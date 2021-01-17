@@ -4,7 +4,7 @@
 
 #include "colorimg.c"
 #include "dda.c"
-
+#include "tabTexelColor.c"
 
 #define SCREEN_WIDTH                    40
 #define SCREEN_HEIGHT                   26
@@ -19,6 +19,7 @@
 unsigned char *theAdr;
 unsigned char *baseAdr;
 unsigned int offTexture;
+unsigned char renCurrentColor;
 
 void prepareRGB(){
     int ii;
@@ -31,55 +32,41 @@ void prepareRGB(){
     }
 }
 
-unsigned char encodeLColor[] = { 0, 2, 5, 7 };
-unsigned char encodeHColor[] = { (0<<3)|0x40, (2<<3)|0x40, (5<<3)|0x40, (7<<3)|0x40 };
+void colorRightTexel(){
 
-
-
-void colorRightTexel(unsigned char theColor){
-
-    unsigned char r, g, b;
+    // unsigned char r, g, b;
     unsigned char *adr;
 
     PROFILE_ENTER(ROUTINE_COLORRIGHTTEXEL);
-    // retrieve the color components from the color value
-    r = (theColor>>4)& 0x03;
-    g = (theColor>>2)& 0x03;
-    b = (theColor)& 0x03;
 
     // compute the start adress of the screen square to color
     //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*SCREEN_WIDTH + (column>>1));
     adr = theAdr; 
 
-    *adr |= encodeLColor[r];
+    *adr |= tabRightRed[renCurrentColor];
     adr += SCREEN_WIDTH;
-    *adr |= encodeLColor[g];
+    *adr |= tabRightGreen[renCurrentColor];
     adr += SCREEN_WIDTH;
-    *adr |= encodeLColor[b];
+    *adr |= tabRightBlue[renCurrentColor];
 
     PROFILE_LEAVE(ROUTINE_COLORRIGHTTEXEL);
 }
 // line in [0..65] column in [0..79]
-void colorLeftTexel(unsigned char theColor){
+void colorLeftTexel(){
 
-    unsigned char r, g, b;
     unsigned char *adr;
 
     PROFILE_ENTER(ROUTINE_COLORLEFTTEXEL);
-    // retrieve the color components from the color value
-    r = (theColor>>4)& 0x03;
-    g = (theColor>>2)& 0x03;
-    b = (theColor)& 0x03;
 
     // compute the start adress of the screen square to color
     //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*SCREEN_WIDTH + (column>>1));
     adr = theAdr;
     //printf ("%d", *adr); get();
-    *adr = encodeHColor[r];
+    *adr = tabLeftRed[renCurrentColor];
     adr += SCREEN_WIDTH;
-    *adr = encodeHColor[g];
+    *adr = tabLeftGreen[renCurrentColor];
     adr += SCREEN_WIDTH;
-    *adr = encodeHColor[b];
+    *adr = tabLeftBlue[renCurrentColor];
 
 
     PROFILE_LEAVE(ROUTINE_COLORLEFTTEXEL);
@@ -157,7 +144,8 @@ void drawImage02(){
             (*ddaStepFunction)();
 
             // colorEvenSquare(bufimg[multi40[ddaCurrentValue] + texcolumn]);
-            colorLeftTexel(bufimgtrans[offTexture + ddaCurrentValue]);
+            renCurrentColor = bufimgtrans[offTexture + ddaCurrentValue];
+            colorLeftTexel();
 
             idxScreenLine   += 1;
             theAdr          += 120;
@@ -192,7 +180,8 @@ void drawImage02(){
             (*ddaStepFunction)();
 
             // colorOddSquare(bufimg[multi40[ddaCurrentValue] + texcolumn]);
-            colorRightTexel(bufimgtrans[offTexture + ddaCurrentValue]);
+            renCurrentColor = bufimgtrans[offTexture + ddaCurrentValue];
+            colorRightTexel();
 
             idxScreenLine   += 1;
             theAdr          += 120;

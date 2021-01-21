@@ -14,6 +14,16 @@ def rayAngles (fov_angle_radian, number_of_slice):
         currentAngle    = math.atan (k*screenIncrementLength/2)
         yield round(currentAngle*128/math.pi)
 
+RAD2FIX = 128/math.pi
+
+def unfish (tabAngles):
+    tab_unfish = []
+    for angle in tabAngles:
+        #a= (ii-20)*2/RAD2FIX
+        a=angle/RAD2FIX
+        v= round(32*math.log2(1.0/math.cos(a)))
+        tab_unfish.append(v)
+    return tab_unfish
 
 def rayAngle2Col (ray_angle_radian, fov_angle_radian, number_of_slice):
 
@@ -37,8 +47,12 @@ def main ():
         idxCol = rayAngle2Col (angle*math.pi/128, math.radians(FOV_IN_DEGREES), NUMBER_OF_SLICE)
         #print (angle, idxCol , tabAngles [idxCol] )
         tabCol.append (idxCol)
-    stAngles2Col             = codegen.buffer2cCode("tabAngle2Col", "unsigned char", tabCol)
+    stAngles2Col            = codegen.buffer2cCode("tabAngle2Col", "unsigned char", tabCol)
     print (stAngles2Col)
     
+    tabUnfish               = unfish (tabAngles)
+    stTabUnfish             = codegen.buffer2cCode("unfish", "unsigned int", tabUnfish)
+    print (stTabUnfish)
+
 if __name__ == "__main__":
     main()

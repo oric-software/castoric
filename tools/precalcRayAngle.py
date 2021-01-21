@@ -32,12 +32,13 @@ def main ():
     tabAngles               = list(rayAngles(math.radians(FOV_IN_DEGREES), NUMBER_OF_SLICE))
     stRayAngles             = codegen.buffer2cCode("tabRayAngles", "signed char", tabAngles)
     print (stRayAngles)
+    tabCol                  = []
     for angle in range (tabAngles[0], tabAngles[-1]-1, -1):
-        idx = rayAngle2Col (angle*math.pi/128, math.radians(FOV_IN_DEGREES), NUMBER_OF_SLICE)
-        print (angle, 
-            idx ,
-            tabAngles [idx]
-        )
+        idxCol = rayAngle2Col (angle*math.pi/128, math.radians(FOV_IN_DEGREES), NUMBER_OF_SLICE)
+        #print (angle, idxCol , tabAngles [idxCol] )
+        tabCol.append (idxCol)
+    stAngles2Col             = codegen.buffer2cCode("tabAngle2Col", "unsigned char", tabCol)
+    print (stAngles2Col)
     
 if __name__ == "__main__":
     main()

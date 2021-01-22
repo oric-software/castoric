@@ -11,7 +11,7 @@ def rayAngles (fov_angle_radian, number_of_slice):
     for ii in range (number_of_slice):
         k               = number_of_slice - 1 - 2*ii
         currentAngle    = math.atan (k*screenIncrementLength/2)
-        yield currentAngle
+        yield round(currentAngle*128/math.pi)
 
 def rayAngle2Col (ray_angle_radian, fov_angle_radian, number_of_slice):
 
@@ -30,12 +30,12 @@ def main ():
 
     NUMBER_OF_SLICE         = 5
 
-    tabAngles               = list(map(math.degrees,rayAngles(math.radians(FOV_IN_DEGREES), NUMBER_OF_SLICE)))
+    tabAngles               = list(rayAngles(math.radians(FOV_IN_DEGREES), NUMBER_OF_SLICE))
 
     print (tabAngles)
     tabCol                  = []
-    for angle in range (round(tabAngles[0]), round(tabAngles[-1])-1, -1):
-        idxCol = rayAngle2Col (angle*math.pi/180, math.radians(FOV_IN_DEGREES), NUMBER_OF_SLICE)
+    for angle in range (tabAngles[0], tabAngles[-1]-1, -1):
+        idxCol = rayAngle2Col (angle*math.pi/128, math.radians(FOV_IN_DEGREES), NUMBER_OF_SLICE)
         # print (angle, idxCol, tabAngles[idxCol])
         tabCol.append(idxCol)
     print (tabCol)

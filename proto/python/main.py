@@ -10,6 +10,10 @@ import scene
 FOV_IN_DEGREES          = 66
 NUMBER_OF_SLICE         = 4
 
+tabRayAngles            = []
+tabAngle2Col            = []
+
+
 glCamPosX, glCamPosY    = 0, 0
 glCamRotZ               = 0
 
@@ -46,8 +50,8 @@ def initCamera():
     glCamPosX               = 0
     glCamPosY               = 0
     glCamRotZ               = 64
-    RayLeftAlpha            = round(glCamRotZ + angle.toFixAngle(math.radians(FOV_IN_DEGREES/2)))
-    RayRightAlpha           = round(glCamRotZ - angle.toFixAngle(math.radians(FOV_IN_DEGREES/2)))
+    RayLeftAlpha            = round(glCamRotZ + tabRayAngles[0])
+    RayRightAlpha           = round(glCamRotZ - tabRayAngles[0])
     
 
 def initScene ():
@@ -95,7 +99,7 @@ def IS_FRONT(idxPoint):
     return abs(lAngle[idxPoint])<64
 
 def IS_VISIBLE(idxPoint):
-    return abs(lAngle[idxPoint]) < angle.toFixAngle(math.radians(FOV_IN_DEGREES/2))
+    return abs(lAngle[idxPoint]) < tabRayAngles[0] # angle.toFixAngle(math.radians(FOV_IN_DEGREES/2))
 
 def rayProcessPoints():
     global RayIdXPoint1
@@ -136,53 +140,57 @@ def toto():
             rayzbuffer[RaySliceIdx] = RayDistance;
             raywall[RaySliceIdx] = RayCurrentWall;
         
-        RaySliceIdx += 1;
-
-        RayAlpha-=2 # FIXME SLICE_ANGULAR_INCREMENT
-        RayNbSlice -= 1
+        RayNbSlice      -= 1
         if (RayNbSlice == 0): break
 
+        RaySliceIdx     += 1;
+
+        RayAlpha        = glCamRotZ + tabRayAngles[RaySliceIdx];
+
+def ANGLE_TO_COL(x): return tabAngle2Col[40-lAngle[(x)]]
 
 def drawFullVisibleWall():
     global InterpAngleLeft, InterpAngleRight, RayNbSlice, InterpIdxLeft 
     preDraw()
     if (lAngle[RayIdXPoint1] > lAngle[RayIdXPoint2]):
-        InterpIdxLeft = (NUMBER_OF_SLICE - lAngle[RayIdXPoint1]) >> 1
-        InterpAngleLeft=lAngle[RayIdXPoint1]+ glCamRotZ
-        InterpAngleRight=lAngle[RayIdXPoint2]+ glCamRotZ
-        RayNbSlice = ((lAngle[RayIdXPoint1] - lAngle[RayIdXPoint2]) >> 1 )+1
+        InterpIdxLeft       = ANGLE_TO_COL(RayIdXPoint1);
+        InterpAngleLeft     = lAngle[RayIdXPoint1]+ glCamRotZ;
+        InterpAngleRight    = lAngle[RayIdXPoint2]+ glCamRotZ; # TODO : remove me to save cycles
+        RayNbSlice          = (ANGLE_TO_COL(RayIdXPoint2) - InterpIdxLeft)+1;
     else:
-        InterpIdxLeft = (NUMBER_OF_SLICE - lAngle[RayIdXPoint2]) >> 1
-        InterpAngleLeft=lAngle[RayIdXPoint2]+ glCamRotZ
-        InterpAngleRight=lAngle[RayIdXPoint1]+ glCamRotZ
-        RayNbSlice = ((lAngle[RayIdXPoint2] - lAngle[RayIdXPoint1]) >> 1 )+1
+        InterpIdxLeft       = ANGLE_TO_COL(RayIdXPoint2);
+        InterpAngleLeft     = lAngle[RayIdXPoint2]+ glCamRotZ;
+        InterpAngleRight    = lAngle[RayIdXPoint1]+ glCamRotZ; # TODO : remove me to save cycles
+        RayNbSlice          = (ANGLE_TO_COL(RayIdXPoint1) - InterpIdxLeft)+1;
     toto()
 
 def drawRightCuttingWall1Visible():
     global InterpAngleLeft, InterpAngleRight, RayNbSlice, InterpIdxLeft 
     preDraw()
-    InterpIdxLeft = (NUMBER_OF_SLICE - lAngle[RayIdXPoint1]) >> 1
-    InterpAngleLeft=lAngle[RayIdXPoint1]+glCamRotZ
-    InterpAngleRight=RayRightAlpha
-    RayNbSlice = (((InterpAngleLeft - InterpAngleRight)&0xFF) >> 1)+1  
+    InterpIdxLeft           = ANGLE_TO_COL(RayIdXPoint1);
+    InterpAngleLeft         = lAngle[RayIdXPoint1]+glCamRotZ;
+    InterpAngleRight        = RayRightAlpha;
+    RayNbSlice              = (NUMBER_OF_SLICE - InterpIdxLeft)+1;
     toto()
 
 def drawLeftCuttingWall1Visible():
     global InterpAngleLeft, InterpAngleRight, RayNbSlice, InterpIdxLeft 
     preDraw()
-    InterpAngleLeft=RayLeftAlpha
-    InterpAngleRight=lAngle[RayIdXPoint1]+ glCamRotZ
-    InterpIdxLeft = 0
-    RayNbSlice = (((InterpAngleLeft - InterpAngleRight)&0xFF) >> 1)+1
+    InterpAngleLeft         = RayLeftAlpha
+    InterpAngleRight        = lAngle[RayIdXPoint1]+ glCamRotZ
+    RayNbSlice              = ANGLE_TO_COL(RayIdXPoint1)
+    InterpIdxLeft           = 0
     toto()
 
 def drawRightCuttingWall2Visible():
     global InterpAngleLeft, InterpAngleRight, RayNbSlice, InterpIdxLeft 
     preDraw()
-    InterpAngleLeft=lAngle[RayIdXPoint2]+glCamRotZ
-    InterpAngleRight=RayRightAlpha
-    InterpIdxLeft = (NUMBER_OF_SLICE - lAngle[RayIdXPoint2]) >> 1
-    RayNbSlice = (((InterpAngleLeft - InterpAngleRight)&0xFF) >> 1)+1
+
+    InterpAngleLeft         = lAngle[RayIdXPoint2]+glCamRotZ;
+    InterpAngleRight        = RayRightAlpha;
+    InterpIdxLeft           = ANGLE_TO_COL(RayIdXPoint2);
+    RayNbSlice              = (NUMBER_OF_SLICE - InterpIdxLeft)+1;
+
     toto()
 
 def drawLeftCuttingWall2Visible():
@@ -291,7 +299,17 @@ def rayProcessWalls():
 
 
 def main ():
-    print ("hello world")    
+    global tabRayAngles, tabAngle2Col
+    print ("hello world") 
+
+    tabRayAngles            = list(angle.rayAngles(math.radians(FOV_IN_DEGREES), NUMBER_OF_SLICE))
+    tabAngle2Col            = []
+    for ang in range (round(tabRayAngles[0]), round(tabRayAngles[-1])-1, -1):
+        idxCol = angle.rayAngle2Col (ang*math.pi/128, math.radians(FOV_IN_DEGREES), NUMBER_OF_SLICE)
+        # print (angle, idxCol, tabAngles[idxCol])
+        tabAngle2Col.append(idxCol)
+    print (tabRayAngles)
+    print (tabAngle2Col)
     initCamera()
     print (f"[{glCamPosX}, {glCamPosY}], ({RayLeftAlpha} {glCamRotZ} {RayRightAlpha})")
     initScene()

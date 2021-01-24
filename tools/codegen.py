@@ -15,6 +15,21 @@ def buffer2cCode(theName, theType, theBuffer):
     theCode += "};\n"
     return theCode
 
+def buffer2pyCode(theName, theBuffer):
+    theCode = ""
+    first = True
+    for ii in range(len(theBuffer)):
+        if first:
+            theCode += f"{theName} = [\n\t"
+            first = False
+        else:
+            theCode += ", "
+        theCode += f"{theBuffer[ii]}"
+        if ((ii+1) %16 == 0) and (ii != 0):
+            theCode += "\n\t"
+    theCode += "]\n"
+    return theCode
+
 def dda(nbVal, nbStep, startValue = 0):
     ii=startValue
     yield ii    

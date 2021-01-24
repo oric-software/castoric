@@ -444,7 +444,7 @@ def log2sin(x):
     return r
 
 def log2cos(x):
-    r = tabLog2Sin[struct.unpack('B',struct.pack("b", x))[0]]
+    r = tabLog2Cos[struct.unpack('B',struct.pack("b", x))[0]]
     return r
 
 
@@ -617,7 +617,23 @@ def fastComputeTextCol (glCamPosX, glCamPosY,
         return [res, tc]
         #return [res, abs(longexp(som+round(math.log2(abs(32*math.sin(angle*FIX2RAD)))))-deltaY)]
     elif (RaySegX2 - RaySegX1 != 0):
-        tc = abs(res*math.cos(angle*FIX2RAD)-deltaX)
+        if (angle == 0):
+            v0 = 0
+            v1 = 0
+            v2 = 0
+        # elif (angle == ):
+        elif abs(angle)<64:
+            v0 = log2cos(angle) 
+            v1 = som + v0
+            v2 = longexp(v1) # (2**(v1/32)) # 
+        elif abs(angle)>=64:
+            v0 = log2cos(angle) 
+            v1 = som + v0
+            v2 = -longexp(v1) # -(2**(v1/32)) # 
+        else :
+            print ("WHAT?")
+        # tc = abs(res*math.cos(angle*FIX2RAD)-deltaX)
+        tc = round(abs(v2-deltaX*COEFF))
         return [res, tc]
     
 
@@ -628,11 +644,41 @@ def fastComputeTextCol (glCamPosX, glCamPosY,
 # glCamRotZ = -128
 # rayAngleMin, rayAngleMax = 151, 207
 
+# [glCamPosX, glCamPosY] = [2, 1]
+# [RaySegX1, RaySegY1] = [12, 5]
+# [RaySegX2, RaySegY2] = [12, -3]
+# glCamRotZ = 0
+# rayAngleMin, rayAngleMax = -20, 20
+
+# [glCamPosX, glCamPosY] = [2, 1]
+# [RaySegX1, RaySegY1] = [4, 8]
+# [RaySegX2, RaySegY2] = [12,8]
+# glCamRotZ = round(50/FIX2DEG)
+# rayAngleMin, rayAngleMax = 35, 70
+
+# [glCamPosX, glCamPosY] = [2, 1]
+# [RaySegX1, RaySegY1] = [4, 8]
+# [RaySegX2, RaySegY2] = [12,8]
+# glCamRotZ = round(-50/FIX2DEG)
+# rayAngleMin, rayAngleMax = -70, -32
+
+# [glCamPosX, glCamPosY] = [2, 1]
+# [RaySegX1, RaySegY1] = [-1, -5]
+# [RaySegX2, RaySegY2] = [5,-5]
+# glCamRotZ = round(-90/FIX2DEG)
+# rayAngleMin, rayAngleMax = -114, -66
+
+# [glCamPosX, glCamPosY] = [2, 1]
+# [RaySegX1, RaySegY1] = [-1, 5]
+# [RaySegX2, RaySegY2] = [5,5]
+# glCamRotZ = round(90/FIX2DEG)
+# rayAngleMin, rayAngleMax = 60, 120
+
 [glCamPosX, glCamPosY] = [2, 1]
-[RaySegX1, RaySegY1] = [12, 5]
-[RaySegX2, RaySegY2] = [12, -3]
-glCamRotZ = 0
-rayAngleMin, rayAngleMax = -20, 20
+[RaySegX1, RaySegY1] = [-6,-3]
+[RaySegX2, RaySegY2] = [-6,5]
+glCamRotZ = round(-180/FIX2DEG)
+rayAngleMin, rayAngleMax = 160, 200
 
 for ii in range (rayAngleMin, rayAngleMax):
     angle = round(ii/FIX2DEG)

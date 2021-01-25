@@ -1,7 +1,7 @@
 //
 // User settings
 //
-#define PROFILER_ENABLE			// Comment out to disable profiling
+#undef PROFILER_ENABLE			// Comment out to disable profiling
 #define PROFILER_USE_PRINTER	// Comment out to disable the usage of printer
 #define PROFILER_USE_NAMES		// Comment out to disable the usage of function names
 

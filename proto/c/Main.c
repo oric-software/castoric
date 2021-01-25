@@ -1,3 +1,4 @@
+#undef DEBUG
 
 #include "lib.h"
 #include "profile.h"
@@ -5,6 +6,8 @@
 #include "colorimg.c"
 #include "dda.c"
 #include "tabTexelColor.c"
+#include "raycast.c"
+#include "scene.c"
 
 #define SCREEN_WIDTH                    40
 #define SCREEN_HEIGHT                   26
@@ -61,7 +64,7 @@ void colorLeftTexel(){
     // compute the start adress of the screen square to color
     //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*SCREEN_WIDTH + (column>>1));
     adr = theAdr;
-    //printf ("%d", *adr); get();
+
     *adr = tabLeftRed[renCurrentColor];
     adr += SCREEN_WIDTH;
     *adr = tabLeftGreen[renCurrentColor];
@@ -71,10 +74,6 @@ void colorLeftTexel(){
 
     PROFILE_LEAVE(ROUTINE_COLORLEFTTEXEL);
 }
-
-
-
-
 
 unsigned char tabHeight[] = {
         40, 39, 39, 38, 37, 37, 36, 35, 34, 34, 33, 32, 32, 31, 30, 30
@@ -86,121 +85,219 @@ unsigned char tabTexCol[] = {
         , 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
         , 32, 33, 34, 35, 36, 37, 38, 39};      
 
-
-
 unsigned int multi120[] = {
         0, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320, 1440, 1560, 1680, 1800
         , 1920, 2040, 2160, 2280, 2400, 2520, 2640, 2760, 2880, 3000, 3120, 3240, 3360, 3480, 3600, 3720
         , 3840, 3960, 4080, 4200, 4320, 4440, 4560, 4680};
-
 
 unsigned int multi32[] = {
 	0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448, 480
 	, 512, 544, 576, 608, 640, 672, 704, 736, 768, 800, 832, 864, 896, 928, 960, 992
 	};
 
+unsigned char *wallTexture[] = {texture_01, texture_00};
+unsigned char *ptrTexture;
+
 void drawImage02(){
     int ii;
 
-    signed char idxScreenLine, idxScreenCol;
-    unsigned char height, texcolumn;
+    signed char         idxScreenLine, idxScreenCol;
+    unsigned char       height, texcolumn;
 
     PROFILE_ENTER(ROUTINE_DRAW02);
 
-    idxScreenCol        = 9;
+    idxScreenCol        = 19;
     ddaStartValue       = 0;
     ddaNbVal            = TEXTURE_HEIGHT;
     baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (idxScreenCol>>1));
 
     for (ii = 0; ii < 40; ) {
 
-// =====================================
-// ============ LEFT TEXEL
-// =====================================
+        if (raywall[ii]!=255) {
+            ptrTexture = wallTexture[raywall[ii]];
 
-        height              = tabHeight[ii];
-        texcolumn           = tabTexCol[ii]&31; // modulo 32
-        offTexture          = multi32[texcolumn];
+    // =====================================
+    // ============ LEFT TEXEL
+    // =====================================
 
-        idxScreenCol        += 1;
-        baseAdr             += 1;
-        idxScreenLine       = 32 - height;
+            height              = (100-TableVerticalPos[ii])/2; // tabHeight[ii];
+            texcolumn           = tabTexCol[ii]&31; // modulo 32
+            offTexture          = multi32[texcolumn];
 
-        ddaNbStep           = height<<1;
+            idxScreenCol        += 1;
+            baseAdr             += 1;
+            idxScreenLine       = 32 - height;
 
-        
+            ddaNbStep           = height<<1;
 
-        ddaInit();
+            
 
-        while (idxScreenLine < 0){
-            (*ddaStepFunction)();
-            idxScreenLine   += 1;
-        } 
+            ddaInit();
 
-        // theAdr = (unsigned char *)(HIRES_SCREEN_ADDRESS + multi120[idxScreenLine] + (idxScreenCol>>1));
-        theAdr              = (unsigned char *)(baseAdr + multi120[idxScreenLine]); 
+            while (idxScreenLine < 0){
+                (*ddaStepFunction)();
+                idxScreenLine   += 1;
+            } 
 
-        do {
-            (*ddaStepFunction)();
+            // theAdr = (unsigned char *)(HIRES_SCREEN_ADDRESS + multi120[idxScreenLine] + (idxScreenCol>>1));
+            theAdr              = (unsigned char *)(baseAdr + multi120[idxScreenLine]); 
 
-            // colorEvenSquare(bufimg[multi40[ddaCurrentValue] + texcolumn]);
-            renCurrentColor = bufimgtrans[offTexture + ddaCurrentValue];
-            colorLeftTexel();
+            do {
+                (*ddaStepFunction)();
 
-            idxScreenLine   += 1;
-            theAdr          += 120;
+                // colorEvenSquare(bufimg[multi40[ddaCurrentValue] + texcolumn]);
+                renCurrentColor = ptrTexture[offTexture + ddaCurrentValue];
+                colorLeftTexel();
 
-        } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < 64));
+                idxScreenLine   += 1;
+                theAdr          += 120;
+
+            } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < 64));
+        }
 
         ii++;
 
-// =====================================
-// ============ RIGHT TEXEL
-// =====================================
-        height              = tabHeight[ii];
-        texcolumn           = tabTexCol[ii]&31;  // modulo 32
-        offTexture          = multi32[texcolumn];
-        idxScreenCol        += 1;
+        if (raywall[ii]!=255) {
+            ptrTexture = wallTexture[raywall[ii]];
 
-        idxScreenLine       = 32 - height;
+    // =====================================
+    // ============ RIGHT TEXEL
+    // =====================================
+            height              = (100-TableVerticalPos[ii])/2; // tabHeight[ii];
+            texcolumn           = tabTexCol[ii]&31;  // modulo 32
+            offTexture          = multi32[texcolumn];
+            idxScreenCol        += 1;
 
-        ddaNbStep           = height<<1;
+            idxScreenLine       = 32 - height;
 
-        ddaInit();
+            ddaNbStep           = height<<1;
 
-        while (idxScreenLine < 0){
-            (*ddaStepFunction)();
-            idxScreenLine   += 1;
-        } 
+            ddaInit();
 
-        // theAdr = (unsigned char *)(HIRES_SCREEN_ADDRESS + multi120[idxScreenLine] + (idxScreenCol>>1));
-        theAdr              = (unsigned char *)(baseAdr + multi120[idxScreenLine]);
-        
-        do {
-            (*ddaStepFunction)();
+            while (idxScreenLine < 0){
+                (*ddaStepFunction)();
+                idxScreenLine   += 1;
+            } 
 
-            // colorOddSquare(bufimg[multi40[ddaCurrentValue] + texcolumn]);
-            renCurrentColor = bufimgtrans[offTexture + ddaCurrentValue];
-            colorRightTexel();
+            // theAdr = (unsigned char *)(HIRES_SCREEN_ADDRESS + multi120[idxScreenLine] + (idxScreenCol>>1));
+            theAdr              = (unsigned char *)(baseAdr + multi120[idxScreenLine]);
+            
+            do {
+                (*ddaStepFunction)();
 
-            idxScreenLine   += 1;
-            theAdr          += 120;
+                // colorOddSquare(bufimg[multi40[ddaCurrentValue] + texcolumn]);
+                renCurrentColor = ptrTexture[offTexture + ddaCurrentValue];
+                colorRightTexel();
 
-        } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < 64));
+                idxScreenLine   += 1;
+                theAdr          += 120;
 
+            } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < 64));
+        }
         ii++;
     }
     PROFILE_LEAVE(ROUTINE_DRAW02);
    
 }
+void initCamera(){
+    glCamPosX               = 2; // 0; // -62; // 39;  //
+    glCamPosY               = 1; // 0; //- 62; // -25; //
+    glCamRotZ               = 32; // 32; // 64; //
+    RayLeftAlpha            = glCamRotZ + tabRayAngles[0];
+    // RayRightAlpha           = glCamRotZ - tabRayAngles[0];
+}
+void precalculateWallsAngle() {
+    unsigned char idxWall, idxPt1, idxPt2;
+    signed char dX, dY, angle;
+
+    for (idxWall = 0; idxWall < rayNbWalls; idxWall ++) { 
+
+        idxPt1 = lWallsPt1[idxWall];
+        idxPt2 = lWallsPt2[idxWall];
+
+        dX = lPointsX[idxPt2]-lPointsX[idxPt1];
+        dY = lPointsY[idxPt2]-lPointsY[idxPt1];
+
+        if (dX == 0) {
+            lWallsCosBeta[idxWall] = 0;
+        } else if (dY == 0) {
+            if (dX > 0) {
+                lWallsCosBeta[idxWall] = 32;
+            } else {
+                lWallsCosBeta[idxWall] = -32;
+            }
+        } else {
+            /* 
+             *  Not aligned walls not handled
+             */
+        }
+    }
+}
+void initScene (signed char sceneData[]){
+	unsigned int ii;
+	unsigned char jj;
+
+	ii=0;
+	rayNbPoints = (unsigned char)sceneData[ii++];
+	rayNbWalls = (unsigned char)sceneData[ii++];
+	for (jj=0; jj < rayNbPoints; jj++){
+		lPointsX[jj]= sceneData[ii++] ; lPointsY[jj] = sceneData[ii++];  // points 0
+	}
+	for (jj=0; jj < rayNbWalls; jj++){
+		lWallsPt1[jj]= (unsigned char)(sceneData[ii++]) ; lWallsPt2[jj] = (unsigned char)(sceneData[ii++]);// points 0
+	}
+    precalculateWallsAngle();
+}
+void rayInitCasting(){
+    unsigned char ii;
+    for (ii=0; ii< SCREEN_WIDTH; ii++) {
+        rayzbuffer[ii]      = 255;
+        raywall[ii]         = 255;
+    }
+}
+
+void detailPoints(){
+    unsigned char idxPoint;
+
+    for (idxPoint = 0; idxPoint < rayNbPoints; idxPoint ++) {
+        printf ("point %d [%d %d], a= %d\n", idxPoint, lPointsX[idxPoint], lPointsY[idxPoint], lAngle[idxPoint]);
+    }
+}
+void textZBuffer () {
+    unsigned char ii, jj;
+    for (jj=0; jj< 10; jj++)  {
+        printf ("%d|%d|%d|%d \t %d|%d|%d|%d \t%d|%d|%d|%d\n", (jj), raywall[(jj)], rayzbuffer[(jj)], TableVerticalPos[jj], (jj)+10, raywall[(jj)+10], rayzbuffer[(jj)+10], TableVerticalPos[jj+10], (jj)+20, raywall[(jj)+20], rayzbuffer[(jj)+20] , TableVerticalPos[jj+20]);
+    }
+    for (jj=30; jj< 40; jj++)  {
+        printf ("%d|%d|%d|%d\n", (jj), raywall[(jj)], rayzbuffer[(jj)], TableVerticalPos[jj]);
+     }
+}
 
 void main(){
+
+
+    printf ("DEBUT\n");
+    initCamera();
+    initScene (scene_00);
+
 
     hires();
     prepareRGB();
 
     ProfilerInitialize();
     ProfilerNextFrame();
+
+    rayInitCasting();
+    rayProcessPoints();
+    rayProcessWalls();
+
+#ifdef DEBUG
+    detailPoints(); 
+    get();
+    textZBuffer ();
+    get();
+#endif
+
 
     drawImage02();
 

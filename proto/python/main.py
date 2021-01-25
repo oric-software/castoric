@@ -7,8 +7,8 @@ import scene
 
 # import display
 
-FOV_IN_DEGREES          = 66
-NUMBER_OF_SLICE         = 4
+FOV_IN_DEGREES          = 112
+NUMBER_OF_SLICE         = 40
 
 tabRayAngles            = []
 tabAngle2Col            = []
@@ -47,9 +47,9 @@ isFront                 = []
 
 def initCamera():
     global glCamPosX, glCamPosY, glCamRotZ, RayLeftAlpha, RayRightAlpha
-    glCamPosX               = 0
-    glCamPosY               = 0
-    glCamRotZ               = 64
+    glCamPosX               = 31
+    glCamPosY               = 20
+    glCamRotZ               = 112
     RayLeftAlpha            = round(glCamRotZ + tabRayAngles[0])
     RayRightAlpha           = round(glCamRotZ - tabRayAngles[0])
     

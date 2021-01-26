@@ -95,7 +95,7 @@ unsigned int multi32[] = {
 	, 512, 544, 576, 608, 640, 672, 704, 736, 768, 800, 832, 864, 896, 928, 960, 992
 	};
 
-unsigned char *wallTexture[] = {texture_01, texture_00};
+unsigned char *wallTexture[] = {texture_bluestone, texture_wood};
 unsigned char *ptrTexture;
 
 void drawImage02(){

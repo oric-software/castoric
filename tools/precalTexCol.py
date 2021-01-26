@@ -31,5 +31,8 @@ def main():
     print (codegen.buffer2pyCode("tabLog2Sin", tls))
     print (codegen.buffer2pyCode("tabLog2Cos", tlc))
 
+    print (codegen.buffer2cCode("tabLog2Sin", "signed char", tls))
+    print (codegen.buffer2cCode("tabLog2Cos", "signed char", tlc))
+
 if __name__ == "__main__":
     main()

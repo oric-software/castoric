@@ -674,22 +674,150 @@ def fastComputeTextCol (glCamPosX, glCamPosY,
 # glCamRotZ = round(90/FIX2DEG)
 # rayAngleMin, rayAngleMax = 60, 120
 
+# [glCamPosX, glCamPosY] = [2, 1]
+# [RaySegX1, RaySegY1] = [-6,-3]
+# [RaySegX2, RaySegY2] = [-6,5]
+# glCamRotZ = round(-180/FIX2DEG)
+# rayAngleMin, rayAngleMax = 160, 200
+
+# for ii in range (rayAngleMin, rayAngleMax):
+#     angle = round(ii/FIX2DEG)
+#     if angle >= 0:
+#         sangle= int.from_bytes(bytes([angle]), byteorder='big', signed=True)
+#     else:
+#         sangle = angle
+#     # dist = fastComputeDistance (RaySegX1-glCamPosX, RaySegY1-glCamPosY, sangle)
+
+#     textcol = fastComputeTextCol (glCamPosX, glCamPosY,
+#                              RaySegX1, RaySegY1,
+#                              RaySegX2, RaySegY2,
+#                              sangle)
+#     print (ii, sangle, textcol)
+
+
+[glCamPosX, glCamPosY] = [2, 1]
+[RaySegX1, RaySegY1] = [-4, 5]
+[RaySegX2, RaySegY2] = [-4, -3]
+glCamRotZ = -128
+#rayAngleMin, rayAngleMax = 151, 207
+
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            107)
+assert (dist == 7) and (textCol == 3)
+
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            117)
+assert (dist == 6) and (textCol == 12)
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            127)
+assert (dist == 6) and (textCol == 20)
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            -128)
+assert (dist == 6) and (textCol == 22)
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            -110)
+assert (dist == 7) and (textCol == 36)
+
+
+
+[glCamPosX, glCamPosY] = [2, 1]
+[RaySegX1, RaySegY1] = [12, 5]
+[RaySegX2, RaySegY2] = [12, -3]
+glCamRotZ = 0
+# rayAngleMin, rayAngleMax = -20, 20
+
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            -14)
+assert (dist == 11) and (textCol == 40)
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            -1)
+assert (dist == 10) and (textCol == 23)
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            0)
+assert (dist == 10) and (textCol == 21)
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            14)
+assert (dist == 11) and (textCol == 2)
+
+[glCamPosX, glCamPosY] = [2, 1]
+[RaySegX1, RaySegY1] = [4, 8]
+[RaySegX2, RaySegY2] = [12,8]
+glCamRotZ = round(50/FIX2DEG)
+# rayAngleMin, rayAngleMax = 35, 70
+
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            -50)
+assert (dist == 7) and (textCol == 2)
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            -43)
+assert (dist == 8) and (textCol == 10)
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            -32)
+assert (dist == 10) and (textCol == 26)
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            -23)
+assert (dist == 13) and (textCol == 49)
+
+
+[glCamPosX, glCamPosY] = [2, 1]
+[RaySegX1, RaySegY1] = [-1, -5]
+[RaySegX2, RaySegY2] = [5,-5]
+glCamRotZ = round(-90/FIX2DEG)
+# rayAngleMin, rayAngleMax = -114, -66
+
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            -81)
+assert (dist == 6) and (textCol == 2)
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            -71)
+assert (dist == 6) and (textCol == 10)
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            -64)
+assert (dist == 6) and (textCol == 15)
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            -48)
+assert (dist == 6) and (textCol == 29)
+
+
+[glCamPosX, glCamPosY] = [2, 1]
+[RaySegX1, RaySegY1] = [-1, 5]
+[RaySegX2, RaySegY2] = [5,5]
+glCamRotZ = round(90/FIX2DEG)
+# rayAngleMin, rayAngleMax = 60, 120
+
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            43)
+assert (dist == 5) and (textCol == 28)
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            55)
+assert (dist == 4) and (textCol == 21)
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            64)
+assert (dist == 4) and (textCol == 15)
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            77)
+assert (dist == 4) and (textCol == 9)
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            85)
+assert (dist == 5) and (textCol == 4)
+
+
+
 [glCamPosX, glCamPosY] = [2, 1]
 [RaySegX1, RaySegY1] = [-6,-3]
 [RaySegX2, RaySegY2] = [-6,5]
 glCamRotZ = round(-180/FIX2DEG)
-rayAngleMin, rayAngleMax = 160, 200
+# rayAngleMin, rayAngleMax = 160, 200
 
-for ii in range (rayAngleMin, rayAngleMax):
-    angle = round(ii/FIX2DEG)
-    if angle >= 0:
-        sangle= int.from_bytes(bytes([angle]), byteorder='big', signed=True)
-    else:
-        sangle = angle
-    # dist = fastComputeDistance (RaySegX1-glCamPosX, RaySegY1-glCamPosY, sangle)
-
-    textcol = fastComputeTextCol (glCamPosX, glCamPosY,
-                             RaySegX1, RaySegY1,
-                             RaySegX2, RaySegY2,
-                             sangle)
-    print (ii, textcol)
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            114)
+assert (dist == 9) and (textCol == 36)
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            127)
+assert (dist == 8) and (textCol == 23)
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            -128)
+assert (dist == 8) and (textCol == 19)
+[dist, textCol] = fastComputeTextCol (glCamPosX, glCamPosY, RaySegX1, RaySegY1, RaySegX2, RaySegY2,
+                            -114)
+assert (dist == 9) and (textCol == 6)

@@ -243,7 +243,7 @@ void initScene (signed char sceneData[]){
 }
 void rayInitCasting(){
     unsigned char ii;
-    for (ii=0; ii< SCREEN_WIDTH; ii++) {
+    for (ii=0; ii< NB_SLICES; ii++) {
         rayzbuffer[ii]      = 255;
         raywall[ii]         = 255;
     }

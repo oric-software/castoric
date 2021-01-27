@@ -26,7 +26,7 @@ def rayAngle2Col (ray_angle_radian, fov_angle_radian, number_of_slice):
 
 def main ():
     
-    FOV_IN_DEGREES          = 20
+    FOV_IN_DEGREES          = 66
 
     NUMBER_OF_SLICE         = 5
 

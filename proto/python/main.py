@@ -7,7 +7,7 @@ import scene
 
 # import display
 
-FOV_IN_DEGREES          = 112
+FOV_IN_DEGREES          = 66
 NUMBER_OF_SLICE         = 40
 
 tabRayAngles            = []

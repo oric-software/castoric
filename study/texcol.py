@@ -680,19 +680,25 @@ def fastComputeTextCol (glCamPosX, glCamPosY,
 # glCamRotZ = round(-180/FIX2DEG)
 # rayAngleMin, rayAngleMax = 160, 200
 
-# for ii in range (rayAngleMin, rayAngleMax):
-#     angle = round(ii/FIX2DEG)
-#     if angle >= 0:
-#         sangle= int.from_bytes(bytes([angle]), byteorder='big', signed=True)
-#     else:
-#         sangle = angle
-#     # dist = fastComputeDistance (RaySegX1-glCamPosX, RaySegY1-glCamPosY, sangle)
+[glCamPosX, glCamPosY] = [2, 1]
+[RaySegX1, RaySegY1] = [-4,12]
+[RaySegX2, RaySegY2] = [12,12]
+glCamRotZ = round(45/FIX2DEG)
+rayAngleMin, rayAngleMax = 100, 102
 
-#     textcol = fastComputeTextCol (glCamPosX, glCamPosY,
-#                              RaySegX1, RaySegY1,
-#                              RaySegX2, RaySegY2,
-#                              sangle)
-#     print (ii, sangle, textcol)
+for ii in range (rayAngleMin, rayAngleMax):
+    angle = round(ii/FIX2DEG)
+    if angle >= 0:
+        sangle= int.from_bytes(bytes([angle]), byteorder='big', signed=True)
+    else:
+        sangle = angle
+    # dist = fastComputeDistance (RaySegX1-glCamPosX, RaySegY1-glCamPosY, sangle)
+
+    textcol = fastComputeTextCol (glCamPosX, glCamPosY,
+                             RaySegX1, RaySegY1,
+                             RaySegX2, RaySegY2,
+                             sangle)
+    print (ii, sangle, textcol)
 
 
 [glCamPosX, glCamPosY] = [2, 1]

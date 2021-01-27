@@ -65,16 +65,17 @@ def image2TextureBuf (filepathname):
 
 def main():
     print (f"#define TEXTURE_WIDTH 32\n#define TEXTURE_HEIGHT 32\n")
-    # print (image2TextureBuf ('img/bluestone.png'))
-    # print (image2TextureBuf ('img/christmas.bmp'))
-    # print (image2TextureBuf ('img/colorstone.png'))
-    # print (image2TextureBuf ('img/eagle.png'))
-    # print (image2TextureBuf ('img/greystone.png'))
-    # print (image2TextureBuf ('img/mossy.png'))
-    # print (image2TextureBuf ('img/pillar.png'))
-    # print (image2TextureBuf ('img/purplestone.png'))
-    # print (image2TextureBuf ('img/redbrick.png'))
-    # print (image2TextureBuf ('img/wood.png'))
+    print (image2TextureBuf ('img/bluestone.png'))
+    print (image2TextureBuf ('img/christmas.bmp'))
+    print (image2TextureBuf ('img/colorstone.png'))
+    print (image2TextureBuf ('img/eagle.png'))
+    print (image2TextureBuf ('img/greystone.png'))
+    print (image2TextureBuf ('img/logo.png'))
+    print (image2TextureBuf ('img/mossy.png'))
+    print (image2TextureBuf ('img/pillar.png'))
+    print (image2TextureBuf ('img/purplestone.png'))
+    print (image2TextureBuf ('img/redbrick.png'))
+    print (image2TextureBuf ('img/wood.png'))
     print (image2TextureBuf ('img/wood.bmp'))
 if __name__ == "__main__":
     # execute only if run as a script

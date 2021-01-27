@@ -9,6 +9,7 @@
 #include "raycast.c"
 #include "scene.c"
 
+
 #define SCREEN_WIDTH                    40
 #define SCREEN_HEIGHT                   26
 
@@ -23,7 +24,8 @@ unsigned char *theAdr;
 unsigned char *baseAdr;
 unsigned int offTexture;
 unsigned char renCurrentColor;
-
+unsigned char running; // game state: 1 = Running, 0 = Leave.
+#include "player.c"
 void prepareRGB(){
     int ii;
 
@@ -75,15 +77,6 @@ void colorLeftTexel(){
     PROFILE_LEAVE(ROUTINE_COLORLEFTTEXEL);
 }
 
-unsigned char tabHeight[] = {
-        40, 39, 39, 38, 37, 37, 36, 35, 34, 34, 33, 32, 32, 31, 30, 30
-        , 29, 28, 27, 27, 26, 25, 25, 24, 23, 23, 22, 21, 20, 20, 19, 18
-        , 18, 17, 16, 16, 15, 14, 13, 13, 12};
-
-unsigned char tabTexCol[] = {
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
-        , 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
-        , 32, 33, 34, 35, 36, 37, 38, 39};      
 
 unsigned int multi120[] = {
         0, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320, 1440, 1560, 1680, 1800
@@ -95,7 +88,7 @@ unsigned int multi32[] = {
 	, 512, 544, 576, 608, 640, 672, 704, 736, 768, 800, 832, 864, 896, 928, 960, 992
 	};
 
-unsigned char *wallTexture[] = {texture_bluestone, texture_wood};
+unsigned char *wallTexture[] = {texture_christmas, texture_logo};
 unsigned char *ptrTexture;
 
 void drawImage02(){
@@ -272,6 +265,33 @@ void textZBuffer () {
         printf ("%d|%d|%d|%d\n", (jj), raywall[(jj)], rayzbuffer[(jj)], TableVerticalPos[jj]);
      }
 }
+void textCol () {
+    unsigned char ii, jj;
+    for (jj=0; jj< 10; jj++)  {
+        printf ("%d|%d|%d|%d \t %d|%d|%d|%d \t%d|%d|%d|%d\n", (jj), raywall[(jj)], tabTexCol[(jj)], TableVerticalPos[jj], (jj)+10, raywall[(jj)+10], tabTexCol[(jj)+10], TableVerticalPos[jj+10], (jj)+20, raywall[(jj)+20], tabTexCol[(jj)+20] , TableVerticalPos[jj+20]);
+    }
+    for (jj=30; jj< 40; jj++)  {
+        printf ("%d|%d|%d|%d\n", (jj), raywall[(jj)], tabTexCol[(jj)], TableVerticalPos[jj]);
+     }
+}
+
+void gameLoop() {
+
+    while (running) {
+
+        player ();
+
+        rayInitCasting();
+        rayProcessPoints();
+        rayProcessWalls();
+        memset(HIRES_SCREEN_ADDRESS, 64, 8000); // 5120 = 0xB400 (std char) - 0xA000 (hires screen)
+        prepareRGB();
+        drawImage02();
+        printf("(X=%d Y=%d) [a=%d]\n", glCamPosX, glCamPosY, glCamRotZ);
+    }
+}
+
+#define DEBUG
 
 void main(){
 
@@ -281,8 +301,6 @@ void main(){
     initScene (scene_00);
 
 
-    hires();
-    prepareRGB();
 
     ProfilerInitialize();
     ProfilerNextFrame();
@@ -292,18 +310,28 @@ void main(){
     rayProcessWalls();
 
 #ifdef DEBUG
-    detailPoints(); 
-    get();
-    textZBuffer ();
+    // detailPoints(); 
+    // get();
+    // textZBuffer ();
+    // get();
+    textCol ();
     get();
 #endif
 
+    hires();
+    prepareRGB();
 
     drawImage02();
 
 	ProfilerDisplay();	
     ProfilerTerminate();
-    printf("Done\n");	
+    printf("Done\n");
+
+
+
+    running = 1;
+    gameLoop();
+	
 }
 
 // #define LORES_SCREEN_ADDRESS            ((unsigned int)0xBB80)

@@ -8,7 +8,7 @@ import scene
 # import display
 
 FOV_IN_DEGREES          = 112
-NUMBER_OF_SLICE         = 40
+NUMBER_OF_SLICE         = 80
 
 tabRayAngles            = []
 tabAngle2Col            = []
@@ -147,7 +147,7 @@ def toto():
 
         RayAlpha        = glCamRotZ + tabRayAngles[RaySliceIdx];
 
-def ANGLE_TO_COL(x): return tabAngle2Col[40-lAngle[(x)]]
+def ANGLE_TO_COL(x): return tabAngle2Col[NUMBER_OF_SLICE-lAngle[(x)]]
 
 def drawFullVisibleWall():
     global InterpAngleLeft, InterpAngleRight, RayNbSlice, InterpIdxLeft 

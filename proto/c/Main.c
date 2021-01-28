@@ -81,7 +81,9 @@ void colorLeftTexel(){
 unsigned int multi120[] = {
         0, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320, 1440, 1560, 1680, 1800
         , 1920, 2040, 2160, 2280, 2400, 2520, 2640, 2760, 2880, 3000, 3120, 3240, 3360, 3480, 3600, 3720
-        , 3840, 3960, 4080, 4200, 4320, 4440, 4560, 4680};
+        , 3840, 3960, 4080, 4200, 4320, 4440, 4560, 4680, 4800, 4920, 5040, 5160, 5280, 5400, 5520, 5640
+        , 5760, 5880, 6000, 6120, 6240, 6360, 6480, 6600, 6720, 6840, 6960, 7080, 7200, 7320, 7440, 7560
+        };
 
 unsigned int multi32[] = {
 	0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448, 480
@@ -99,13 +101,14 @@ void drawImage02(){
 
     PROFILE_ENTER(ROUTINE_DRAW02);
 
-    idxScreenCol        = 19;
+    idxScreenCol        = 1;
     ddaStartValue       = 0;
     ddaNbVal            = TEXTURE_HEIGHT;
     baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (idxScreenCol>>1));
 
-    for (ii = 0; ii < 40; ) {
-
+    for (ii = 2; ii < NB_SLICES-1; ) {
+        baseAdr             += 1;
+        idxScreenCol        += 1;
         if (raywall[ii]!=255) {
             ptrTexture = wallTexture[raywall[ii]];
 
@@ -117,8 +120,8 @@ void drawImage02(){
             texcolumn           = tabTexCol[ii]&31; // modulo 32
             offTexture          = multi32[texcolumn];
 
-            idxScreenCol        += 1;
-            baseAdr             += 1;
+            
+            
             idxScreenLine       = 32 - height;
 
             ddaNbStep           = height<<1;
@@ -149,7 +152,7 @@ void drawImage02(){
         }
 
         ii++;
-
+        idxScreenCol        += 1;
         if (raywall[ii]!=255) {
             ptrTexture = wallTexture[raywall[ii]];
 
@@ -159,7 +162,7 @@ void drawImage02(){
             height              = (100-TableVerticalPos[ii])/2; // tabHeight[ii];
             texcolumn           = tabTexCol[ii]&31;  // modulo 32
             offTexture          = multi32[texcolumn];
-            idxScreenCol        += 1;
+            
 
             idxScreenLine       = 32 - height;
 
@@ -193,8 +196,8 @@ void drawImage02(){
    
 }
 void initCamera(){
-    glCamPosX               = 2; // 0; // -62; // 39;  //
-    glCamPosY               = 1; // 0; //- 62; // -25; //
+    glCamPosX               = -12; // 0; // -62; // 39;  //
+    glCamPosY               = -12; // 0; //- 62; // -25; //
     glCamRotZ               = 32; // 32; // 64; //
     RayLeftAlpha            = glCamRotZ + tabRayAngles[0];
     // RayRightAlpha           = glCamRotZ - tabRayAngles[0];
@@ -243,7 +246,7 @@ void initScene (signed char sceneData[]){
 }
 void rayInitCasting(){
     unsigned char ii;
-    for (ii=0; ii< SCREEN_WIDTH; ii++) {
+    for (ii=0; ii< NB_SLICES; ii++) {
         rayzbuffer[ii]      = 255;
         raywall[ii]         = 255;
     }
@@ -270,9 +273,11 @@ void textCol () {
     for (jj=0; jj< 10; jj++)  {
         printf ("%d|%d|%d|%d \t %d|%d|%d|%d \t%d|%d|%d|%d\n", (jj), raywall[(jj)], tabTexCol[(jj)], TableVerticalPos[jj], (jj)+10, raywall[(jj)+10], tabTexCol[(jj)+10], TableVerticalPos[jj+10], (jj)+20, raywall[(jj)+20], tabTexCol[(jj)+20] , TableVerticalPos[jj+20]);
     }
+    get();
     for (jj=30; jj< 40; jj++)  {
-        printf ("%d|%d|%d|%d\n", (jj), raywall[(jj)], tabTexCol[(jj)], TableVerticalPos[jj]);
+        printf ("%d|%d|%d|%d \t %d|%d|%d|%d \t%d|%d|%d|%d\n", (jj), raywall[(jj)], tabTexCol[(jj)], TableVerticalPos[jj], (jj)+10, raywall[(jj)+10], tabTexCol[(jj)+10], TableVerticalPos[jj+10], (jj)+20, raywall[(jj)+20], tabTexCol[(jj)+20] , TableVerticalPos[jj+20]);
      }
+     get();
 }
 
 void gameLoop() {
@@ -291,7 +296,7 @@ void gameLoop() {
     }
 }
 
-#define DEBUG
+#undef DEBUG
 
 void main(){
 

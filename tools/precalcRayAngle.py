@@ -38,7 +38,7 @@ def rayAngle2Col (ray_angle_radian, fov_angle_radian, number_of_slice):
 def main ():
     
     FOV_IN_DEGREES          = 112
-    NUMBER_OF_SLICE         = 40
+    NUMBER_OF_SLICE         = 80
     tabAngles               = list(rayAngles(math.radians(FOV_IN_DEGREES), NUMBER_OF_SLICE))
     stRayAngles             = codegen.buffer2cCode("tabRayAngles", "signed char", tabAngles)
     print (stRayAngles)

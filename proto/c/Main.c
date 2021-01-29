@@ -19,6 +19,9 @@
 #define CHANGE_INK_TO_RED	            1		
 #define CHANGE_INK_TO_GREEN	            2		
 #define CHANGE_INK_TO_BLUE	            4		
+#define CHANGE_INK_TO_YELLOW	        3		
+#define CHANGE_INK_TO_MAGENTA           5			
+#define CHANGE_INK_TO_CYAN	            6		
 
 unsigned char *theAdr;
 unsigned char *baseAdr;
@@ -36,7 +39,16 @@ void prepareRGB(){
         poke (HIRES_SCREEN_ADDRESS+((ii+2)*SCREEN_WIDTH),CHANGE_INK_TO_BLUE);
     }
 }
+void prepareCMY(){
+    int ii;
 
+    // parcours de lignes de 3 en 3
+    for (ii=0; ii < (SCREEN_HEIGHT - NB_LESS_LINES_4_COLOR)*8;  ii+=3){
+        poke (HIRES_SCREEN_ADDRESS+((ii)*SCREEN_WIDTH),CHANGE_INK_TO_CYAN);
+        poke (HIRES_SCREEN_ADDRESS+((ii+1)*SCREEN_WIDTH),CHANGE_INK_TO_RED);
+        poke (HIRES_SCREEN_ADDRESS+((ii+2)*SCREEN_WIDTH),CHANGE_INK_TO_YELLOW);
+    }
+}
 void colorRightTexel(){
 
     // unsigned char r, g, b;
@@ -90,7 +102,7 @@ unsigned int multi32[] = {
 	, 512, 544, 576, 608, 640, 672, 704, 736, 768, 800, 832, 864, 896, 928, 960, 992
 	};
 
-unsigned char *wallTexture[] = {texture_christmas, texture_logo};
+unsigned char *wallTexture[] = {texture_barrel, texture_logo};
 unsigned char *ptrTexture;
 
 void drawImage02(){
@@ -196,9 +208,9 @@ void drawImage02(){
    
 }
 void initCamera(){
-    glCamPosX               = -12; // 0; // -62; // 39;  //
-    glCamPosY               = -12; // 0; //- 62; // -25; //
-    glCamRotZ               = 32; // 32; // 64; //
+    glCamPosX               = 5; // -12; // 0; // -62; // 39;  //
+    glCamPosY               = 5; // -12; // 0; //- 62; // -25; //
+    glCamRotZ               = 64; // 32; // 32; // 64; //
     RayLeftAlpha            = glCamRotZ + tabRayAngles[0];
     // RayRightAlpha           = glCamRotZ - tabRayAngles[0];
 }
@@ -290,7 +302,7 @@ void gameLoop() {
         rayProcessPoints();
         rayProcessWalls();
         memset(HIRES_SCREEN_ADDRESS, 64, 8000); // 5120 = 0xB400 (std char) - 0xA000 (hires screen)
-        prepareRGB();
+        prepareCMY();
         drawImage02();
         printf("(X=%d Y=%d) [a=%d]\n", glCamPosX, glCamPosY, glCamRotZ);
     }
@@ -324,7 +336,7 @@ void main(){
 #endif
 
     hires();
-    prepareRGB();
+    prepareCMY();
 
     drawImage02();
 

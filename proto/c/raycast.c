@@ -9,6 +9,7 @@
 #define ANGLE_MAX       (signed char)0xC0
 #define IS_FRONT(i)     (((lAngle[(i)] & ANGLE_MAX) == 0) || ((lAngle[(i)] & ANGLE_MAX) == ANGLE_MAX))
 #define abs(x)          (((x)<0)?-(x):(x))
+// #define max(x,y)          (((x)<(y))?(y):(x))
 
 
 static signed char      RayAlpha  = 0;
@@ -518,7 +519,7 @@ void drawRightCuttingWall2Visible(){
 
 void rayProcessWalls() {
     int v0, v2;
-    unsigned int v1;
+    int v1;
     int deltaX, deltaY;
     signed char angle;
     
@@ -612,7 +613,8 @@ void rayProcessWalls() {
         if (RayCurrentWall != 255) {
             raylogdist[RaySliceIdx] = rayzbuffer[RaySliceIdx];
 #ifdef USE_ANTIFISH
-            rayzbuffer[RaySliceIdx] -= unfish[RaySliceIdx];
+            if (unfish[RaySliceIdx] < rayzbuffer[RaySliceIdx])
+                rayzbuffer[RaySliceIdx] -= unfish[RaySliceIdx];
 #endif
 
             TableVerticalPos[RaySliceIdx] =dist2hh(rayzbuffer[RaySliceIdx]);
@@ -637,11 +639,13 @@ void rayProcessWalls() {
                 } else if (angle > 0) {
                     v0 = log2sin(angle); // round(32*math.log2(math.sin(angle*FIX2RAD)*COEFF))
                     v1 = raylogdist[RaySliceIdx] + v0;
+                    if (v1<0) v1=0;
                     v2 = longexp(v1); // (2**(v1/32))
 
                 } else if (angle < 0) {
                     v0 = log2sin(angle); // round(32*math.log2(-math.sin(angle*FIX2RAD)*COEFF))
                     v1 = raylogdist[RaySliceIdx] + v0;
+                    if (v1<0) v1=0;
                     v2 = -longexp(v1); // -(2**(v1/32)) # 
                 }
                 if (deltaY < 0) {
@@ -658,11 +662,13 @@ void rayProcessWalls() {
                 } else if (abs (angle) < 64) {
                     v0 = log2cos(angle); // round(32*math.log2(math.sin(angle*FIX2RAD)*COEFF))
                     v1 = raylogdist[RaySliceIdx] + v0;
+                    if (v1<0) v1=0;
                     v2 = longexp(v1); // (2**(v1/32))
 
                 } else if (abs (angle) >= 64) {
                     v0 = log2cos(angle); // round(32*math.log2(-math.sin(angle*FIX2RAD)*COEFF))
                     v1 = raylogdist[RaySliceIdx] + v0;
+                    if (v1<0) v1=0;
                     v2 = -longexp(v1); // -(2**(v1/32)) # 
                 }
                 if (deltaX < 0){

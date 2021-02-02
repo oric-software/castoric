@@ -116,7 +116,7 @@ void drawImage02(){
     // ============ LEFT TEXEL
     // =====================================
 
-            height              = (100-TableVerticalPos[ii])/2; // tabHeight[ii];
+            height              = (100-TableVerticalPos[ii])/4; // tabHeight[ii];
             texcolumn           = tabTexCol[ii]&31; // modulo 32
             offTexture          = multi32[texcolumn];
 
@@ -159,7 +159,7 @@ void drawImage02(){
     // =====================================
     // ============ RIGHT TEXEL
     // =====================================
-            height              = (100-TableVerticalPos[ii])/2; // tabHeight[ii];
+            height              = (100-TableVerticalPos[ii])/4; // tabHeight[ii];
             texcolumn           = tabTexCol[ii]&31;  // modulo 32
             offTexture          = multi32[texcolumn];
             
@@ -196,9 +196,9 @@ void drawImage02(){
    
 }
 void initCamera(){
-    glCamPosX               = -12; // 0; // -62; // 39;  //
-    glCamPosY               = -12; // 0; //- 62; // -25; //
-    glCamRotZ               = 32; // 32; // 64; //
+    glCamPosX               = 6; // 0; // -62; // 39;  //
+    glCamPosY               = 11; // 0; //- 62; // -25; //
+    glCamRotZ               = 80; // 32; // 64; //
     RayLeftAlpha            = glCamRotZ + tabRayAngles[0];
     // RayRightAlpha           = glCamRotZ - tabRayAngles[0];
 }
@@ -296,7 +296,7 @@ void gameLoop() {
     }
 }
 
-#undef DEBUG
+// #undef DEBUG
 
 void main(){
 

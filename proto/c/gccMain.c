@@ -85,18 +85,62 @@ void initScene (signed char sceneData[]){
 	}
     precalculateWallsAngle();
 }
+
+#include "iea2d.c"
+#define max(x,y)          (((x)<(y))?(y):(x))
+#define min(x,y)          (((x)<(y))?(x):(y))
+#define VIEWPORT_LEFT_COLUMN        2
+#define VIEWPORT_RIGHT_COLUMN       78
+#define SCREEN_WIDTH                    80
+#define SCREEN_HEIGHT                   64
+
+void displaySprite(unsigned char column, unsigned char height){
+
+    signed char scrColIdx, scrLinIdx;
+
+    // unsigned char start_column, end_column, nb_column;
+    // start_column    = max(VIEWPORT_LEFT_COLUMN, column-height/2);
+    // end_column      = min(VIEWPORT_RIGHT_COLUMN, column + height/2);
+    // nb_column       = height/2;
+
+    scrColIdx          = column - height/2;
+    scrLinIdx          = SCREEN_HEIGHT/ 2 - height/2;
+
+    iea1StartValue       = 0;
+    iea1NbVal            = TEXTURE_HEIGHT;
+    iea1NbStep           = height;
+    iea1Init();
+
+    do {
+        iea2StartValue       = 0;
+        iea2NbVal            = TEXTURE_HEIGHT;
+        iea2NbStep           = height;
+        iea2Init();
+        do {
+            printf ("%d %d, %d %d\n", scrLinIdx, scrColIdx, iea1CurrentValue, iea2CurrentValue);
+            (*iea2StepFunction)();
+            scrColIdx   += 1;
+        } while (iea2CurrentValue <= iea2EndValue);
+        (*iea1StepFunction)();
+        scrLinIdx      += 1;
+        scrColIdx      = column - height/2;
+    } while (iea1CurrentValue <= iea1EndValue);
+}
+
 void main(){
 
 
     printf ("DEBUT\n");
-    initCamera();
-    initScene (scene_00);
+    // initCamera();
+    // initScene (scene_00);
 
-    rayInitCasting();
-    rayProcessPoints();
-    rayProcessWalls();
+    // rayInitCasting();
+    // rayProcessPoints();
+    // rayProcessWalls();
 
-    textCol ();
+    // textCol ();
+
+    displaySprite(20, 12);
 
     printf ("FIN\n");
 	

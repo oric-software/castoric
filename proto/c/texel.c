@@ -1,3 +1,52 @@
+
+
+#define NEXT_LINE_INCREMENT 40
+
+
+void colorRightTexel(){
+
+    // unsigned char r, g, b;
+    unsigned char *adr;
+
+    PROFILE_ENTER(ROUTINE_COLORRIGHTTEXEL);
+
+    // compute the start adress of the screen square to color
+    //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*SCREEN_WIDTH + (column>>1));
+    adr = theAdr; 
+
+    *adr |= tabRightRed[renCurrentColor];
+    adr += NEXT_LINE_INCREMENT;
+    *adr |= tabRightGreen[renCurrentColor];
+    adr += NEXT_LINE_INCREMENT;
+    *adr |= tabRightBlue[renCurrentColor];
+
+    PROFILE_LEAVE(ROUTINE_COLORRIGHTTEXEL);
+}
+// line in [0..65] column in [0..79]
+void colorLeftTexel(){
+
+    unsigned char *adr;
+
+    PROFILE_ENTER(ROUTINE_COLORLEFTTEXEL);
+
+    // compute the start adress of the screen square to color
+    //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*SCREEN_WIDTH + (column>>1));
+    adr = theAdr;
+
+    *adr = tabLeftRed[renCurrentColor];
+    adr += NEXT_LINE_INCREMENT;
+    *adr = tabLeftGreen[renCurrentColor];
+    adr += NEXT_LINE_INCREMENT;
+    *adr = tabLeftBlue[renCurrentColor];
+
+
+    PROFILE_LEAVE(ROUTINE_COLORLEFTTEXEL);
+}
+
+
+#undef USE_SLOW_TEXEL
+
+#ifdef USE_SLOW_TEXEL
 // ============================
 // ==== SLOW TEXEL ACCESS FOR PROTOTYPE PURPOSE
 // ============================
@@ -19,7 +68,7 @@ unsigned int multi40[] = {
         , 7680, 7720, 7760, 7800, 7840, 7880, 7920, 7960
         };
 
-#define NEXT_LINE_INCREMENT 40
+
 // line in [0..65] column in [0..79]
 void colorSquare(unsigned char line, unsigned char column, unsigned char theColor){
 
@@ -52,3 +101,4 @@ void colorSquare(unsigned char line, unsigned char column, unsigned char theColo
 // ============================
 // ====
 // ============================
+#endif // USE_SLOW_TEXEL

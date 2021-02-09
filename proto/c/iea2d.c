@@ -2,6 +2,11 @@
 // Digital Differential Analyzer Algorithm
 // Incremental error algorithm
 
+#undef USE_IEA1
+#define USE_IEA2
+
+
+#ifdef USE_IEA1
 unsigned char   iea1NbVal;
 unsigned char   iea1NbStep;
 unsigned char   iea1StartValue;
@@ -48,6 +53,9 @@ void iea1Init(){
         iea1StepFunction     = &iea1Step0;
     }
 }
+#endif // USE_IEA1
+
+#ifdef USE_IEA2
 
 unsigned char   iea2NbVal;
 unsigned char   iea2NbStep;
@@ -95,4 +103,4 @@ void iea2Init(){
         iea2StepFunction     = &iea2Step0;
     }
 }
-
+#endif // USE_IEA2

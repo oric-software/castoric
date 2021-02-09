@@ -1,3 +1,9 @@
+// Author : Jean-Baptiste PERIN
+// Date : 2021
+//
+// Build with OSDK: osdk_build.bat && osdk_execute.bat
+//
+
 #undef DEBUG
 
 #include "lib.h"
@@ -20,6 +26,8 @@
 #define CHANGE_INK_TO_GREEN	            2		
 #define CHANGE_INK_TO_BLUE	            4		
 
+#include "tables.c"
+
 unsigned char *theAdr;
 unsigned char *baseAdr;
 unsigned int offTexture;
@@ -36,6 +44,10 @@ void prepareRGB(){
         poke (HIRES_SCREEN_ADDRESS+((ii+2)*SCREEN_WIDTH),CHANGE_INK_TO_BLUE);
     }
 }
+
+#include "iea2d.c"
+#include "texel.c"
+#include "sprite.c"
 
 void colorRightTexel(){
 
@@ -78,17 +90,7 @@ void colorLeftTexel(){
 }
 
 
-unsigned int multi120[] = {
-        0, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320, 1440, 1560, 1680, 1800
-        , 1920, 2040, 2160, 2280, 2400, 2520, 2640, 2760, 2880, 3000, 3120, 3240, 3360, 3480, 3600, 3720
-        , 3840, 3960, 4080, 4200, 4320, 4440, 4560, 4680, 4800, 4920, 5040, 5160, 5280, 5400, 5520, 5640
-        , 5760, 5880, 6000, 6120, 6240, 6360, 6480, 6600, 6720, 6840, 6960, 7080, 7200, 7320, 7440, 7560
-        };
 
-unsigned int multi32[] = {
-	0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448, 480
-	, 512, 544, 576, 608, 640, 672, 704, 736, 768, 800, 832, 864, 896, 928, 960, 992
-	};
 
 unsigned char *wallTexture[] = {texture_christmas, texture_logo};
 unsigned char *ptrTexture;
@@ -196,9 +198,9 @@ void drawImage02(){
    
 }
 void initCamera(){
-    glCamPosX               = 6; // 0; // -62; // 39;  //
-    glCamPosY               = 11; // 0; //- 62; // -25; //
-    glCamRotZ               = 80; // 32; // 64; //
+    glCamPosX               = 3; // -62; // 39;  //6; // 
+    glCamPosY               = 3; //- 62; // -25; //11; // 
+    glCamRotZ               = 32; // 64; //80; // 
     RayLeftAlpha            = glCamRotZ + tabRayAngles[0];
     // RayRightAlpha           = glCamRotZ - tabRayAngles[0];
 }
@@ -327,6 +329,8 @@ void main(){
     prepareRGB();
 
     drawImage02();
+
+    displaySprite02(40, 40);
 
 	ProfilerDisplay();	
     ProfilerTerminate();

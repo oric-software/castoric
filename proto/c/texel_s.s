@@ -7,48 +7,34 @@ _theAdr .dsb  2
 
 .text
 
-
 _colorLeftTexel 
 .(
-    ldx         #0;"
-    ldy         _renCurrentColor;"
+    ldx         _renCurrentColor
 
     ;; *theAdr = tabLeftGreen[renCurrentColor];
     ;; theAdr += NEXT_LINE_INCREMENT;
 
-    lda         _tabLeftRed,y
-    sta         (_theAdr,x)
-    clc     
-    lda         _theAdr
-    adc         #40
-    sta         _theAdr
-.(  
-    bcc skip:    inc _theAdr+1: skip .)
-
+    lda         _tabLeftRed,x
+    ldy         #0
+    sta         (_theAdr),y
 
     ;; *theAdr = tabLeftGreen[renCurrentColor];
     ;; theAdr += NEXT_LINE_INCREMENT;
 
-    lda         _tabLeftGreen,y
-    sta         (_theAdr,x)
-
-    clc     
-    lda         _theAdr
-    adc         #40
-    sta         _theAdr
-.(  
-    bcc skip:    inc _theAdr+1: skip .)
-
+    lda         _tabLeftGreen,x
+    ldy         #40
+    sta         (_theAdr),y
 
     ;; *theAdr = tabLeftBlue[renCurrentColor];
     ;; theAdr += NEXT_LINE_INCREMENT;
 
+    lda         _tabLeftBlue,x
+    ldy         #80
+    sta         (_theAdr),y
 
-    lda         _tabLeftBlue,y
-    sta         (_theAdr,x)
     clc     
     lda         _theAdr
-    adc         #40
+    adc         #120
     sta         _theAdr
 .(  
     bcc skip:    inc _theAdr+1: skip .)
@@ -60,44 +46,40 @@ _colorLeftTexel
 _colorRightTexel 
 .(
 
-    ldx         #0;"
-    ldy         _renCurrentColor;"
+    ldy         #0
+    ldx         _renCurrentColor
 
-    lda         _tabRightRed,y
-    ora         (_theAdr,x)
-    sta         (_theAdr,x)
-    clc     
-    lda         _theAdr
-    adc         #40
-    sta         _theAdr
-.(  
-    bcc skip:    inc _theAdr+1: skip .)
+    lda         _tabRightRed,x
+    ora         (_theAdr),y
+    ;; ldy         #0
+    sta         (_theAdr),y
+;;     clc     
+;;     lda         _theAdr
+;;     adc         #40
+;;     sta         _theAdr
+;; .(  
+;;     bcc skip:    inc _theAdr+1: skip .)
 
 
     ;; *theAdr |= tabRightGreen[renCurrentColor];
     ;; theAdr += NEXT_LINE_INCREMENT;
 
-    lda         _tabRightGreen,y
-    ora         (_theAdr,x)
-    sta         (_theAdr,x)
-    clc     
-    lda         _theAdr;" // TODO : optimize by adding constant (use bcc as in https://codebase64.org/doku.php?id=base:16bit_addition_and_subtraction
-    adc         #40
-    sta         _theAdr
-.(  
-    bcc skip:    inc _theAdr+1: skip .)
-
+    lda         _tabRightGreen,x
+    ldy         #40
+    ora         (_theAdr),y
+    sta         (_theAdr),y
 
     ;; *theAdr |= tabRightBlue[renCurrentColor];
     ;; theAdr += NEXT_LINE_INCREMENT;
 
+    lda         _tabRightBlue,x
+    ldy         #80
+    ora         (_theAdr),y
+    sta         (_theAdr),y
 
-    lda         _tabRightBlue,y
-    ora         (_theAdr,x)
-    sta         (_theAdr,x)
     clc     
-    lda         _theAdr ;; TODO : optimize by adding constant (use bcc as in https://codebase64.org/doku.php?id=base:16bit_addition_and_subtraction) 
-    adc         #40
+    lda         _theAdr 
+    adc         #120
     sta         _theAdr
 .(  
     bcc skip:    inc _theAdr+1: skip .)

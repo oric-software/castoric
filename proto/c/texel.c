@@ -2,46 +2,139 @@
 
 #define NEXT_LINE_INCREMENT 40
 
-
+#ifdef USE_C_COLORRIGHTTEXEL
 void colorRightTexel(){
 
     // unsigned char r, g, b;
-    unsigned char *adr;
+    // unsigned char *adr;
 
     PROFILE_ENTER(ROUTINE_COLORRIGHTTEXEL);
 
     // compute the start adress of the screen square to color
     //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*SCREEN_WIDTH + (column>>1));
-    adr = theAdr; 
+    // adr = theAdr; 
 
-    *adr |= tabRightRed[renCurrentColor];
-    adr += NEXT_LINE_INCREMENT;
-    *adr |= tabRightGreen[renCurrentColor];
-    adr += NEXT_LINE_INCREMENT;
-    *adr |= tabRightBlue[renCurrentColor];
+    *theAdr |= tabRightRed[renCurrentColor];
+    theAdr += NEXT_LINE_INCREMENT;
+    // asm (
+    //     "ldx #0;"
+    //     "ldy _renCurrentColor;"
+    // );
+
+    // asm(
+    //     "lda _tabRightRed,y;"
+    //     "ora (_theAdr,x);"
+    //     "sta (_theAdr,x);"
+    //     "clc;"
+    //     "lda _theAdr;" // TODO : optimize by adding constant (use bcc as in https://codebase64.org/doku.php?id=base:16bit_addition_and_subtraction) 
+    //     "adc #40;"
+    //     "sta _theAdr;"
+    //     "lda _theAdr+1;"
+    //     "adc #0;"
+    //     "sta _theAdr+1;"
+    // );
+
+    *theAdr |= tabRightGreen[renCurrentColor];
+    theAdr += NEXT_LINE_INCREMENT;
+
+    // asm(
+    //     "lda _tabRightGreen,y;"
+    //     "ora (_theAdr,x);"
+    //     "sta (_theAdr,x);"
+    //     "clc;"
+    //     "lda _theAdr;" // TODO : optimize by adding constant (use bcc as in https://codebase64.org/doku.php?id=base:16bit_addition_and_subtraction) 
+    //     "adc #40;"
+    //     "sta _theAdr;"
+    //     "lda _theAdr+1;"
+    //     "adc #0;"
+    //     "sta _theAdr+1;"
+    // );
+
+
+    *theAdr |= tabRightBlue[renCurrentColor];
+    theAdr += NEXT_LINE_INCREMENT;
+
+    // asm(
+    //     "lda _tabRightBlue,y;"
+    //     "ora (_theAdr,x);"
+    //     "sta (_theAdr,x);"
+    //     "clc;"
+    //     "lda _theAdr;" // TODO : optimize by adding constant (use bcc as in https://codebase64.org/doku.php?id=base:16bit_addition_and_subtraction) 
+    //     "adc #40;"
+    //     "sta _theAdr;"
+    //     "lda _theAdr+1;"
+    //     "adc #0;"
+    //     "sta _theAdr+1;"
+    // );
+
 
     PROFILE_LEAVE(ROUTINE_COLORRIGHTTEXEL);
 }
+#endif // USE_C_COLORRIGHTTEXEL
+
+#ifdef USE_C_COLORLEFTTEXEL
 // line in [0..65] column in [0..79]
 void colorLeftTexel(){
 
-    unsigned char *adr;
+    // unsigned char *adr;
 
     PROFILE_ENTER(ROUTINE_COLORLEFTTEXEL);
 
     // compute the start adress of the screen square to color
     //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*SCREEN_WIDTH + (column>>1));
-    adr = theAdr;
+    // adr = theAdr;
 
-    *adr = tabLeftRed[renCurrentColor];
-    adr += NEXT_LINE_INCREMENT;
-    *adr = tabLeftGreen[renCurrentColor];
-    adr += NEXT_LINE_INCREMENT;
-    *adr = tabLeftBlue[renCurrentColor];
+    *theAdr = tabLeftRed[renCurrentColor];
+    theAdr += NEXT_LINE_INCREMENT;
 
+    // asm (
+    //     "ldx #0;"
+    //     "ldy _renCurrentColor;"
+    // );
+    // asm(
+    //     "lda _tabLeftRed,y;"
+    //     "sta (_theAdr,x);"
+    //     "clc;"
+    //     "lda _theAdr;" // TODO : optimize by adding constant (use bcc as in https://codebase64.org/doku.php?id=base:16bit_addition_and_subtraction) 
+    //     "adc #40;"
+    //     "sta _theAdr;"
+    //     "lda _theAdr+1;"
+    //     "adc #0;"
+    //     "sta _theAdr+1;"
+    // );
+
+    *theAdr = tabLeftGreen[renCurrentColor];
+    theAdr += NEXT_LINE_INCREMENT;
+
+    // asm (
+    //     "lda _tabLeftGreen,y;"
+    //     "sta (_theAdr,x);"
+    //     "clc;"
+    //     "lda _theAdr;" // TODO : optimize by adding constant (use bcc as in https://codebase64.org/doku.php?id=base:16bit_addition_and_subtraction) 
+    //     "adc #40;"
+    //     "sta _theAdr;"
+    //     "lda _theAdr+1;"
+    //     "adc #0;"
+    //     "sta _theAdr+1;"
+    // );
+    *theAdr = tabLeftBlue[renCurrentColor];
+    theAdr += NEXT_LINE_INCREMENT;
+
+    // asm (
+    //     "lda _tabLeftBlue,y;"
+    //     "sta (_theAdr,x);"
+    //     "clc;"
+    //     "lda _theAdr;" // TODO : optimize by adding constant (use bcc as in https://codebase64.org/doku.php?id=base:16bit_addition_and_subtraction) 
+    //     "adc #40;"
+    //     "sta _theAdr;"
+    //     "lda _theAdr+1;"
+    //     "adc #0;"
+    //     "sta _theAdr+1;"
+    // );
 
     PROFILE_LEAVE(ROUTINE_COLORLEFTTEXEL);
 }
+#endif // USE_C_COLORLEFTTEXEL
 
 
 #undef USE_SLOW_TEXEL

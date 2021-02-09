@@ -116,10 +116,12 @@ void displaySprite02(unsigned char column, unsigned char height){
                     } else {
                         colorRightTexel();
                     }
+                }else{
+                   theAdr              += 120; 
                 }
                 idxLinTexture       ++;
                 
-                theAdr              += 120;
+                // theAdr              += 120;
                 
             // Jusqu'à indice ligne > 64 
             } while (((++viewportLinIdx) < VIEWPORT_DOWN_LINE) && ((--nbLine) != 0));

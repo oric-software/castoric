@@ -28,7 +28,7 @@
 
 #include "tables.c"
 
-unsigned char *theAdr;
+extern unsigned char *theAdr;
 unsigned char *baseAdr;
 unsigned int offTexture;
 unsigned char renCurrentColor;
@@ -108,7 +108,7 @@ void drawImage02(){
                 colorLeftTexel();
 
                 idxScreenLine   += 1;
-                theAdr          += 120;
+                // theAdr          += 120;
 
             } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < 64));
         }
@@ -148,7 +148,7 @@ void drawImage02(){
                 colorRightTexel();
 
                 idxScreenLine   += 1;
-                theAdr          += 120;
+                // theAdr          += 120;
 
             } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < 64));
         }

@@ -158,8 +158,8 @@ void drawImage02(){
    
 }
 void initCamera(){
-    glCamPosX               = 3; // -62; // 39;  //6; // 
-    glCamPosY               = 3; //- 62; // -25; //11; // 
+    glCamPosX               = -3; // -62; // 39;  //6; // 
+    glCamPosY               = -3; //- 62; // -25; //11; // 
     glCamRotZ               = 32; // 64; //80; // 
     RayLeftAlpha            = glCamRotZ + tabRayAngles[0];
     // RayRightAlpha           = glCamRotZ - tabRayAngles[0];
@@ -254,6 +254,7 @@ void gameLoop() {
         memset(HIRES_SCREEN_ADDRESS, 64, 8000); // 5120 = 0xB400 (std char) - 0xA000 (hires screen)
         prepareRGB();
         drawImage02();
+        drawSprite (6, 6, texture_pillar);
         printf("(X=%d Y=%d) [a=%d]\n", glCamPosX, glCamPosY, glCamRotZ);
     }
 }
@@ -290,7 +291,8 @@ void main(){
 
     drawImage02();
 
-    displaySprite02(40, 40);
+    // displaySprite02(40, 40);
+    drawSprite (6, 6, texture_pillar);
 
 	ProfilerDisplay();	
     ProfilerTerminate();

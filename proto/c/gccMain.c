@@ -103,15 +103,24 @@ void initScene (signed char sceneData[]){
 
 unsigned int            offTexture;
 unsigned char           *theAdr;
-unsigned char *baseAdr;
+unsigned char           *baseAdr;
+
+
+#define USE_C_COLORLEFTTEXEL
+#define USE_C_COLORRIGHTTEXEL
 #include "texel.c"
 
 #include "sprite.c"
+
+
 
 void main(){
 
     printf ("DEBUT\n");
     initCamera();
+    drawSprite (6, 6, texture_pillar);
+
+
     initScene (scene_00);
 
     rayInitCasting();
@@ -120,7 +129,7 @@ void main(){
 
     // textCol ();
 
-    displaySprite02(3, 20);
+    // displaySprite02(3, 20);
 
     printf ("FIN\n");
 }

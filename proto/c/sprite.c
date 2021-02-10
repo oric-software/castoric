@@ -27,7 +27,7 @@ void precalcTexPixelRunthrough(unsigned char height){
     precalTexPixelOffset [idxTexPixel++] = iea2CurrentValue;
 }
 
-unsigned char           renCurrentColor;
+
 
 void displaySprite02(unsigned char column, unsigned char height){
 
@@ -134,4 +134,64 @@ void displaySprite02(unsigned char column, unsigned char height){
     // Jusqu'à idxColonne = VIEWPORT_RIGHT_COLUMN ou  nbColumn = 0
 
 
+}
+
+
+
+
+void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
+
+    signed char     deltaX, deltaY;
+    signed char     alpha;
+    unsigned char   log2Delta;
+    unsigned int    log2dist;
+    unsigned char   height;
+    signed char     column;
+
+    deltaX          = posX-glCamPosX;
+    deltaY          = posY-glCamPosY;
+    alpha           = ATAN2(deltaY, deltaX);
+    if (abs(alpha) < tabRayAngles[0]) {
+        // if (lWallsCosBeta[RayCurrentWall] == 0){    // Wall is O,y aligned   
+        //     RayWallLog      = log2_tab[(unsigned char)(abs(lPointsX[RayIdXPoint1]-glCamPosX))];
+        //     tab_denom       = tab_1overcos;
+        // } else {                                    // Wall is O,x aligned
+        //     RayWallLog      = log2_tab[(unsigned char)(abs(lPointsY[RayIdXPoint1]-glCamPosY))];
+        //     tab_denom       = tab_1oversin;
+        // }
+        column = tabAngle2Col[tabRayAngles[0]-alpha+glCamRotZ];
+        if (deltaX > deltaY) {
+            log2Delta = log2_tab[(unsigned char)(abs(deltaX))];
+            // unsigned char dist2hh(unsigned int x)
+            // signed char log2sin(unsigned char x)
+            // signed char log2cos(unsigned char x)
+            // distance = RayWallLog + (unsigned int)tab_denom[(unsigned char)RayAlpha];
+            
+            log2dist = log2Delta + (unsigned int)tab_1overcos[(unsigned char)alpha];
+#ifdef USE_ANTIFISH
+            if (unfish[column] < log2dist)
+                log2dist -= unfish[column];
+#endif
+            height = (100-dist2hh(log2dist))/4;
+        } else {
+            log2Delta = log2_tab[(unsigned char)(abs(deltaY))];
+            log2dist = log2Delta + (unsigned int)tab_1oversin[(unsigned char)alpha];
+            
+
+#ifdef USE_ANTIFISH
+            if (unfish[column] < log2dist)
+                log2dist -= unfish[column];
+#endif
+
+            height = (100-dist2hh(log2dist))/4;
+        }
+
+
+        //alpha glCamRotZ
+        
+        displaySprite02(column, height*2);
+    } else {
+        // displaySprite02(column, height);
+    }
+    
 }

@@ -2,6 +2,8 @@
 
 #define NEXT_LINE_INCREMENT 40
 
+unsigned char           renCurrentColor;
+
 #ifdef USE_C_COLORRIGHTTEXEL
 void colorRightTexel(){
 

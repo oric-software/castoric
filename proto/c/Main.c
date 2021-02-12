@@ -7,7 +7,10 @@
 #undef DEBUG
 
 #include "lib.h"
-#include "profile.h"
+
+#include "config.h"
+
+// #include "profile.h"
 
 #include "colorimg.c"
 #include "dda.c"
@@ -53,33 +56,32 @@ void prepareRGB(){
 
 
 unsigned char *wallTexture[] = {texture_christmas, texture_logo};
+
 unsigned char *ptrTexture;
 
 void drawImage02(){
-    int ii;
+    int idxCurrentSlice;
 
     signed char         idxScreenLine, idxScreenCol;
     unsigned char       height, texcolumn;
-
-    PROFILE_ENTER(ROUTINE_DRAW02);
 
     idxScreenCol        = 1;
     ddaStartValue       = 0;
     ddaNbVal            = TEXTURE_HEIGHT;
     baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (idxScreenCol>>1));
 
-    for (ii = 2; ii < NB_SLICES-1; ) {
+    for (idxCurrentSlice = 2; idxCurrentSlice < NB_SLICES-1; ) {
         baseAdr             += 1;
         idxScreenCol        += 1;
-        if (raywall[ii]!=255) {
-            ptrTexture = wallTexture[raywall[ii]];
+        if (raywall[idxCurrentSlice]!=255) {
+            ptrTexture = wallTexture[raywall[idxCurrentSlice]];
 
     // =====================================
     // ============ LEFT TEXEL
     // =====================================
 
-            height              = (100-TableVerticalPos[ii])/4; // tabHeight[ii];
-            texcolumn           = tabTexCol[ii]&31; // modulo 32
+            height              = (100-TableVerticalPos[idxCurrentSlice])/4; // tabHeight[idxCurrentSlice];
+            texcolumn           = tabTexCol[idxCurrentSlice]&31; // modulo 32
             offTexture          = multi32[texcolumn];
 
             
@@ -113,16 +115,16 @@ void drawImage02(){
             } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < 64));
         }
 
-        ii++;
+        idxCurrentSlice++;
         idxScreenCol        += 1;
-        if (raywall[ii]!=255) {
-            ptrTexture = wallTexture[raywall[ii]];
+        if (raywall[idxCurrentSlice]!=255) {
+            ptrTexture = wallTexture[raywall[idxCurrentSlice]];
 
     // =====================================
     // ============ RIGHT TEXEL
     // =====================================
-            height              = (100-TableVerticalPos[ii])/4; // tabHeight[ii];
-            texcolumn           = tabTexCol[ii]&31;  // modulo 32
+            height              = (100-TableVerticalPos[idxCurrentSlice])/4; // tabHeight[ii];
+            texcolumn           = tabTexCol[idxCurrentSlice]&31;  // modulo 32
             offTexture          = multi32[texcolumn];
             
 
@@ -152,9 +154,8 @@ void drawImage02(){
 
             } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < 64));
         }
-        ii++;
+        idxCurrentSlice++;
     }
-    PROFILE_LEAVE(ROUTINE_DRAW02);
    
 }
 void initCamera(){
@@ -213,7 +214,7 @@ void rayInitCasting(){
         raywall[ii]         = 255;
     }
 }
-
+#ifdef DEBUG
 void detailPoints(){
     unsigned char idxPoint;
 
@@ -241,7 +242,7 @@ void textCol () {
      }
      get();
 }
-
+#endif
 void gameLoop() {
 
     while (running) {
@@ -260,46 +261,49 @@ void gameLoop() {
 }
 
 // #undef DEBUG
+void oldmain (){
 
+    printf ("hello\n"); get();
+
+    ddaStartValue       = 0;
+    ddaNbStep           = 12;
+    ddaNbVal            = 5;
+
+    ddaInit();
+    printf ("%d\n", ddaCurrentValue);
+    while (ddaCurrentValue < ddaEndValue) {
+        (*ddaStepFunction)(); 
+        printf ("%d\n", ddaCurrentValue);
+    }
+}
 void main(){
 
-
     printf ("DEBUT\n");
+
     initCamera();
     initScene (scene_00);
 
-
-
-    ProfilerInitialize();
-    ProfilerNextFrame();
+#ifdef DEBUG
 
     rayInitCasting();
     rayProcessPoints();
     rayProcessWalls();
 
-#ifdef DEBUG
-    // detailPoints(); 
-    // get();
-    // textZBuffer ();
-    // get();
+    detailPoints(); 
+    get();
+    textZBuffer ();
+    get();
     textCol ();
     get();
 #endif
 
     hires();
+
+#ifdef DEBUG
     prepareRGB();
-
     drawImage02();
-
-    // displaySprite02(40, 40);
     drawSprite (6, 6, texture_pillar);
-
-	ProfilerDisplay();	
-    ProfilerTerminate();
-    printf("Done\n");
-
-
-
+#endif
     running = 1;
     gameLoop();
 	

@@ -10,8 +10,6 @@ void colorRightTexel(){
     // unsigned char r, g, b;
     // unsigned char *adr;
 
-    PROFILE_ENTER(ROUTINE_COLORRIGHTTEXEL);
-
     // compute the start adress of the screen square to color
     //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*SCREEN_WIDTH + (column>>1));
     // adr = theAdr; 
@@ -69,8 +67,6 @@ void colorRightTexel(){
     //     "sta _theAdr+1;"
     // );
 
-
-    PROFILE_LEAVE(ROUTINE_COLORRIGHTTEXEL);
 }
 #endif // USE_C_COLORRIGHTTEXEL
 
@@ -79,8 +75,6 @@ void colorRightTexel(){
 void colorLeftTexel(){
 
     // unsigned char *adr;
-
-    PROFILE_ENTER(ROUTINE_COLORLEFTTEXEL);
 
     // compute the start adress of the screen square to color
     //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*SCREEN_WIDTH + (column>>1));
@@ -134,7 +128,6 @@ void colorLeftTexel(){
     //     "sta _theAdr+1;"
     // );
 
-    PROFILE_LEAVE(ROUTINE_COLORLEFTTEXEL);
 }
 #endif // USE_C_COLORLEFTTEXEL
 

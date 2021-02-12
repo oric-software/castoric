@@ -3,18 +3,18 @@
 //
 // Build with GCC: gcc -o a.out gccMain.c && a.out
 //
-
 #include <stdio.h>
+#include "config.h"
 
-#include "profile.h"
 
 #include "colorimg.c"
+
 #include "dda.c"
+
 #include "tables.c"
 #include "tabTexelColor.c"
 
-#define USE_C_PREDRAW
-#define USE_C_TOTO
+
 #include "raycast.c"
 
 #include "scene.c"

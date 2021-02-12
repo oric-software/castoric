@@ -12,7 +12,11 @@
 #include "dda.c"
 #include "tables.c"
 #include "tabTexelColor.c"
+
+#define USE_C_PREDRAW
+#define USE_C_TOTO
 #include "raycast.c"
+
 #include "scene.c"
 
 
@@ -21,10 +25,10 @@
 #define HIRES_SCREEN_ADDRESS            ((unsigned int)0xA000)
 
 void initCamera(){
-    glCamPosX               = 3; // 0; // -62; // 39;  //
-    glCamPosY               = 3; // 0; //- 62; // -25; //
-    glCamRotZ               = 32; // 32; // 64; //
-    RayLeftAlpha            = glCamRotZ + tabRayAngles[0];
+    rayCamPosX               = 3; // 0; // -62; // 39;  //
+    rayCamPosY               = 3; // 0; //- 62; // -25; //
+    rayCamRotZ               = 32; // 32; // 64; //
+    RayLeftAlpha            = rayCamRotZ + tabRayAngles[0];
     // RayRightAlpha           = glCamRotZ - tabRayAngles[0];
 }
 
@@ -109,6 +113,7 @@ unsigned char           *baseAdr;
 #define USE_C_COLORLEFTTEXEL
 #define USE_C_COLORRIGHTTEXEL
 #include "texel.c"
+
 
 #include "sprite.c"
 

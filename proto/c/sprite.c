@@ -148,8 +148,8 @@ void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
     unsigned char   height;
     signed char     column;
 
-    deltaX          = posX-glCamPosX;
-    deltaY          = posY-glCamPosY;
+    deltaX          = posX-rayCamPosX;
+    deltaY          = posY-rayCamPosY;
     alpha           = ATAN2(deltaY, deltaX);
     if (abs(alpha) < tabRayAngles[0]) {
         // if (lWallsCosBeta[RayCurrentWall] == 0){    // Wall is O,y aligned   
@@ -159,7 +159,7 @@ void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
         //     RayWallLog      = log2_tab[(unsigned char)(abs(lPointsY[RayIdXPoint1]-glCamPosY))];
         //     tab_denom       = tab_1oversin;
         // }
-        column = tabAngle2Col[tabRayAngles[0]-alpha+glCamRotZ];
+        column = tabAngle2Col[tabRayAngles[0]-alpha+rayCamRotZ];
         if (deltaX > deltaY) {
             log2Delta = log2_tab[(unsigned char)(abs(deltaX))];
             // unsigned char dist2hh(unsigned int x)

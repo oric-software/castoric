@@ -12,37 +12,39 @@
 // #define max(x,y)          (((x)<(y))?(y):(x))
 
 
-static signed char      RayAlpha  = 0;
-static signed char      RayLeftAlpha;
-static signed char      InterpAngleLeft;
-static unsigned char    RaySliceIdx;
-static unsigned char    InterpIdxLeft;
-static unsigned char    RayNbSlice;
-static unsigned int     RayDistance;
-static unsigned int     RayWallLog;
-static unsigned char    rayzbuffer[NB_SLICES]; // FIXME .. should be int
-static unsigned int     raylogdist[NB_SLICES];
-static unsigned char*   tab_denom;
-static unsigned char    raywall[NB_SLICES];
-static unsigned char    RayCurrentWall;
-static signed char      lWallsCosBeta[NB_MAX_WALL];
-static unsigned char    RayIdXPoint1, RayIdXPoint2;
-static signed char      lPointsX[NB_MAX_POINT];
-static signed char      lPointsY[NB_MAX_POINT];
-static unsigned char    lWallsPt1[NB_MAX_WALL];
-static unsigned char    lWallsPt2[NB_MAX_WALL];
-static signed char      lAngle[NB_MAX_POINT];
-static unsigned char    isVisible[NB_MAX_POINT];
-static unsigned char    isFront[NB_MAX_POINT];
-static unsigned char    TableVerticalPos[NB_SLICES];
-static unsigned char    tabTexCol[NB_SLICES];
+signed char      RayAlpha  = 0;
+signed char      RayLeftAlpha;
+signed char      InterpAngleLeft;
+unsigned char    RaySliceIdx;
+unsigned char    InterpIdxLeft;
+unsigned char    RayNbSlice;
+unsigned int     RayDistance;
+unsigned int     RayWallLog;
+unsigned char    rayzbuffer[NB_SLICES]; // FIXME .. should be int
+unsigned int     raylogdist[NB_SLICES];
+#ifdef USE_C_TOTO
+unsigned char*   tab_denom;
+#endif
+unsigned char    raywall[NB_SLICES];
+unsigned char    RayCurrentWall;
+signed char      lWallsCosBeta[NB_MAX_WALL];
+unsigned char    RayIdXPoint1, RayIdXPoint2;
+signed char      lPointsX[NB_MAX_POINT];
+signed char      lPointsY[NB_MAX_POINT];
+unsigned char    lWallsPt1[NB_MAX_WALL];
+unsigned char    lWallsPt2[NB_MAX_WALL];
+signed char      lAngle[NB_MAX_POINT];
+unsigned char    isVisible[NB_MAX_POINT];
+unsigned char    isFront[NB_MAX_POINT];
+unsigned char    TableVerticalPos[NB_SLICES];
+unsigned char    tabTexCol[NB_SLICES];
 
 unsigned char           rayNbPoints;
 unsigned char           rayNbWalls;
 
-signed char             glCamPosX = 0;
-signed char             glCamPosY = 0;
-signed char             glCamRotZ = 0;
+signed char             rayCamPosX = 0;
+signed char             rayCamPosY = 0;
+signed char             rayCamRotZ = 0;
 
 
 
@@ -410,6 +412,7 @@ signed char ATAN2 (signed int ty, signed int tx){
     return (signed char)v;
 }
 
+#ifdef USE_C_TOTO
 void toto() {
 
     RayAlpha        = InterpAngleLeft; //tabRayAngles[InterpIdxLeft]-glCamRotZ;
@@ -433,21 +436,28 @@ void toto() {
         } 
         if ((--RayNbSlice) == 0) break;
         RaySliceIdx     += 1;
-        RayAlpha        = glCamRotZ + tabRayAngles[RaySliceIdx];
+        RayAlpha        = rayCamRotZ + tabRayAngles[RaySliceIdx];
 
     }
 }
+#else
+extern void toto();
+#endif
 
+#ifdef USE_C_PREDRAW
 void preDraw(){
 
     if (lWallsCosBeta[RayCurrentWall] == 0){    // Wall is O,y aligned   
-        RayWallLog      = log2_tab[(unsigned char)(abs(lPointsX[RayIdXPoint1]-glCamPosX))];
+        RayWallLog      = log2_tab[(unsigned char)(abs(lPointsX[RayIdXPoint1]-rayCamPosX))];
         tab_denom       = tab_1overcos;
     } else {                                    // Wall is O,x aligned
-        RayWallLog      = log2_tab[(unsigned char)(abs(lPointsY[RayIdXPoint1]-glCamPosY))];
+        RayWallLog      = log2_tab[(unsigned char)(abs(lPointsY[RayIdXPoint1]-rayCamPosY))];
         tab_denom       = tab_1oversin;
     }
 }
+#else
+extern void preDraw();
+#endif // USE_C_PREDRAW
 
 #define ANGLE_TO_COL(x) tabAngle2Col[tabRayAngles[0]-lAngle[(x)]]
 
@@ -469,12 +479,12 @@ void drawFullVisibleWall(){
     if (lAngle[RayIdXPoint1] > lAngle[RayIdXPoint2]){
 
         InterpIdxLeft       = ANGLE_TO_COL(RayIdXPoint1);
-        InterpAngleLeft     = lAngle[RayIdXPoint1]+ glCamRotZ;
+        InterpAngleLeft     = lAngle[RayIdXPoint1]+ rayCamRotZ;
         RayNbSlice          = (ANGLE_TO_COL(RayIdXPoint2) - InterpIdxLeft)+1;
     } else {
 
         InterpIdxLeft       = ANGLE_TO_COL(RayIdXPoint2);
-        InterpAngleLeft     = lAngle[RayIdXPoint2]+ glCamRotZ;
+        InterpAngleLeft     = lAngle[RayIdXPoint2]+ rayCamRotZ;
         RayNbSlice          = (ANGLE_TO_COL(RayIdXPoint1) - InterpIdxLeft)+1;
     }
 
@@ -504,14 +514,14 @@ void drawLeftCuttingWall2Visible(){
 void drawRightCuttingWall1Visible(){
     preDraw();
     InterpIdxLeft           = ANGLE_TO_COL(RayIdXPoint1);
-    InterpAngleLeft         = lAngle[RayIdXPoint1]+glCamRotZ;
+    InterpAngleLeft         = lAngle[RayIdXPoint1]+rayCamRotZ;
     RayNbSlice              = (NB_SLICES - InterpIdxLeft)+1;
  
     toto();
 }
 void drawRightCuttingWall2Visible(){
     preDraw();
-    InterpAngleLeft         = lAngle[RayIdXPoint2]+glCamRotZ;
+    InterpAngleLeft         = lAngle[RayIdXPoint2]+rayCamRotZ;
     InterpIdxLeft           = ANGLE_TO_COL(RayIdXPoint2);
     RayNbSlice              = (NB_SLICES - InterpIdxLeft)+1;
     toto();
@@ -628,9 +638,9 @@ void rayProcessWalls() {
     for (RaySliceIdx=0; RaySliceIdx<NB_SLICES; RaySliceIdx++){
         RayCurrentWall = raywall[RaySliceIdx];
         if (RayCurrentWall != 255) {
-            angle       = glCamRotZ + tabRayAngles[RaySliceIdx];
+            angle       = rayCamRotZ + tabRayAngles[RaySliceIdx];
             if (lWallsCosBeta[RayCurrentWall] == 0){    // Wall is O,y aligned   
-                deltaY      = lPointsY[lWallsPt1[RayCurrentWall]]-glCamPosY;
+                deltaY      = lPointsY[lWallsPt1[RayCurrentWall]]-rayCamPosY;
                  
                 if (angle == 0){
                     v0 = 0;
@@ -654,7 +664,7 @@ void rayProcessWalls() {
                     tabTexCol [RaySliceIdx]        = abs(v2-multiCoeff[abs(deltaY)]);
                 }
             } else {                       // Wall is O,x aligned 
-                deltaX      = lPointsX[lWallsPt1[RayCurrentWall]]-glCamPosX;
+                deltaX      = lPointsX[lWallsPt1[RayCurrentWall]]-rayCamPosX;
                 if (tabRayAngles[RaySliceIdx] == 0){
                     v0 = 0;
                     v1 = 0;
@@ -689,7 +699,7 @@ void rayProcessPoints() {
 
     for (RayIdXPoint1 = 0; RayIdXPoint1 < rayNbPoints; RayIdXPoint1 ++) {
 
-        lAngle[RayIdXPoint1]        =  ATAN2(lPointsY[RayIdXPoint1]-glCamPosY, lPointsX[RayIdXPoint1]-glCamPosX) - glCamRotZ;
+        lAngle[RayIdXPoint1]        =  ATAN2(lPointsY[RayIdXPoint1]-rayCamPosY, lPointsX[RayIdXPoint1]-rayCamPosX) - rayCamRotZ;
 
         isVisible[RayIdXPoint1]     = (abs(lAngle[RayIdXPoint1])<tabRayAngles[0])?1:0;
         isFront[RayIdXPoint1]       = IS_FRONT(RayIdXPoint1)?1:0;

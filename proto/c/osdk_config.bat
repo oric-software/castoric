@@ -5,6 +5,6 @@
 ::
 SET OSDKADDR=$600
 SET OSDKNAME=proto
-SET OSDKFILE=main texel_s profile
+SET OSDKFILE=texel_s raycast_s main profile
 SET OSDKCOMP=-O2
 :: display buffer clip line8

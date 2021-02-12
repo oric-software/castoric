@@ -158,10 +158,10 @@ void drawImage02(){
    
 }
 void initCamera(){
-    glCamPosX               = -3; // -62; // 39;  //6; // 
-    glCamPosY               = -3; //- 62; // -25; //11; // 
-    glCamRotZ               = 32; // 64; //80; // 
-    RayLeftAlpha            = glCamRotZ + tabRayAngles[0];
+    rayCamPosX               = -3; // -62; // 39;  //6; // 
+    rayCamPosY               = -3; //- 62; // -25; //11; // 
+    rayCamRotZ               = 32; // 64; //80; // 
+    RayLeftAlpha            = rayCamRotZ + tabRayAngles[0];
     // RayRightAlpha           = glCamRotZ - tabRayAngles[0];
 }
 void precalculateWallsAngle() {
@@ -255,7 +255,7 @@ void gameLoop() {
         prepareRGB();
         drawImage02();
         drawSprite (6, 6, texture_pillar);
-        printf("(X=%d Y=%d) [a=%d]\n", glCamPosX, glCamPosY, glCamRotZ);
+        printf("(X=%d Y=%d) [a=%d]\n", rayCamPosX, rayCamPosY, rayCamRotZ);
     }
 }
 

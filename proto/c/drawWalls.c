@@ -4,6 +4,7 @@
 
 
 unsigned char *     ptrTexture;             // Address of the texture 
+unsigned char *     ptrReadTexture;             // Address of the texture 
 unsigned char       idxCurrentSlice;
 unsigned char *     baseAdr;
 signed char         idxScreenLine, idxScreenCol;
@@ -22,17 +23,19 @@ void drawWalls(){
         idxScreenCol        += 1;
         wallId              = raywall[idxCurrentSlice];
         if (wallId !=255) {
-            ptrTexture          = wallTexture[wallId];
 
     // =====================================
     // ============ LEFT TEXEL
     // =====================================
 
-            columnHeight        = (100-TableVerticalPos[idxCurrentSlice])/4; // tabHeight[idxCurrentSlice];
+
             columnTextureCoord  = tabTexCol[idxCurrentSlice]&31; // modulo 32
             offTexture          = multi32[columnTextureCoord];
-
+            ptrTexture          = wallTexture[wallId];
+            ptrReadTexture      = &(ptrTexture[offTexture]);
             
+
+            columnHeight        = (100-TableVerticalPos[idxCurrentSlice])/4; // tabHeight[idxCurrentSlice];
             
 
             ddaNbStep           = columnHeight<<1;
@@ -52,7 +55,9 @@ void drawWalls(){
                 (*ddaStepFunction)();
 
                 // colorEvenSquare(bufimg[multi40[ddaCurrentValue] + columnTextureCoord]);
-                renCurrentColor = ptrTexture[offTexture + ddaCurrentValue];
+                // renCurrentColor = ptrTexture[offTexture + ddaCurrentValue];
+
+                renCurrentColor = ptrReadTexture[ddaCurrentValue];
                 colorLeftTexel();
 
                 idxScreenLine   += 1;
@@ -61,8 +66,8 @@ void drawWalls(){
             } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < 64));
         }
 
-        idxCurrentSlice     += 1;
         idxScreenCol        += 1;
+        idxCurrentSlice     += 1;
         wallId              = raywall[idxCurrentSlice];
 
         if (wallId !=255) {
@@ -74,6 +79,8 @@ void drawWalls(){
             columnHeight        = (100-TableVerticalPos[idxCurrentSlice])/4; // tabHeight[ii];
             columnTextureCoord  = tabTexCol[idxCurrentSlice]&31;  // modulo 32
             offTexture          = multi32[columnTextureCoord];
+            ptrTexture          = wallTexture[wallId];
+            ptrReadTexture      = &(ptrTexture[offTexture]);
             
             idxScreenLine       = 32 - columnHeight;
 
@@ -92,7 +99,8 @@ void drawWalls(){
                 (*ddaStepFunction)();
 
                 // colorOddSquare(bufimg[multi40[ddaCurrentValue] + columnTextureCoord]);
-                renCurrentColor = ptrTexture[offTexture + ddaCurrentValue];
+                // renCurrentColor = ptrTexture[offTexture + ddaCurrentValue];
+                renCurrentColor = ptrReadTexture [ddaCurrentValue];
                 colorRightTexel();
 
                 idxScreenLine   += 1;
@@ -102,7 +110,6 @@ void drawWalls(){
         }
         idxCurrentSlice++;
     }
-   
 }
 
 #endif // USE_C_DRAWWALLS

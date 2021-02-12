@@ -71,7 +71,7 @@ void colorRightTexel(){
 #endif // USE_C_COLORRIGHTTEXEL
 
 #ifdef USE_C_COLORLEFTTEXEL
-// line in [0..65] column in [0..79]
+// line in [0..63] column in [0..79]
 void colorLeftTexel(){
 
     // unsigned char *adr;

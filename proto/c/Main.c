@@ -36,7 +36,9 @@ unsigned char *baseAdr;
 unsigned int offTexture;
 unsigned char renCurrentColor;
 unsigned char running; // game state: 1 = Running, 0 = Leave.
+
 #include "player.c"
+
 void prepareRGB(){
     int ii;
 
@@ -54,110 +56,8 @@ void prepareRGB(){
 
 
 
+#include "drawWalls.c"
 
-unsigned char *wallTexture[] = {texture_christmas, texture_logo};
-
-unsigned char *ptrTexture;
-
-void drawImage02(){
-    int idxCurrentSlice;
-
-    signed char         idxScreenLine, idxScreenCol;
-    unsigned char       height, texcolumn;
-
-    idxScreenCol        = 1;
-    ddaStartValue       = 0;
-    ddaNbVal            = TEXTURE_HEIGHT;
-    baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (idxScreenCol>>1));
-
-    for (idxCurrentSlice = 2; idxCurrentSlice < NB_SLICES-1; ) {
-        baseAdr             += 1;
-        idxScreenCol        += 1;
-        if (raywall[idxCurrentSlice]!=255) {
-            ptrTexture = wallTexture[raywall[idxCurrentSlice]];
-
-    // =====================================
-    // ============ LEFT TEXEL
-    // =====================================
-
-            height              = (100-TableVerticalPos[idxCurrentSlice])/4; // tabHeight[idxCurrentSlice];
-            texcolumn           = tabTexCol[idxCurrentSlice]&31; // modulo 32
-            offTexture          = multi32[texcolumn];
-
-            
-            
-            idxScreenLine       = 32 - height;
-
-            ddaNbStep           = height<<1;
-
-            
-
-            ddaInit();
-
-            while (idxScreenLine < 0){
-                (*ddaStepFunction)();
-                idxScreenLine   += 1;
-            } 
-
-            // theAdr = (unsigned char *)(HIRES_SCREEN_ADDRESS + multi120[idxScreenLine] + (idxScreenCol>>1));
-            theAdr              = (unsigned char *)(baseAdr + multi120[idxScreenLine]); 
-
-            do {
-                (*ddaStepFunction)();
-
-                // colorEvenSquare(bufimg[multi40[ddaCurrentValue] + texcolumn]);
-                renCurrentColor = ptrTexture[offTexture + ddaCurrentValue];
-                colorLeftTexel();
-
-                idxScreenLine   += 1;
-                // theAdr          += 120;
-
-            } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < 64));
-        }
-
-        idxCurrentSlice++;
-        idxScreenCol        += 1;
-        if (raywall[idxCurrentSlice]!=255) {
-            ptrTexture = wallTexture[raywall[idxCurrentSlice]];
-
-    // =====================================
-    // ============ RIGHT TEXEL
-    // =====================================
-            height              = (100-TableVerticalPos[idxCurrentSlice])/4; // tabHeight[ii];
-            texcolumn           = tabTexCol[idxCurrentSlice]&31;  // modulo 32
-            offTexture          = multi32[texcolumn];
-            
-
-            idxScreenLine       = 32 - height;
-
-            ddaNbStep           = height<<1;
-
-            ddaInit();
-
-            while (idxScreenLine < 0){
-                (*ddaStepFunction)();
-                idxScreenLine   += 1;
-            } 
-
-            // theAdr = (unsigned char *)(HIRES_SCREEN_ADDRESS + multi120[idxScreenLine] + (idxScreenCol>>1));
-            theAdr              = (unsigned char *)(baseAdr + multi120[idxScreenLine]);
-            
-            do {
-                (*ddaStepFunction)();
-
-                // colorOddSquare(bufimg[multi40[ddaCurrentValue] + texcolumn]);
-                renCurrentColor = ptrTexture[offTexture + ddaCurrentValue];
-                colorRightTexel();
-
-                idxScreenLine   += 1;
-                // theAdr          += 120;
-
-            } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < 64));
-        }
-        idxCurrentSlice++;
-    }
-   
-}
 void initCamera(){
     rayCamPosX               = -3; // -62; // 39;  //6; // 
     rayCamPosY               = -3; //- 62; // -25; //11; // 
@@ -254,7 +154,7 @@ void gameLoop() {
         rayProcessWalls();
         memset(HIRES_SCREEN_ADDRESS, 64, 8000); // 5120 = 0xB400 (std char) - 0xA000 (hires screen)
         prepareRGB();
-        drawImage02();
+        drawWalls();
         drawSprite (6, 6, texture_pillar);
         printf("(X=%d Y=%d) [a=%d]\n", rayCamPosX, rayCamPosY, rayCamRotZ);
     }
@@ -301,7 +201,7 @@ void main(){
 
 #ifdef DEBUG
     prepareRGB();
-    drawImage02();
+    drawWalls();
     drawSprite (6, 6, texture_pillar);
 #endif
     running = 1;

@@ -32,7 +32,7 @@
 #include "tables.c"
 
 extern unsigned char *theAdr;
-unsigned char *baseAdr;
+
 unsigned int offTexture;
 unsigned char renCurrentColor;
 unsigned char running; // game state: 1 = Running, 0 = Leave.
@@ -52,15 +52,14 @@ void prepareRGB(){
 
 #include "iea2d.c"
 #include "texel.c"
-#include "sprite.c"
-
-
 
 #include "drawWalls.c"
 
+#include "sprite.c"
+
 void initCamera(){
-    rayCamPosX               = -3; // -62; // 39;  //6; // 
-    rayCamPosY               = -3; //- 62; // -25; //11; // 
+    rayCamPosX               = 2; // -62; // 39;  //6; // 
+    rayCamPosY               = 2; //- 62; // -25; //11; // 
     rayCamRotZ               = 32; // 64; //80; // 
     RayLeftAlpha            = rayCamRotZ + tabRayAngles[0];
     // RayRightAlpha           = glCamRotZ - tabRayAngles[0];
@@ -163,7 +162,7 @@ void gameLoop() {
 // #undef DEBUG
 void oldmain (){
 
-    printf ("hello\n"); get();
+    printf ("hello\n");
 
     ddaStartValue       = 0;
     ddaNbStep           = 12;

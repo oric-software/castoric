@@ -1,15 +1,16 @@
 #define USE_C_DRAWWALLS
+
 #ifdef USE_C_DRAWWALLS
 
-unsigned char *wallTexture[] = {texture_christmas, texture_logo};
 
-unsigned char *ptrTexture;
+unsigned char *     ptrTexture;             // Address of the texture 
+unsigned char       idxCurrentSlice;
+unsigned char *     baseAdr;
+signed char         idxScreenLine, idxScreenCol;
+unsigned char       columnHeight, columnTextureCoord;
+unsigned char       wallId;
 
 void drawWalls(){
-    unsigned char       idxCurrentSlice;
-
-    signed char         idxScreenLine, idxScreenCol;
-    unsigned char       columnHeight, columnTextureCoord;
 
     idxScreenCol        = 1;
     ddaStartValue       = 0;
@@ -19,26 +20,25 @@ void drawWalls(){
     for (idxCurrentSlice = 2; idxCurrentSlice < NB_SLICES-1; ) {
         baseAdr             += 1;
         idxScreenCol        += 1;
-        if (raywall[idxCurrentSlice]!=255) {
-            ptrTexture = wallTexture[raywall[idxCurrentSlice]];
+        wallId              = raywall[idxCurrentSlice];
+        if (wallId !=255) {
+            ptrTexture          = wallTexture[wallId];
 
     // =====================================
     // ============ LEFT TEXEL
     // =====================================
 
-            columnHeight              = (100-TableVerticalPos[idxCurrentSlice])/4; // tabHeight[idxCurrentSlice];
-            columnTextureCoord           = tabTexCol[idxCurrentSlice]&31; // modulo 32
+            columnHeight        = (100-TableVerticalPos[idxCurrentSlice])/4; // tabHeight[idxCurrentSlice];
+            columnTextureCoord  = tabTexCol[idxCurrentSlice]&31; // modulo 32
             offTexture          = multi32[columnTextureCoord];
 
             
             
-            idxScreenLine       = 32 - columnHeight;
 
             ddaNbStep           = columnHeight<<1;
-
-            
-
             ddaInit();
+
+            idxScreenLine       = 32 - columnHeight;
 
             while (idxScreenLine < 0){
                 (*ddaStepFunction)();
@@ -61,23 +61,23 @@ void drawWalls(){
             } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < 64));
         }
 
-        idxCurrentSlice++;
+        idxCurrentSlice     += 1;
         idxScreenCol        += 1;
-        if (raywall[idxCurrentSlice]!=255) {
-            ptrTexture = wallTexture[raywall[idxCurrentSlice]];
+        wallId              = raywall[idxCurrentSlice];
+
+        if (wallId !=255) {
+            ptrTexture          = wallTexture[wallId];
 
     // =====================================
     // ============ RIGHT TEXEL
     // =====================================
-            columnHeight              = (100-TableVerticalPos[idxCurrentSlice])/4; // tabHeight[ii];
-            columnTextureCoord           = tabTexCol[idxCurrentSlice]&31;  // modulo 32
+            columnHeight        = (100-TableVerticalPos[idxCurrentSlice])/4; // tabHeight[ii];
+            columnTextureCoord  = tabTexCol[idxCurrentSlice]&31;  // modulo 32
             offTexture          = multi32[columnTextureCoord];
             
-
             idxScreenLine       = 32 - columnHeight;
 
             ddaNbStep           = columnHeight<<1;
-
             ddaInit();
 
             while (idxScreenLine < 0){

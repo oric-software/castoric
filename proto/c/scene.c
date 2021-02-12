@@ -12,3 +12,5 @@ signed char scene_00[] = {
 	, 1, 2   // W1
 
 };
+
+unsigned char *wallTexture[] = {texture_christmas, texture_logo};

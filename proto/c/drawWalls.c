@@ -35,7 +35,7 @@ void drawWalls(){
             ptrReadTexture      = &(ptrTexture[offTexture]);
             
 
-            columnHeight        = (100-TableVerticalPos[idxCurrentSlice])/4; // tabHeight[idxCurrentSlice];
+            columnHeight        = TableVerticalPos[idxCurrentSlice]; 
             
 
             ddaNbStep           = columnHeight<<1;
@@ -76,7 +76,7 @@ void drawWalls(){
     // =====================================
     // ============ RIGHT TEXEL
     // =====================================
-            columnHeight        = (100-TableVerticalPos[idxCurrentSlice])/4; // tabHeight[ii];
+            columnHeight        = TableVerticalPos[idxCurrentSlice];
             columnTextureCoord  = tabTexCol[idxCurrentSlice]&31;  // modulo 32
             offTexture          = multi32[columnTextureCoord];
             ptrTexture          = wallTexture[wallId];

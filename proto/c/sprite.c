@@ -80,7 +80,7 @@ void displaySprite02(unsigned char column, unsigned char height){
         // si l'objet du sprite est plus grand ou plus petit que le mur affiche sur cette colonne
         //          if (rayzbuffer[RaySliceIdx] < DistanceObject) {
         //          if (raylogdist[RaySliceIdx] < 32*log2(DistanceObject) ){
-        wallheight = (100-TableVerticalPos[viewportColIdx])/4;
+        wallheight = TableVerticalPos[viewportColIdx]; // (100-TableVerticalPos[viewportColIdx])/4;
         if (height > wallheight) {
             // Rejoindre la bordure haute de l'ecran
             idxLinTexture           = 0;
@@ -172,7 +172,7 @@ void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
             if (unfish[column] < log2dist)
                 log2dist -= unfish[column];
 #endif
-            height = (100-dist2hh(log2dist))/4;
+            height = dist2hh(log2dist); // (100-dist2hh(log2dist))/4;
         } else {
             log2Delta = log2_tab[(unsigned char)(abs(deltaY))];
             log2dist = log2Delta + (unsigned int)tab_1oversin[(unsigned char)alpha];
@@ -183,7 +183,7 @@ void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
                 log2dist -= unfish[column];
 #endif
 
-            height = (100-dist2hh(log2dist))/4;
+            height = dist2hh(log2dist);
         }
 
 

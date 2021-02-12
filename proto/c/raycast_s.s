@@ -1,4 +1,4 @@
-;; Assebly routines for raycasting
+;; Assembly routines for raycasting
 ;; Author : Jean-Baptiste PERIN
 ;; Date : 2021
 ;; 

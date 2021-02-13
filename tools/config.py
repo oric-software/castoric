@@ -8,7 +8,6 @@ VIEWPORT_WIDTH          = 80
 NUMBER_OF_SLICE         = 80
 
 TEXTURE_SIZE            = 32
-
 RAD_TO_FIX              = 128/math.pi
 FIX_TO_RAD              = math.pi/128
 
@@ -26,6 +25,7 @@ def rayAngles ():
         currentAngle    = math.atan (k*screenIncrementLength/2)
         yield round(currentAngle*128/math.pi)
 
+HALF_FOV_FIX_ANGLE      = list(rayAngles ())[0]
 
 
 

@@ -118,7 +118,7 @@ void preDraw(){
 extern void preDraw();
 #endif // USE_C_PREDRAW
 
-#define ANGLE_TO_COL(x) tabAngle2Col[tabRayAngles[0]-lAngle[(x)]]
+#define ANGLE_TO_COL(x) tabAngle2Col[HALF_FOV_FIX_ANGLE-lAngle[(x)]]
 
 void drawFullCrossingWall(){
 
@@ -360,7 +360,7 @@ void rayProcessPoints() {
 
         lAngle[RayIdXPoint1]        =  ATAN2(lPointsY[RayIdXPoint1]-rayCamPosY, lPointsX[RayIdXPoint1]-rayCamPosX) - rayCamRotZ;
 
-        isVisible[RayIdXPoint1]     = (abs(lAngle[RayIdXPoint1])<tabRayAngles[0])?1:0;
+        isVisible[RayIdXPoint1]     = (abs(lAngle[RayIdXPoint1])<HALF_FOV_FIX_ANGLE)?1:0;
         isFront[RayIdXPoint1]       = IS_FRONT(RayIdXPoint1)?1:0;
     }
 }

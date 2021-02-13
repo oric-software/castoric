@@ -27,8 +27,7 @@ void initCamera(){
     rayCamPosX               = 3; // 0; // -62; // 39;  //
     rayCamPosY               = 3; // 0; //- 62; // -25; //
     rayCamRotZ               = 32; // 32; // 64; //
-    RayLeftAlpha            = rayCamRotZ + tabRayAngles[0];
-    // RayRightAlpha           = glCamRotZ - tabRayAngles[0];
+    RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
 }
 
 void rayInitCasting(){

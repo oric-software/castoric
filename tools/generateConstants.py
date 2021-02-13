@@ -10,7 +10,7 @@ strConstants = f"""// Generated file. Do not modify by hand.
 #define VIEWPORT_HEIGHT                 {config.VIEWPORT_HEIGHT}
 
 #define TEXTURE_SIZE                    {config.TEXTURE_SIZE}
-
+#define HALF_FOV_FIX_ANGLE              {config.HALF_FOV_FIX_ANGLE}
 #define VIEWPORT_UP_LINE                0
 #define VIEWPORT_DOWN_LINE              64
 #define VIEWPORT_LEFT_COLUMN            2

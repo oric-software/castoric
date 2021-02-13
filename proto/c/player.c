@@ -15,11 +15,11 @@ void player () {
     switch (get()) {
     case 8:  // left 
         rayCamRotZ += ROT_ANGLE_STEP;
-        RayLeftAlpha            = rayCamRotZ + tabRayAngles[0];
+        RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
         break;
     case 9:  // right 
         rayCamRotZ -= ROT_ANGLE_STEP; 
-        RayLeftAlpha            = rayCamRotZ + tabRayAngles[0];
+        RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
         break;
     case 10:  // down
         backward(); break;

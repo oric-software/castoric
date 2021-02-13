@@ -55,8 +55,8 @@ void initCamera(){
     rayCamPosX               = 2; // -62; // 39;  //6; // 
     rayCamPosY               = 2; //- 62; // -25; //11; // 
     rayCamRotZ               = 32; // 64; //80; // 
-    RayLeftAlpha            = rayCamRotZ + tabRayAngles[0];
-    // RayRightAlpha           = glCamRotZ - tabRayAngles[0];
+    RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
+    // RayRightAlpha           = glCamRotZ - HALF_FOV_FIX_ANGLE;
 }
 void precalculateWallsAngle() {
     unsigned char idxWall, idxPt1, idxPt2;

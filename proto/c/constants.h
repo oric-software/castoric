@@ -11,7 +11,7 @@
 #define VIEWPORT_DOWN_LINE              64
 #define VIEWPORT_LEFT_COLUMN            2
 #define VIEWPORT_RIGHT_COLUMN           78
-#define EMPTY_ALPHA 0
+#define EMPTY_ALPHA                     0
 
 
 //((unsigned int)0xA000)

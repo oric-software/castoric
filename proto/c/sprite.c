@@ -164,20 +164,20 @@ void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
             // distance = RayWallLog + (unsigned int)tab_denom[(unsigned char)RayAlpha];
             
             log2dist = log2Delta + (unsigned int)tab_1overcos[(unsigned char)alpha];
-#ifdef USE_ANTIFISH
+
             if (unfish[column] < log2dist)
                 log2dist -= unfish[column];
-#endif
+
             height = dist2hh(log2dist); // (100-dist2hh(log2dist))/4;
         } else {
             log2Delta = log2_tab[(unsigned char)(abs(deltaY))];
             log2dist = log2Delta + (unsigned int)tab_1oversin[(unsigned char)alpha];
             
 
-#ifdef USE_ANTIFISH
+
             if (unfish[column] < log2dist)
                 log2dist -= unfish[column];
-#endif
+
 
             height = dist2hh(log2dist);
         }

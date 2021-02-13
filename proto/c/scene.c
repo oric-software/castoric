@@ -13,4 +13,4 @@ signed char scene_00[] = {
 
 };
 
-unsigned char *wallTexture[] = {texture_christmas, texture_logo};
+unsigned char *wallTexture[] = {texture_bluestone, texture_redbrick};

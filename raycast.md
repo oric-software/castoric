@@ -12,11 +12,11 @@ TBD: changing height of viewport. ()
 
 # Changing FOV and Number of Slices
 
-- change value of constant `NB_SLICES` in `raycast.c`
+- change value of constant `NUMBER_OF_SLICE` in `raycast.c`
 - change loop boundaries in function drawin images
 - regénérer les tables `tabRayAngles`, `tabAngle2Col` et `unfish` with script `precalRayAngle.py`
 
-FOV = 112,  NB_SLICES = 80
+FOV = 112,  NUMBER_OF_SLICE = 80
 
 ```c
 signed char             tabRayAngles[] = {
@@ -45,7 +45,7 @@ unsigned int            unfish[] = {
 
 ```
 
-FOV = 112,  NB_SLICES = 40
+FOV = 112,  NUMBER_OF_SLICE = 40
 
 ```c
 signed char             tabRayAngles[] = {
@@ -67,7 +67,7 @@ unsigned int            unfish[] = {
         , 15, 17, 18, 20, 22, 24, 25, 27};
 ```
 
-FOV = 66,  NB_SLICES = 40
+FOV = 66,  NUMBER_OF_SLICE = 40
 
 ```c
 signed char             tabRayAngles[] = {

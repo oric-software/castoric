@@ -1,5 +1,4 @@
-#define TEXTURE_WIDTH 32
-#define TEXTURE_HEIGHT 32
+
 
 // unsigned char texture_bluestone[] = {
 //         1, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 2, 1, 1, 1

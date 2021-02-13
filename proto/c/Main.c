@@ -19,17 +19,11 @@
 #include "scene.c"
 
 
-#define SCREEN_WIDTH                    40
-#define SCREEN_HEIGHT                   26
-
-#define HIRES_SCREEN_ADDRESS            ((unsigned int)0xA000)
-#define NB_LESS_LINES_4_COLOR           2
-
 #define CHANGE_INK_TO_RED	            1		
 #define CHANGE_INK_TO_GREEN	            2		
 #define CHANGE_INK_TO_BLUE	            4		
 
-
+#include "tabMulti.c"
 
 extern unsigned char *theAdr;
 
@@ -43,10 +37,10 @@ void prepareRGB(){
     int ii;
 
     // parcours de lignes de 3 en 3
-    for (ii=0; ii < (SCREEN_HEIGHT - NB_LESS_LINES_4_COLOR)*8;  ii+=3){
-        poke (HIRES_SCREEN_ADDRESS+((ii)*SCREEN_WIDTH),CHANGE_INK_TO_RED);
-        poke (HIRES_SCREEN_ADDRESS+((ii+1)*SCREEN_WIDTH),CHANGE_INK_TO_GREEN);
-        poke (HIRES_SCREEN_ADDRESS+((ii+2)*SCREEN_WIDTH),CHANGE_INK_TO_BLUE);
+    for (ii=0; ii < (TEXT_SCREEN_HEIGHT - NB_LESS_LINES_4_COLOR)*8;  ii+=3){
+        poke (HIRES_SCREEN_ADDRESS+((ii)*NEXT_SCANLINE_INCREMENT),CHANGE_INK_TO_RED);
+        poke (HIRES_SCREEN_ADDRESS+((ii+1)*NEXT_SCANLINE_INCREMENT),CHANGE_INK_TO_GREEN);
+        poke (HIRES_SCREEN_ADDRESS+((ii+2)*NEXT_SCANLINE_INCREMENT),CHANGE_INK_TO_BLUE);
     }
 }
 
@@ -108,7 +102,7 @@ void initScene (signed char sceneData[]){
 }
 void rayInitCasting(){
     unsigned char ii;
-    for (ii=0; ii< NB_SLICES; ii++) {
+    for (ii=0; ii< NUMBER_OF_SLICE; ii++) {
         rayzbuffer[ii]      = 255;
         raywall[ii]         = 255;
     }
@@ -290,20 +284,20 @@ void main(){
 //     b = (theColor)& 0x03;
 
 //     // compute the start adress of the screen square to color
-//     //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*SCREEN_WIDTH + (column>>1));
+//     //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*NEXT_SCANLINE_INCREMENT + (column>>1));
 //     adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + multi40[(line<<1) + line] + (column>>1));
 
 //     if ((column&0x01) == 0){
 //         *adr |= encodeHColor[r];
-//         adr += SCREEN_WIDTH;
+//         adr += NEXT_SCANLINE_INCREMENT;
 //         *adr |= encodeHColor[g];
-//         adr += SCREEN_WIDTH;
+//         adr += NEXT_SCANLINE_INCREMENT;
 //         *adr |= encodeHColor[b];
 //     } else {
 //         *adr |= encodeLColor[r];
-//         adr += SCREEN_WIDTH;
+//         adr += NEXT_SCANLINE_INCREMENT;
 //         *adr |= encodeLColor[g];
-//         adr += SCREEN_WIDTH;
+//         adr += NEXT_SCANLINE_INCREMENT;
 //         *adr |= encodeLColor[b];
 //     }
 
@@ -324,7 +318,7 @@ void main(){
 
 //         ddaStartValue       = 0;
 //         ddaNbStep           = 2*height;
-//         ddaNbVal            = TEXTURE_HEIGHT;
+//         ddaNbVal            = TEXTURE_SIZE;
 
 //         ddaInit();
 //         idxScreenLine       = 32 - height;

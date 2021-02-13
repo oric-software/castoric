@@ -22,7 +22,6 @@
 
 // #define PROFILE_ENTER(x)
 // #define PROFILE_LEAVE(x)
-#define HIRES_SCREEN_ADDRESS            ((unsigned int)0xA000)
 
 void initCamera(){
     rayCamPosX               = 3; // 0; // -62; // 39;  //
@@ -34,7 +33,7 @@ void initCamera(){
 
 void rayInitCasting(){
     unsigned char ii;
-    for (ii=0; ii< NB_SLICES; ii++) {
+    for (ii=0; ii< NUMBER_OF_SLICE; ii++) {
         rayzbuffer[ii]      = 255;
         raywall[ii]         = 255;
     }
@@ -101,9 +100,6 @@ void initScene (signed char sceneData[]){
 #define min(x,y)          (((x)<(y))?(x):(y))
 
 
-#define SCREEN_WIDTH                    80
-#define SCREEN_HEIGHT                   64
-
 
 unsigned int            offTexture;
 unsigned char           *theAdr;
@@ -156,13 +152,13 @@ void main(){
 //     scrLinIdx          = SCREEN_HEIGHT/ 2 - height/2;
 
 //     iea1StartValue       = 0;
-//     iea1NbVal            = TEXTURE_HEIGHT;
+//     iea1NbVal            = TEXTURE_SIZE;
 //     iea1NbStep           = height;
 //     iea1Init();
 
 //     do {
 //         iea2StartValue       = 0;
-//         iea2NbVal            = TEXTURE_HEIGHT;
+//         iea2NbVal            = TEXTURE_SIZE;
 //         iea2NbStep           = height;
 //         iea2Init();
 //         do {

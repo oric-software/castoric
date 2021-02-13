@@ -57,14 +57,12 @@ def image2TextureBuf (filepathname):
             r, g, b = rgb_im.getpixel((ii, jj))
             bufimgtranslat.append(toSimpleRgb(r)*16 + toSimpleRgb(g)*4 + toSimpleRgb(b))
 
-    # cCode = f"#define TEXTURE_WIDTH {imw}\n#define TEXTURE_HEIGHT {imh}\n"
     # cCode += codegen.buffer2cCode("texture_"+namerad, "unsigned char", bufimg)
     cCode = codegen.buffer2cCode("texture_"+namerad, "unsigned char", bufimgtranslat)
 
     return cCode
 
 def main():
-    print (f"#define TEXTURE_WIDTH 32\n#define TEXTURE_HEIGHT 32\n")
     print (image2TextureBuf ('img/bluestone.png'))
     print (image2TextureBuf ('img/christmas.bmp'))
     print (image2TextureBuf ('img/colorstone.png'))

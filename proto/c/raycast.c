@@ -2,7 +2,7 @@
 
 #define                 USE_ANTIFISH
 
-#define NB_SLICES       80
+
 #define NB_MAX_WALL     32
 #define NB_MAX_POINT    64
 
@@ -20,12 +20,12 @@ unsigned char    InterpIdxLeft;
 unsigned char    RayNbSlice;
 unsigned int     RayDistance;
 unsigned int     RayWallLog;
-unsigned char    rayzbuffer[NB_SLICES]; // FIXME .. should be int
-unsigned int     raylogdist[NB_SLICES];
+unsigned char    rayzbuffer[NUMBER_OF_SLICE]; // FIXME .. should be int
+unsigned int     raylogdist[NUMBER_OF_SLICE];
 #ifdef USE_C_TOTO
 unsigned char*   tab_denom;
 #endif
-unsigned char    raywall[NB_SLICES];
+unsigned char    raywall[NUMBER_OF_SLICE];
 unsigned char    RayCurrentWall;
 signed char      lWallsCosBeta[NB_MAX_WALL];
 unsigned char    RayIdXPoint1, RayIdXPoint2;
@@ -36,8 +36,8 @@ unsigned char    lWallsPt2[NB_MAX_WALL];
 signed char      lAngle[NB_MAX_POINT];
 unsigned char    isVisible[NB_MAX_POINT];
 unsigned char    isFront[NB_MAX_POINT];
-unsigned char    TableVerticalPos[NB_SLICES];
-unsigned char    tabTexCol[NB_SLICES];
+unsigned char    TableVerticalPos[NUMBER_OF_SLICE];
+unsigned char    tabTexCol[NUMBER_OF_SLICE];
 
 unsigned char           rayNbPoints;
 unsigned char           rayNbWalls;
@@ -313,7 +313,7 @@ void drawFullCrossingWall(){
     preDraw();
 
     InterpAngleLeft     = RayLeftAlpha;
-    RayNbSlice          = NB_SLICES;
+    RayNbSlice          = NUMBER_OF_SLICE;
     InterpIdxLeft       = 0;
 
     toto();
@@ -362,7 +362,7 @@ void drawRightCuttingWall1Visible(){
     preDraw();
     InterpIdxLeft           = ANGLE_TO_COL(RayIdXPoint1);
     InterpAngleLeft         = lAngle[RayIdXPoint1]+rayCamRotZ;
-    RayNbSlice              = (NB_SLICES - InterpIdxLeft)+1;
+    RayNbSlice              = (NUMBER_OF_SLICE - InterpIdxLeft)+1;
  
     toto();
 }
@@ -370,7 +370,7 @@ void drawRightCuttingWall2Visible(){
     preDraw();
     InterpAngleLeft         = lAngle[RayIdXPoint2]+rayCamRotZ;
     InterpIdxLeft           = ANGLE_TO_COL(RayIdXPoint2);
-    RayNbSlice              = (NB_SLICES - InterpIdxLeft)+1;
+    RayNbSlice              = (NUMBER_OF_SLICE - InterpIdxLeft)+1;
     toto();
 }
 
@@ -465,7 +465,7 @@ void rayProcessWalls() {
     /* 
      * Change output from logarithmic scale to linear scale 
      */
-    for (RaySliceIdx=0; RaySliceIdx<NB_SLICES; RaySliceIdx++){
+    for (RaySliceIdx=0; RaySliceIdx<NUMBER_OF_SLICE; RaySliceIdx++){
         RayCurrentWall = raywall[RaySliceIdx];
         if (RayCurrentWall != 255) {
             raylogdist[RaySliceIdx] = rayzbuffer[RaySliceIdx];
@@ -482,7 +482,7 @@ void rayProcessWalls() {
     }
 
     // Compute texture column informations
-    for (RaySliceIdx=0; RaySliceIdx<NB_SLICES; RaySliceIdx++){
+    for (RaySliceIdx=0; RaySliceIdx<NUMBER_OF_SLICE; RaySliceIdx++){
         RayCurrentWall = raywall[RaySliceIdx];
         if (RayCurrentWall != 255) {
             angle       = rayCamRotZ + tabRayAngles[RaySliceIdx];

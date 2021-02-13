@@ -1,6 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include "constants.h"
 
 #ifdef __GNUC__
 

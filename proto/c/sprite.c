@@ -1,9 +1,4 @@
-#define VIEWPORT_UP_LINE                0
-#define VIEWPORT_DOWN_LINE              64
-#define VIEWPORT_LEFT_COLUMN            2
-#define VIEWPORT_RIGHT_COLUMN           78
-#define VIEWPORT_HEIGHT                 64
-#define EMPTY_ALPHA 0
+
 
 unsigned char           texcolumn, texline;
 
@@ -17,7 +12,7 @@ void precalcTexPixelRunthrough(unsigned char height){
     idxTexPixel         = 0;
 
     iea2StartValue      = 0;
-    iea2NbVal           = TEXTURE_HEIGHT-1;
+    iea2NbVal           = TEXTURE_SIZE-1;
     iea2NbStep          = height;
     iea2Init();
     do {
@@ -47,7 +42,7 @@ void displaySprite02(unsigned char column, unsigned char height){
     // }
 
     viewportColIdx          = column - height/2;
-    viewportLinIdx          = SCREEN_HEIGHT/ 2 - height/2;
+    viewportLinIdx          = VIEWPORT_HEIGHT/ 2 - height/2;
     idxLinTexture           = 0;
     idxColTexture           = 0;
     adrScreenCol            = 0;

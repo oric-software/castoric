@@ -1,6 +1,5 @@
 
 
-#define NEXT_LINE_INCREMENT 40
 
 unsigned char           renCurrentColor;
 
@@ -11,11 +10,11 @@ void colorRightTexel(){
     // unsigned char *adr;
 
     // compute the start adress of the screen square to color
-    //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*SCREEN_WIDTH + (column>>1));
+    //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*NEXT_SCANLINE_INCREMENT + (column>>1));
     // adr = theAdr; 
 
     *theAdr |= tabRightRed[renCurrentColor];
-    theAdr += NEXT_LINE_INCREMENT;
+    theAdr += NEXT_SCANLINE_INCREMENT;
     // asm (
     //     "ldx #0;"
     //     "ldy _renCurrentColor;"
@@ -35,7 +34,7 @@ void colorRightTexel(){
     // );
 
     *theAdr |= tabRightGreen[renCurrentColor];
-    theAdr += NEXT_LINE_INCREMENT;
+    theAdr += NEXT_SCANLINE_INCREMENT;
 
     // asm(
     //     "lda _tabRightGreen,y;"
@@ -52,7 +51,7 @@ void colorRightTexel(){
 
 
     *theAdr |= tabRightBlue[renCurrentColor];
-    theAdr += NEXT_LINE_INCREMENT;
+    theAdr += NEXT_SCANLINE_INCREMENT;
 
     // asm(
     //     "lda _tabRightBlue,y;"
@@ -77,11 +76,11 @@ void colorLeftTexel(){
     // unsigned char *adr;
 
     // compute the start adress of the screen square to color
-    //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*SCREEN_WIDTH + (column>>1));
+    //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*NEXT_SCANLINE_INCREMENT + (column>>1));
     // adr = theAdr;
 
     *theAdr = tabLeftRed[renCurrentColor];
-    theAdr += NEXT_LINE_INCREMENT;
+    theAdr += NEXT_SCANLINE_INCREMENT;
 
     // asm (
     //     "ldx #0;"
@@ -100,7 +99,7 @@ void colorLeftTexel(){
     // );
 
     *theAdr = tabLeftGreen[renCurrentColor];
-    theAdr += NEXT_LINE_INCREMENT;
+    theAdr += NEXT_SCANLINE_INCREMENT;
 
     // asm (
     //     "lda _tabLeftGreen,y;"
@@ -114,7 +113,7 @@ void colorLeftTexel(){
     //     "sta _theAdr+1;"
     // );
     *theAdr = tabLeftBlue[renCurrentColor];
-    theAdr += NEXT_LINE_INCREMENT;
+    theAdr += NEXT_SCANLINE_INCREMENT;
 
     // asm (
     //     "lda _tabLeftBlue,y;"
@@ -169,20 +168,20 @@ void colorSquare(unsigned char line, unsigned char column, unsigned char theColo
     b = (theColor)& 0x03;
 
     // compute the start adress of the screen square to color
-    //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*SCREEN_WIDTH + (column>>1));
+    //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*NEXT_SCANLINE_INCREMENT + (column>>1));
     adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + multi40[(line<<1) + line] + (column>>1));
 
     if ((column&0x01) == 0){
         *adr = encodeHColor[r];
-        adr += NEXT_LINE_INCREMENT;
+        adr += NEXT_SCANLINE_INCREMENT;
         *adr = encodeHColor[g];
-        adr += NEXT_LINE_INCREMENT;
+        adr += NEXT_SCANLINE_INCREMENT;
         *adr = encodeHColor[b];
     } else {
         *adr |= encodeLColor[r];
-        adr += NEXT_LINE_INCREMENT;
+        adr += NEXT_SCANLINE_INCREMENT;
         *adr |= encodeLColor[g];
-        adr += NEXT_LINE_INCREMENT;
+        adr += NEXT_SCANLINE_INCREMENT;
         *adr |= encodeLColor[b];
     }
 }

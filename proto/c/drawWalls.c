@@ -15,10 +15,10 @@ void drawWalls(){
 
     idxScreenCol        = 1;
     ddaStartValue       = 0;
-    ddaNbVal            = TEXTURE_HEIGHT;
+    ddaNbVal            = TEXTURE_SIZE;
     baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (idxScreenCol>>1));
 
-    for (idxCurrentSlice = 2; idxCurrentSlice < NB_SLICES-1; ) {
+    for (idxCurrentSlice = 2; idxCurrentSlice < NUMBER_OF_SLICE-1; ) {
         baseAdr             += 1;
         idxScreenCol        += 1;
         wallId              = raywall[idxCurrentSlice];

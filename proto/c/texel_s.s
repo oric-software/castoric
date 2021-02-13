@@ -12,21 +12,21 @@ _colorLeftTexel
     ldx         _renCurrentColor
 
     ;; *theAdr = tabLeftGreen[renCurrentColor];
-    ;; theAdr += NEXT_LINE_INCREMENT;
+    ;; theAdr += NEXT_SCANLINE_INCREMENT;
 
     lda         _tabLeftRed,x
     ldy         #0
     sta         (_theAdr),y
 
     ;; *theAdr = tabLeftGreen[renCurrentColor];
-    ;; theAdr += NEXT_LINE_INCREMENT;
+    ;; theAdr += NEXT_SCANLINE_INCREMENT;
 
     lda         _tabLeftGreen,x
     ldy         #40
     sta         (_theAdr),y
 
     ;; *theAdr = tabLeftBlue[renCurrentColor];
-    ;; theAdr += NEXT_LINE_INCREMENT;
+    ;; theAdr += NEXT_SCANLINE_INCREMENT;
 
     lda         _tabLeftBlue,x
     ldy         #80
@@ -62,7 +62,7 @@ _colorRightTexel
 
 
     ;; *theAdr |= tabRightGreen[renCurrentColor];
-    ;; theAdr += NEXT_LINE_INCREMENT;
+    ;; theAdr += NEXT_SCANLINE_INCREMENT;
 
     lda         _tabRightGreen,x
     ldy         #40
@@ -70,7 +70,7 @@ _colorRightTexel
     sta         (_theAdr),y
 
     ;; *theAdr |= tabRightBlue[renCurrentColor];
-    ;; theAdr += NEXT_LINE_INCREMENT;
+    ;; theAdr += NEXT_SCANLINE_INCREMENT;
 
     lda         _tabRightBlue,x
     ldy         #80

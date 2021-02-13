@@ -86,7 +86,7 @@ void displaySprite02(unsigned char column, unsigned char height){
             idxLinTexture           = 0;
             viewportLinIdx          = VIEWPORT_HEIGHT/ 2 - height/2;
             nbLine                  = height;
-            while ((viewportLinIdx--) < VIEWPORT_UP_LINE) {
+            while ((viewportLinIdx++) < VIEWPORT_UP_LINE) {
 #ifdef DEBUG                
                 printf ("skipped lin %d \n", viewportLinIdx, nbColumn);
 #endif
@@ -150,6 +150,7 @@ void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
 
     deltaX          = posX-rayCamPosX;
     deltaY          = posY-rayCamPosY;
+    if ((deltaX == 0) && (deltaY == 0)) return;
     alpha           = ATAN2(deltaY, deltaX);
     if (abs(alpha) < tabRayAngles[0]) {
         // if (lWallsCosBeta[RayCurrentWall] == 0){    // Wall is O,y aligned   

@@ -29,7 +29,7 @@
 #define CHANGE_INK_TO_GREEN	            2		
 #define CHANGE_INK_TO_BLUE	            4		
 
-#include "tables.c"
+
 
 extern unsigned char *theAdr;
 

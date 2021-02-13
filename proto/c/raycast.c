@@ -185,13 +185,7 @@ unsigned char log2_tab[] = {
 // castoric> python tools\precalcDistance2Height.py > proto\c\tabunlogd2hh.h
 #include "tabunlogd2hh.h"
 
-
-
-unsigned char multiCoeff[] = {
-        0, 5, 11, 16, 21, 27, 32, 37, 43, 48, 53, 59, 64, 69, 75, 80
-        , 85, 91, 96, 101, 107, 112, 117, 123, 128, 133, 139, 144, 149, 155, 160, 165
-        , 171, 176, 181, 187, 192, 197, 203, 208, 213, 219, 224, 229, 235};
-
+#include "tabMulti.h"
 
 signed char log2sin(unsigned char x){
     return tabLog2Sin[x];

@@ -7,6 +7,8 @@ VIEWPORT_HEIGHT         = 200
 VIEWPORT_WIDTH          = 320
 NUMBER_OF_SLICE         = 80
 
+TEXTURE_SIZE            = 32
+
 RAD_TO_FIX              = 128/math.pi
 FIX_TO_RAD              = math.pi/128
 

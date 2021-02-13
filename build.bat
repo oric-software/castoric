@@ -6,3 +6,4 @@ python tools\precalcLogTrigo.py > proto\c\tablogtrigo.h
 python tools\precalcRayAngle.py > proto\c\tabrayangle.h
 python tools\precalcTexel.py > proto\c\tabTexelColor.h
 python tools\precalcTabMulti.py > proto\c\tabMulti.h
+python tools\generateConstants.py > proto\c\constants.h

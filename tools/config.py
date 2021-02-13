@@ -1,10 +1,10 @@
 import math
 
 WALL_HEIGHT             = 6
-CAMERA_PLANE_HEIGHT     = 6
+CAMERA_PLANE_HEIGHT     = 8
 HFOV_IN_DEGREES         = 112
-VIEWPORT_HEIGHT         = 200
-VIEWPORT_WIDTH          = 320
+VIEWPORT_HEIGHT         = 64
+VIEWPORT_WIDTH          = 80
 NUMBER_OF_SLICE         = 80
 
 TEXTURE_SIZE            = 32

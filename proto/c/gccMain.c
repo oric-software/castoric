@@ -12,7 +12,7 @@
 #include "dda.c"
 
 #include "tables.c"
-#include "tabTexelColor.c"
+#include "tabTexelColor.h"
 
 
 #include "raycast.c"

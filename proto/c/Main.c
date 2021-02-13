@@ -14,7 +14,7 @@
 
 #include "colorimg.c"
 #include "dda.c"
-#include "tabTexelColor.c"
+#include "tabTexelColor.h"
 #include "raycast.c"
 #include "scene.c"
 

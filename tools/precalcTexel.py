@@ -14,7 +14,7 @@ encodeHColor = [ (0<<3)|0x40, (2<<3)|0x40, (5<<3)|0x40, (7<<3)|0x40]
 def main ():
     for ii in range (64):
         r, g, b = (ii>>4)& 0x03, (ii>>2)& 0x03, (ii)& 0x03
-        print (ii, r, g, b)
+
         tabRightRed.append(encodeLColor[r])  
         tabLeftRed.append(encodeHColor[r])   
         tabRightGreen.append(encodeLColor[g])

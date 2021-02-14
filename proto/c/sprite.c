@@ -41,8 +41,8 @@ void displaySprite02(unsigned char column, unsigned char height){
     //     printf ("%d\n", precalTexPixelOffset [idxTexPixel]);
     // }
 
-    viewportColIdx          = column - height/2;
-    viewportLinIdx          = VIEWPORT_HEIGHT/ 2 - height/2;
+    viewportColIdx          = column - height/2 + VIEWPORT_START_COLUMN;
+    viewportLinIdx          = VIEWPORT_HEIGHT/ 2 - height/2 + VIEWPORT_START_LINE;
     idxLinTexture           = 0;
     idxColTexture           = 0;
     adrScreenCol            = 0;
@@ -51,7 +51,7 @@ void displaySprite02(unsigned char column, unsigned char height){
     nbLine                  = height; // number of line on Screen of the Sprite
 
     // Rejoindre la bordure gauche
-    while ((viewportColIdx < VIEWPORT_LEFT_COLUMN) && (nbColumn != 0)) {
+    while ((viewportColIdx < VIEWPORT_START_COLUMN) && (nbColumn != 0)) {
         nbColumn            --;
         viewportColIdx      ++;
         idxColTexture       ++;
@@ -79,9 +79,9 @@ void displaySprite02(unsigned char column, unsigned char height){
         if (height > wallheight) {
             // Rejoindre la bordure haute de l'ecran
             idxLinTexture           = 0;
-            viewportLinIdx          = VIEWPORT_HEIGHT/ 2 - height/2;
+            viewportLinIdx          = VIEWPORT_HEIGHT/ 2 - height/2 + VIEWPORT_START_LINE;
             nbLine                  = height;
-            while ((viewportLinIdx++) < VIEWPORT_UP_LINE) {
+            while ((viewportLinIdx++) < VIEWPORT_START_LINE) {
 #ifdef DEBUG                
                 printf ("skipped lin %d \n", viewportLinIdx, nbColumn);
 #endif
@@ -119,13 +119,13 @@ void displaySprite02(unsigned char column, unsigned char height){
                 // theAdr              += 120;
                 
             // Jusqu'à indice ligne > 64 
-            } while (((++viewportLinIdx) < VIEWPORT_DOWN_LINE) && ((--nbLine) != 0));
+            } while (((++viewportLinIdx) < VIEWPORT_START_LINE+VIEWPORT_HEIGHT) && ((--nbLine) != 0));
         }
         idxColTexture       ++;
         if ((viewportColIdx&0x01) == 0){
             baseAdr             += 1;
         }
-    } while (((++viewportColIdx) < VIEWPORT_RIGHT_COLUMN ) && ((--nbColumn) > 0));
+    } while (((++viewportColIdx) < VIEWPORT_START_COLUMN + VIEWPORT_WIDTH) && ((--nbColumn) > 0));
     // Jusqu'à idxColonne = VIEWPORT_RIGHT_COLUMN ou  nbColumn = 0
 
 
@@ -146,7 +146,7 @@ void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
     deltaX          = posX-rayCamPosX;
     deltaY          = posY-rayCamPosY;
     if ((deltaX == 0) && (deltaY == 0)) return;
-    alpha           = ATAN2(deltaY, deltaX);
+    alpha           = ATAN2(deltaY, deltaX)-rayCamRotZ;
     if (abs(alpha) < HALF_FOV_FIX_ANGLE) {
         // if (lWallsCosBeta[RayCurrentWall] == 0){    // Wall is O,y aligned   
         //     RayWallLog      = log2_tab[(unsigned char)(abs(lPointsX[RayIdXPoint1]-glCamPosX))];
@@ -155,7 +155,7 @@ void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
         //     RayWallLog      = log2_tab[(unsigned char)(abs(lPointsY[RayIdXPoint1]-glCamPosY))];
         //     tab_denom       = tab_1oversin;
         // }
-        column = tabAngle2Col[HALF_FOV_FIX_ANGLE-alpha+rayCamRotZ];
+        column = tabAngle2Col[HALF_FOV_FIX_ANGLE-alpha];
         if (deltaX > deltaY) {
             log2Delta = log2_tab[(unsigned char)(abs(deltaX))];
             // unsigned char dist2hh(unsigned int x)
@@ -185,7 +185,7 @@ void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
 
         //alpha glCamRotZ
         
-        displaySprite02(column, height*2);
+        displaySprite02(column, height);
     } else {
         // displaySprite02(column, height);
     }

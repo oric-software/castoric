@@ -134,6 +134,7 @@ void main(){
 
     // displaySprite02(3, 20);
     drawWalls();
+    drawSprite (6, 6, texture_pillar);
     printf ("FIN\n");
 }
 

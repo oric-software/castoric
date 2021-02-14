@@ -8,14 +8,11 @@ strConstants = f"""// Generated file. Do not modify by hand.
 #define NUMBER_OF_SLICE                 {config.NUMBER_OF_SLICE}
 
 #define VIEWPORT_HEIGHT                 {config.VIEWPORT_HEIGHT}
+#define VIEWPORT_WIDTH                  {config.NUMBER_OF_SLICE}
 #define VIEWPORT_START_COLUMN           {config.VIEWPORT_START_COLUMN}
 #define VIEWPORT_START_LINE             {config.VIEWPORT_START_LINE}
 #define TEXTURE_SIZE                    {config.TEXTURE_SIZE}
 #define HALF_FOV_FIX_ANGLE              {config.HALF_FOV_FIX_ANGLE}
-#define VIEWPORT_UP_LINE                0
-#define VIEWPORT_DOWN_LINE              64
-#define VIEWPORT_LEFT_COLUMN            2
-#define VIEWPORT_RIGHT_COLUMN           78
 #define EMPTY_ALPHA                     0
 
 

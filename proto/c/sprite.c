@@ -185,7 +185,7 @@ void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
 
         //alpha glCamRotZ
         
-        displaySprite02(column, height);
+        displaySprite02(column, height*2);
     } else {
         // displaySprite02(column, height);
     }

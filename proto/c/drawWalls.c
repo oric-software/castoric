@@ -41,9 +41,9 @@ void drawWalls(){
             ddaNbStep           = columnHeight<<1;
             ddaInit();
 
-            idxScreenLine       = VIEWPORT_HEIGHT/2 - columnHeight;
+            idxScreenLine       = VIEWPORT_HEIGHT/2 - columnHeight + VIEWPORT_START_LINE;
 
-            while (idxScreenLine < 0){
+            while (idxScreenLine < VIEWPORT_START_LINE){
                 (*ddaStepFunction)();
                 idxScreenLine   += 1;
             } 
@@ -63,7 +63,7 @@ void drawWalls(){
                 idxScreenLine   += 1;
                 // theAdr          += 120;
 
-            } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < VIEWPORT_HEIGHT));
+            } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
         }
 
         idxScreenCol        += 1;
@@ -82,12 +82,12 @@ void drawWalls(){
             ptrTexture          = wallTexture[wallId];
             ptrReadTexture      = &(ptrTexture[offTexture]);
             
-            idxScreenLine       = VIEWPORT_HEIGHT/2 - columnHeight;
+            idxScreenLine       = VIEWPORT_HEIGHT/2 - columnHeight + VIEWPORT_START_LINE;
 
             ddaNbStep           = columnHeight<<1;
             ddaInit();
 
-            while (idxScreenLine < 0){
+            while (idxScreenLine < VIEWPORT_START_LINE){
                 (*ddaStepFunction)();
                 idxScreenLine   += 1;
             } 
@@ -106,7 +106,7 @@ void drawWalls(){
                 idxScreenLine   += 1;
                 // theAdr          += 120;
 
-            } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < VIEWPORT_HEIGHT));
+            } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
         }
         idxCurrentSlice++;
     }

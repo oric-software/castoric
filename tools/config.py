@@ -4,8 +4,9 @@ WALL_HEIGHT             = 6
 CAMERA_PLANE_HEIGHT     = 8
 HFOV_IN_DEGREES         = 112
 VIEWPORT_HEIGHT         = 64
-VIEWPORT_WIDTH          = 80
-NUMBER_OF_SLICE         = 80
+VIEWPORT_START_COLUMN   = 2
+VIEWPORT_WIDTH          = 78
+NUMBER_OF_SLICE         = 78
 
 TEXTURE_SIZE            = 32
 RAD_TO_FIX              = 128/math.pi

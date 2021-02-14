@@ -13,7 +13,7 @@ unsigned char       wallId;
 
 void drawWalls(){
 
-    idxScreenCol        = 1;
+    idxScreenCol        = VIEWPORT_START_COLUMN-1;
     ddaStartValue       = 0;
     ddaNbVal            = TEXTURE_SIZE;
     baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (idxScreenCol>>1));
@@ -29,7 +29,7 @@ void drawWalls(){
     // =====================================
 
 
-            columnTextureCoord  = tabTexCol[idxCurrentSlice]&31; // modulo 32
+            columnTextureCoord  = tabTexCol[idxCurrentSlice]&(TEXTURE_SIZE-1); // modulo 32
             offTexture          = multi32[columnTextureCoord];
             ptrTexture          = wallTexture[wallId];
             ptrReadTexture      = &(ptrTexture[offTexture]);
@@ -41,7 +41,7 @@ void drawWalls(){
             ddaNbStep           = columnHeight<<1;
             ddaInit();
 
-            idxScreenLine       = 32 - columnHeight;
+            idxScreenLine       = VIEWPORT_HEIGHT/2 - columnHeight;
 
             while (idxScreenLine < 0){
                 (*ddaStepFunction)();
@@ -63,7 +63,7 @@ void drawWalls(){
                 idxScreenLine   += 1;
                 // theAdr          += 120;
 
-            } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < 64));
+            } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < VIEWPORT_HEIGHT));
         }
 
         idxScreenCol        += 1;
@@ -77,12 +77,12 @@ void drawWalls(){
     // ============ RIGHT TEXEL
     // =====================================
             columnHeight        = TableVerticalPos[idxCurrentSlice];
-            columnTextureCoord  = tabTexCol[idxCurrentSlice]&31;  // modulo 32
+            columnTextureCoord  = tabTexCol[idxCurrentSlice]&(TEXTURE_SIZE-1);  // modulo 32
             offTexture          = multi32[columnTextureCoord];
             ptrTexture          = wallTexture[wallId];
             ptrReadTexture      = &(ptrTexture[offTexture]);
             
-            idxScreenLine       = 32 - columnHeight;
+            idxScreenLine       = VIEWPORT_HEIGHT/2 - columnHeight;
 
             ddaNbStep           = columnHeight<<1;
             ddaInit();
@@ -106,7 +106,7 @@ void drawWalls(){
                 idxScreenLine   += 1;
                 // theAdr          += 120;
 
-            } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < 64));
+            } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < VIEWPORT_HEIGHT));
         }
         idxCurrentSlice++;
     }

@@ -1,10 +1,10 @@
 // Generated file. Do not modify by hand.
 // To change values, edit config.py and regenerate with:
 // python tools\generateConstants.py > proto\c\constants.h
-#define NUMBER_OF_SLICE                 80
+#define NUMBER_OF_SLICE                 78
 
 #define VIEWPORT_HEIGHT                 64
-
+#define VIEWPORT_START_COLUMN           2
 #define TEXTURE_SIZE                    32
 #define HALF_FOV_FIX_ANGLE              40
 #define VIEWPORT_UP_LINE                0

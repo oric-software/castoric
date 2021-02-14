@@ -12,8 +12,9 @@ void colorRightTexel(){
     // compute the start adress of the screen square to color
     //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*NEXT_SCANLINE_INCREMENT + (column>>1));
     // adr = theAdr; 
-
+#ifndef __GNUC__
     *theAdr |= tabRightRed[renCurrentColor];
+#endif // __GNUC__
     theAdr += NEXT_SCANLINE_INCREMENT;
     // asm (
     //     "ldx #0;"
@@ -33,7 +34,10 @@ void colorRightTexel(){
     //     "sta _theAdr+1;"
     // );
 
+#ifndef __GNUC__
     *theAdr |= tabRightGreen[renCurrentColor];
+#endif // __GNUC__
+
     theAdr += NEXT_SCANLINE_INCREMENT;
 
     // asm(
@@ -50,7 +54,9 @@ void colorRightTexel(){
     // );
 
 
+#ifndef __GNUC__
     *theAdr |= tabRightBlue[renCurrentColor];
+#endif // __GNUC__
     theAdr += NEXT_SCANLINE_INCREMENT;
 
     // asm(
@@ -78,8 +84,9 @@ void colorLeftTexel(){
     // compute the start adress of the screen square to color
     //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*NEXT_SCANLINE_INCREMENT + (column>>1));
     // adr = theAdr;
-
+#ifndef __GNUC__
     *theAdr = tabLeftRed[renCurrentColor];
+#endif // __GNUC__
     theAdr += NEXT_SCANLINE_INCREMENT;
 
     // asm (
@@ -98,7 +105,10 @@ void colorLeftTexel(){
     //     "sta _theAdr+1;"
     // );
 
+#ifndef __GNUC__
     *theAdr = tabLeftGreen[renCurrentColor];
+#endif // __GNUC__
+
     theAdr += NEXT_SCANLINE_INCREMENT;
 
     // asm (
@@ -112,7 +122,9 @@ void colorLeftTexel(){
     //     "adc #0;"
     //     "sta _theAdr+1;"
     // );
+#ifndef __GNUC__
     *theAdr = tabLeftBlue[renCurrentColor];
+#endif
     theAdr += NEXT_SCANLINE_INCREMENT;
 
     // asm (

@@ -20,6 +20,28 @@
 #include "scene.c"
 
 
+#include "iea2d.c"
+#define max(x,y)          (((x)<(y))?(y):(x))
+#define min(x,y)          (((x)<(y))?(x):(y))
+
+
+
+unsigned int            offTexture;
+unsigned char           *theAdr;
+unsigned char           *baseAdr;
+
+
+#define USE_C_COLORLEFTTEXEL
+#define USE_C_COLORRIGHTTEXEL
+#include "texel.c"
+
+
+#include "sprite.c"
+
+
+
+#include "drawWalls.c"
+
 // #define PROFILE_ENTER(x)
 // #define PROFILE_LEAVE(x)
 
@@ -94,31 +116,12 @@ void initScene (signed char sceneData[]){
     precalculateWallsAngle();
 }
 
-#include "iea2d.c"
-#define max(x,y)          (((x)<(y))?(y):(x))
-#define min(x,y)          (((x)<(y))?(x):(y))
-
-
-
-unsigned int            offTexture;
-unsigned char           *theAdr;
-unsigned char           *baseAdr;
-
-
-#define USE_C_COLORLEFTTEXEL
-#define USE_C_COLORRIGHTTEXEL
-#include "texel.c"
-
-
-#include "sprite.c"
-
-
 
 void main(){
 
     printf ("DEBUT\n");
     initCamera();
-    drawSprite (6, 6, texture_pillar);
+    // drawSprite (6, 6, texture_pillar);
 
 
     initScene (scene_00);
@@ -130,7 +133,7 @@ void main(){
     // textCol ();
 
     // displaySprite02(3, 20);
-
+    drawWalls();
     printf ("FIN\n");
 }
 

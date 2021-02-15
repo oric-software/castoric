@@ -1,9 +1,13 @@
+;; Author : Jean-Baptiste PERIN
+;; Date : 2021
+;; 
 #include "config.h"
 
 
 #ifndef USE_C_DRAWWALLS
 
-.text
+
+.zero 
 
 ;; unsigned char *     ptrReadTexture;             // Address of the texture 
 _ptrReadTexture         .dsb 2
@@ -28,6 +32,7 @@ _columnTextureCoord     .dsb 1
 ;; unsigned char       wallId;
 _wallId                 .dsb 1
 
+.text
 
 ;; void drawWalls(){
 _drawWalls

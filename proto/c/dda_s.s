@@ -9,7 +9,7 @@
 ;; void            (*ddaStepFunction)(); 
 _ddaStepFunction    .dsb 2
 
-.text
+
 ;; unsigned char   ddaNbVal;
 _ddaNbVal       .dsb 1
 ;; unsigned char   ddaNbStep;
@@ -27,6 +27,11 @@ _ddaEndValue        .dsb 1
 
 ;; signed char     ddaCurrentError;
 _ddaCurrentError    .dsb 1
+
+
+
+.text
+
 
 ; void ddaStep0(){
 ;     ddaCurrentValue         += 1;

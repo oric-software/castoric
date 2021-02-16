@@ -49,12 +49,12 @@ void prepareRGB(){
 
 #include "drawWalls.c"
 
-#include "sprite.c"
+// #include "sprite.c"
 
 void initCamera(){
-    rayCamPosX               = 2; // -62; // 39;  //6; // 
-    rayCamPosY               = 2; //- 62; // -25; //11; // 
-    rayCamRotZ               = 32; // 64; //80; // 
+    rayCamPosX               = 0; // -62; // 39;  //6; // 
+    rayCamPosY               = 0; //- 62; // -25; //11; // 
+    rayCamRotZ               = 0; // 64; //80; // 
     RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
     // RayRightAlpha           = glCamRotZ - HALF_FOV_FIX_ANGLE;
 }
@@ -148,8 +148,8 @@ void gameLoop() {
         memset(HIRES_SCREEN_ADDRESS, 64, 8000); // 5120 = 0xB400 (std char) - 0xA000 (hires screen)
         prepareRGB();
         drawWalls();
-        drawSprite (6, 6, texture_pillar);
-        printf("(X=%d Y=%d) [a=%d]\n", rayCamPosX, rayCamPosY, rayCamRotZ);
+        // drawSprite (6, 6, texture_pillar);
+        printf("\n(X=%d Y=%d) [a=%d]\n", rayCamPosX, rayCamPosY, rayCamRotZ);
     }
 }
 
@@ -195,7 +195,7 @@ void main(){
 #ifdef DEBUG
     prepareRGB();
     drawWalls();
-    drawSprite (6, 6, texture_pillar);
+    // drawSprite (6, 6, texture_pillar);
 #endif
     running = 1;
     gameLoop();

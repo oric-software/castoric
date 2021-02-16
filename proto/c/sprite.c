@@ -2,7 +2,7 @@
 
 unsigned char           texcolumn, texline;
 
-unsigned char *         ptrTexture;
+
 //precalTexPixelOffset[N] =  Nth value of Incremental Error Algo (nbStep = Height on screen , nbVal = TEXTURE_DIMENSION)
 unsigned char           precalTexPixelOffset[80];
 unsigned char           idxTexPixel;    // run through precalTexPixelOffset

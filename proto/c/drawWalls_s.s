@@ -8,6 +8,8 @@
 
 
 .zero 
+;; unsigned char *         ptrTexture;
+_ptrTexture             .dsb 2
 
 ;; unsigned char *     ptrReadTexture;             // Address of the texture 
 _ptrReadTexture         .dsb 2

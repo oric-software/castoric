@@ -10,7 +10,7 @@ void forward();
 void shiftLeft();
 void backward();
 void shiftRight();
-
+// [ref camera_situation]
 void player () {
     switch (get()) {
     case 8:  // left 

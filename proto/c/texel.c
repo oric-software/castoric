@@ -1,156 +1,54 @@
-
+// Texel Rendering Routines for Oric  
+// Author : Jean-Baptiste PERIN
+// Date : 2021
 
 
 unsigned char           renCurrentColor;
 
 #ifdef USE_C_COLORRIGHTTEXEL
+// [ref texel_codec]
 void colorRightTexel(){
 
-    // unsigned char r, g, b;
-    // unsigned char *adr;
-
-    // compute the start adress of the screen square to color
-    //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*NEXT_SCANLINE_INCREMENT + (column>>1));
-    // adr = theAdr; 
 #ifndef __GNUC__
     *theAdr |= tabRightRed[renCurrentColor];
 #endif // __GNUC__
     theAdr += NEXT_SCANLINE_INCREMENT;
-    // asm (
-    //     "ldx #0;"
-    //     "ldy _renCurrentColor;"
-    // );
-
-    // asm(
-    //     "lda _tabRightRed,y;"
-    //     "ora (_theAdr,x);"
-    //     "sta (_theAdr,x);"
-    //     "clc;"
-    //     "lda _theAdr;" // TODO : optimize by adding constant (use bcc as in https://codebase64.org/doku.php?id=base:16bit_addition_and_subtraction) 
-    //     "adc #40;"
-    //     "sta _theAdr;"
-    //     "lda _theAdr+1;"
-    //     "adc #0;"
-    //     "sta _theAdr+1;"
-    // );
 
 #ifndef __GNUC__
     *theAdr |= tabRightGreen[renCurrentColor];
 #endif // __GNUC__
-
     theAdr += NEXT_SCANLINE_INCREMENT;
-
-    // asm(
-    //     "lda _tabRightGreen,y;"
-    //     "ora (_theAdr,x);"
-    //     "sta (_theAdr,x);"
-    //     "clc;"
-    //     "lda _theAdr;" // TODO : optimize by adding constant (use bcc as in https://codebase64.org/doku.php?id=base:16bit_addition_and_subtraction) 
-    //     "adc #40;"
-    //     "sta _theAdr;"
-    //     "lda _theAdr+1;"
-    //     "adc #0;"
-    //     "sta _theAdr+1;"
-    // );
-
 
 #ifndef __GNUC__
     *theAdr |= tabRightBlue[renCurrentColor];
 #endif // __GNUC__
     theAdr += NEXT_SCANLINE_INCREMENT;
-
-    // asm(
-    //     "lda _tabRightBlue,y;"
-    //     "ora (_theAdr,x);"
-    //     "sta (_theAdr,x);"
-    //     "clc;"
-    //     "lda _theAdr;" // TODO : optimize by adding constant (use bcc as in https://codebase64.org/doku.php?id=base:16bit_addition_and_subtraction) 
-    //     "adc #40;"
-    //     "sta _theAdr;"
-    //     "lda _theAdr+1;"
-    //     "adc #0;"
-    //     "sta _theAdr+1;"
-    // );
-
 }
 #endif // USE_C_COLORRIGHTTEXEL
 
 #ifdef USE_C_COLORLEFTTEXEL
-// line in [0..63] column in [0..79]
 void colorLeftTexel(){
 
-    // unsigned char *adr;
-
-    // compute the start adress of the screen square to color
-    //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*NEXT_SCANLINE_INCREMENT + (column>>1));
-    // adr = theAdr;
 #ifndef __GNUC__
     *theAdr = tabLeftRed[renCurrentColor];
 #endif // __GNUC__
     theAdr += NEXT_SCANLINE_INCREMENT;
 
-    // asm (
-    //     "ldx #0;"
-    //     "ldy _renCurrentColor;"
-    // );
-    // asm(
-    //     "lda _tabLeftRed,y;"
-    //     "sta (_theAdr,x);"
-    //     "clc;"
-    //     "lda _theAdr;" // TODO : optimize by adding constant (use bcc as in https://codebase64.org/doku.php?id=base:16bit_addition_and_subtraction) 
-    //     "adc #40;"
-    //     "sta _theAdr;"
-    //     "lda _theAdr+1;"
-    //     "adc #0;"
-    //     "sta _theAdr+1;"
-    // );
-
 #ifndef __GNUC__
     *theAdr = tabLeftGreen[renCurrentColor];
 #endif // __GNUC__
-
     theAdr += NEXT_SCANLINE_INCREMENT;
 
-    // asm (
-    //     "lda _tabLeftGreen,y;"
-    //     "sta (_theAdr,x);"
-    //     "clc;"
-    //     "lda _theAdr;" // TODO : optimize by adding constant (use bcc as in https://codebase64.org/doku.php?id=base:16bit_addition_and_subtraction) 
-    //     "adc #40;"
-    //     "sta _theAdr;"
-    //     "lda _theAdr+1;"
-    //     "adc #0;"
-    //     "sta _theAdr+1;"
-    // );
 #ifndef __GNUC__
     *theAdr = tabLeftBlue[renCurrentColor];
 #endif
     theAdr += NEXT_SCANLINE_INCREMENT;
 
-    // asm (
-    //     "lda _tabLeftBlue,y;"
-    //     "sta (_theAdr,x);"
-    //     "clc;"
-    //     "lda _theAdr;" // TODO : optimize by adding constant (use bcc as in https://codebase64.org/doku.php?id=base:16bit_addition_and_subtraction) 
-    //     "adc #40;"
-    //     "sta _theAdr;"
-    //     "lda _theAdr+1;"
-    //     "adc #0;"
-    //     "sta _theAdr+1;"
-    // );
-
 }
 #endif // USE_C_COLORLEFTTEXEL
 
 
-#undef USE_SLOW_TEXEL
-
 #ifdef USE_SLOW_TEXEL
-// ============================
-// ==== SLOW TEXEL ACCESS FOR PROTOTYPE PURPOSE
-// ============================
-unsigned char encodeLColor[] = { 0, 2, 5, 7 };
-unsigned char encodeHColor[] = { (0<<3)|0x40, (2<<3)|0x40, (5<<3)|0x40, (7<<3)|0x40 };
 unsigned int multi40[] = {
         0, 40, 80, 120, 160, 200, 240, 280, 320, 360, 400, 440, 480, 520, 560, 600
         , 640, 680, 720, 760, 800, 840, 880, 920, 960, 1000, 1040, 1080, 1120, 1160, 1200, 1240
@@ -168,36 +66,37 @@ unsigned int multi40[] = {
         };
 
 
-// line in [0..65] column in [0..79]
-void colorSquare(unsigned char line, unsigned char column, unsigned char theColor){
+// [ref texel_codec]
+void drawTexelOnScreen (signed char line, signed char column, unsigned char theColor){
 
-    unsigned char r, g, b;
     unsigned char *adr;
 
-    // retrieve the color components from the color value
-    r = (theColor>>4)& 0x03;
-    g = (theColor>>2)& 0x03;
-    b = (theColor)& 0x03;
+    if ((line >= 0) && (line < 64) && (column >= 2) && (column < 80)){
 
-    // compute the start adress of the screen square to color
-    //adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + (line*3)*NEXT_SCANLINE_INCREMENT + (column>>1));
-    adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + multi40[(line<<1) + line] + (column>>1));
+        adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + multi40[(line<<1) + line] + (column>>1));
 
-    if ((column&0x01) == 0){
-        *adr = encodeHColor[r];
-        adr += NEXT_SCANLINE_INCREMENT;
-        *adr = encodeHColor[g];
-        adr += NEXT_SCANLINE_INCREMENT;
-        *adr = encodeHColor[b];
-    } else {
-        *adr |= encodeLColor[r];
-        adr += NEXT_SCANLINE_INCREMENT;
-        *adr |= encodeLColor[g];
-        adr += NEXT_SCANLINE_INCREMENT;
-        *adr |= encodeLColor[b];
+        if ((column&0x01) == 0){
+            *adr = tabLeftRed[theColor];
+            adr += NEXT_SCANLINE_INCREMENT;
+            *adr = tabLeftGreen[theColor];
+            adr += NEXT_SCANLINE_INCREMENT;
+            *adr = tabLeftBlue[theColor];
+        } else {
+            *adr |= tabLeftRed[theColor];
+            adr += NEXT_SCANLINE_INCREMENT;
+            *adr |= tabLeftGreen[theColor];
+            adr += NEXT_SCANLINE_INCREMENT;
+            *adr |= tabLeftBlue[theColor];
+        }
+
     }
 }
-// ============================
-// ====
-// ============================
+
+void drawTexelOnViewport (signed char line, signed char column, unsigned char theColor){
+    if ((line >= 0) && (line < VIEWPORT_HEIGHT) && (column >= 0) && (column < VIEWPORT_WIDTH)) {
+        // TODO
+    }
+}
+
+
 #endif // USE_SLOW_TEXEL

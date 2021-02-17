@@ -1,4 +1,9 @@
 
+## Author : Jean-Baptiste PERIN
+## Date : 2021
+
+
+## [ref config_generate]
 
 import config
 
@@ -6,6 +11,8 @@ strConstants = f"""// Generated file. Do not modify by hand.
 // To change values, edit config.py and regenerate with:
 // python tools\generateConstants.py > proto\c\constants.h
 #define NUMBER_OF_SLICE                 {config.NUMBER_OF_SLICE}
+
+// [ref config_viewport]
 
 #define VIEWPORT_HEIGHT                 {config.VIEWPORT_HEIGHT}
 #define VIEWPORT_WIDTH                  {config.NUMBER_OF_SLICE}
@@ -15,6 +22,9 @@ strConstants = f"""// Generated file. Do not modify by hand.
 #define HALF_FOV_FIX_ANGLE              {config.HALF_FOV_FIX_ANGLE}
 #define EMPTY_ALPHA                     0
 
+// [ref scene_describe]
+#define NB_MAX_WALL                     {config.NB_MAX_WALL}
+#define NB_MAX_POINT                    {config.NB_MAX_POINT}
 
 //((unsigned int)0xA000)
 #define HIRES_SCREEN_ADDRESS            40960

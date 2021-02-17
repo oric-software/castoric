@@ -7,8 +7,6 @@
 #include "config.h"
 
 
-#include "colorimg.c"
-
 #include "dda.c"
 
 

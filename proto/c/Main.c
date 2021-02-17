@@ -12,7 +12,6 @@
 
 // #include "profile.h"
 
-#include "colorimg.c"
 #include "dda.c"
 #include "tabTexelColor.h"
 #include "raycast.c"
@@ -85,6 +84,8 @@ void precalculateWallsAngle() {
         }
     }
 }
+
+// [ref scene_describe] [ref scene_load]
 void initScene (signed char sceneData[]){
 	unsigned int ii;
 	unsigned char jj;
@@ -100,6 +101,8 @@ void initScene (signed char sceneData[]){
 	}
     precalculateWallsAngle();
 }
+
+
 void rayInitCasting(){
     unsigned char ii;
     for (ii=0; ii< NUMBER_OF_SLICE; ii++) {
@@ -137,7 +140,7 @@ void textCol () {
 }
 #endif
 void gameLoop() {
-
+    // unsigned char ii;
     while (running) {
 
         player ();
@@ -149,26 +152,18 @@ void gameLoop() {
         prepareRGB();
         drawWalls();
         // drawSprite (6, 6, texture_pillar);
-        printf("\n(X=%d Y=%d) [a=%d]\n", rayCamPosX, rayCamPosY, rayCamRotZ);
+        // for (ii = 0; ii <= VIEWPORT_HEIGHT; ii++) {
+        //     drawTexelOnScreen (ii, 40-VIEWPORT_WIDTH/2, 63);
+        //     drawTexelOnScreen (ii, 40+VIEWPORT_WIDTH/2, 63);
+        // }
+        // for (ii=0 ; ii < VIEWPORT_WIDTH/2; ii++){
+        //     drawTexelOnScreen (VIEWPORT_HEIGHT, 40+ii, 63);
+        //     drawTexelOnScreen (VIEWPORT_HEIGHT, 40-ii, 63);
+        // }
+        printf("\nColor Textured Raycasting on Oric\n      Jean-Baptiste PERIN 2021\n(X=%d Y=%d) [a=%d]", rayCamPosX, rayCamPosY, rayCamRotZ);
     }
 }
 
-// #undef DEBUG
-void oldmain (){
-
-    printf ("hello\n");
-
-    ddaStartValue       = 0;
-    ddaNbStep           = 12;
-    ddaNbVal            = 5;
-
-    ddaInit();
-    printf ("%d\n", ddaCurrentValue);
-    while (ddaCurrentValue < ddaEndValue) {
-        (*ddaStepFunction)(); 
-        printf ("%d\n", ddaCurrentValue);
-    }
-}
 void main(){
 
     printf ("DEBUT\n");

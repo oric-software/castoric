@@ -1,5 +1,8 @@
 
 
+#include "iea2d.c"
+
+
 unsigned char           texcolumn, texline;
 
 

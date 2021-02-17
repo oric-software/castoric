@@ -10,27 +10,33 @@
 
 #include "config.h"
 
-// #include "profile.h"
-
-#include "dda.c"
-#include "tabTexelColor.h"
 #include "raycast.c"
 #include "scene.c"
 
+#include "game.c"
+
+#include "player.c"
+
+#include "texel.c"
+
+#include "drawWalls.c"
+
+#ifdef USE_SPRITE
+#include "sprite.c"
+#endif
 
 #define CHANGE_INK_TO_RED	            1		
 #define CHANGE_INK_TO_GREEN	            2		
 #define CHANGE_INK_TO_BLUE	            4		
 
-#include "tabMulti.c"
-
 extern unsigned char *theAdr;
-
 unsigned int offTexture;
 unsigned char renCurrentColor;
-unsigned char running; // game state: 1 = Running, 0 = Leave.
 
-#include "player.c"
+
+
+
+
 
 void prepareRGB(){
     int ii;
@@ -43,104 +49,21 @@ void prepareRGB(){
     }
 }
 
-#include "iea2d.c"
-#include "texel.c"
 
-#include "drawWalls.c"
-
-// #include "sprite.c"
-
+// [ref camera_situation]
 void initCamera(){
-    rayCamPosX               = 0; // -62; // 39;  //6; // 
-    rayCamPosY               = 0; //- 62; // -25; //11; // 
-    rayCamRotZ               = 0; // 64; //80; // 
+    rayCamPosX               = 0;
+    rayCamPosY               = 0; 
+    rayCamRotZ               = 0;
     RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
-    // RayRightAlpha           = glCamRotZ - HALF_FOV_FIX_ANGLE;
-}
-void precalculateWallsAngle() {
-    unsigned char idxWall, idxPt1, idxPt2;
-    signed char dX, dY, angle;
-
-    for (idxWall = 0; idxWall < rayNbWalls; idxWall ++) { 
-
-        idxPt1 = lWallsPt1[idxWall];
-        idxPt2 = lWallsPt2[idxWall];
-
-        dX = lPointsX[idxPt2]-lPointsX[idxPt1];
-        dY = lPointsY[idxPt2]-lPointsY[idxPt1];
-
-        if (dX == 0) {
-            lWallsCosBeta[idxWall] = 0;
-        } else if (dY == 0) {
-            if (dX > 0) {
-                lWallsCosBeta[idxWall] = 32;
-            } else {
-                lWallsCosBeta[idxWall] = -32;
-            }
-        } else {
-            /* 
-             *  Not aligned walls not handled
-             */
-        }
-    }
-}
-
-// [ref scene_describe] [ref scene_load]
-void initScene (signed char sceneData[]){
-	unsigned int ii;
-	unsigned char jj;
-
-	ii=0;
-	rayNbPoints = (unsigned char)sceneData[ii++];
-	rayNbWalls = (unsigned char)sceneData[ii++];
-	for (jj=0; jj < rayNbPoints; jj++){
-		lPointsX[jj]= sceneData[ii++] ; lPointsY[jj] = sceneData[ii++];  // points 0
-	}
-	for (jj=0; jj < rayNbWalls; jj++){
-		lWallsPt1[jj]= (unsigned char)(sceneData[ii++]) ; lWallsPt2[jj] = (unsigned char)(sceneData[ii++]);// points 0
-	}
-    precalculateWallsAngle();
 }
 
 
-void rayInitCasting(){
-    unsigned char ii;
-    for (ii=0; ii< NUMBER_OF_SLICE; ii++) {
-        rayzbuffer[ii]      = 255;
-        raywall[ii]         = 255;
-    }
-}
 #ifdef DEBUG
-void detailPoints(){
-    unsigned char idxPoint;
-
-    for (idxPoint = 0; idxPoint < rayNbPoints; idxPoint ++) {
-        printf ("point %d [%d %d], a= %d\n", idxPoint, lPointsX[idxPoint], lPointsY[idxPoint], lAngle[idxPoint]);
-    }
-}
-void textZBuffer () {
-    unsigned char ii, jj;
-    for (jj=0; jj< 10; jj++)  {
-        printf ("%d|%d|%d|%d \t %d|%d|%d|%d \t%d|%d|%d|%d\n", (jj), raywall[(jj)], rayzbuffer[(jj)], TableVerticalPos[jj], (jj)+10, raywall[(jj)+10], rayzbuffer[(jj)+10], TableVerticalPos[jj+10], (jj)+20, raywall[(jj)+20], rayzbuffer[(jj)+20] , TableVerticalPos[jj+20]);
-    }
-    for (jj=30; jj< 40; jj++)  {
-        printf ("%d|%d|%d|%d\n", (jj), raywall[(jj)], rayzbuffer[(jj)], TableVerticalPos[jj]);
-     }
-}
-void textCol () {
-    unsigned char ii, jj;
-    for (jj=0; jj< 10; jj++)  {
-        printf ("%d|%d|%d|%d \t %d|%d|%d|%d \t%d|%d|%d|%d\n", (jj), raywall[(jj)], tabTexCol[(jj)], TableVerticalPos[jj], (jj)+10, raywall[(jj)+10], tabTexCol[(jj)+10], TableVerticalPos[jj+10], (jj)+20, raywall[(jj)+20], tabTexCol[(jj)+20] , TableVerticalPos[jj+20]);
-    }
-    get();
-    for (jj=30; jj< 40; jj++)  {
-        printf ("%d|%d|%d|%d \t %d|%d|%d|%d \t%d|%d|%d|%d\n", (jj), raywall[(jj)], tabTexCol[(jj)], TableVerticalPos[jj], (jj)+10, raywall[(jj)+10], tabTexCol[(jj)+10], TableVerticalPos[jj+10], (jj)+20, raywall[(jj)+20], tabTexCol[(jj)+20] , TableVerticalPos[jj+20]);
-     }
-     get();
-}
+#include "debug.c"
 #endif
 void gameLoop() {
-    // unsigned char ii;
+
     while (running) {
 
         player ();
@@ -148,6 +71,7 @@ void gameLoop() {
         rayInitCasting();
         rayProcessPoints();
         rayProcessWalls();
+
         memset(HIRES_SCREEN_ADDRESS, 64, 8000); // 5120 = 0xB400 (std char) - 0xA000 (hires screen)
         prepareRGB();
         drawWalls();
@@ -168,7 +92,10 @@ void main(){
 
     printf ("DEBUT\n");
 
+    // [res camera_situation]]
     initCamera();
+    
+    // [ref scene_load]
     initScene (scene_00);
 
 #ifdef DEBUG

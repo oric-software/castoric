@@ -31,15 +31,15 @@ signed char      lPointsY[NB_MAX_POINT];
 unsigned char    lWallsPt1[NB_MAX_WALL];
 unsigned char    lWallsPt2[NB_MAX_WALL];
 
+unsigned char           rayNbPoints;
+unsigned char           rayNbWalls;
+
 
 signed char      lAngle[NB_MAX_POINT];
 unsigned char    isVisible[NB_MAX_POINT];
 unsigned char    isFront[NB_MAX_POINT];
 unsigned char    TableVerticalPos[NUMBER_OF_SLICE];
 unsigned char    tabTexCol[NUMBER_OF_SLICE];
-
-unsigned char           rayNbPoints;
-unsigned char           rayNbWalls;
 
 
 // [ref camera_situation]
@@ -75,6 +75,16 @@ signed char             rayCamRotZ = 0;
 #include "tabMulti.h"
 
 #include "math.c"
+
+
+
+void rayInitCasting(){
+    unsigned char ii;
+    for (ii=0; ii< NUMBER_OF_SLICE; ii++) {
+        rayzbuffer[ii]      = 255;
+        raywall[ii]         = 255;
+    }
+}
 
 #ifdef USE_C_TOTO
 void toto() {

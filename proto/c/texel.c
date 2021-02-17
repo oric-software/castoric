@@ -2,8 +2,8 @@
 // Author : Jean-Baptiste PERIN
 // Date : 2021
 
+#include "tabTexelColor.h"
 
-unsigned char           renCurrentColor;
 
 #ifdef USE_C_COLORRIGHTTEXEL
 // [ref texel_codec]

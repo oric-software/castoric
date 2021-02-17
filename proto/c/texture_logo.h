@@ -1,6 +1,7 @@
 // CAUTION !! GENERATED FILE. DO NOT MODIFY BY HAND
 // texture buffer generated from file : img\logo.png
 // by script : texture2buf.py
+// [ref texture_file2buffer]
 unsigned char texture_logo[] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 	, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0

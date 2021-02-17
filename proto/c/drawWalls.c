@@ -1,5 +1,7 @@
 #include "config.h"
 
+#include "dda.c"
+
 #ifdef USE_C_DRAWWALLS
 
 

@@ -1,6 +1,7 @@
 // CAUTION !! GENERATED FILE. DO NOT MODIFY BY HAND
 // texture buffer generated from file : img\redbrick.png
 // by script : texture2buf.py
+// [ref texture_file2buffer]
 unsigned char texture_redbrick[] = {
 	0, 16, 16, 16, 16, 0, 32, 16, 16, 16, 0, 32, 16, 16, 16, 0
 	, 32, 16, 16, 0, 0, 16, 16, 16, 16, 0, 32, 16, 16, 16, 0, 0

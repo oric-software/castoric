@@ -30,7 +30,8 @@ def image2TextureBuf (filepathname):
         for jj in range (imh):    
             ## [ref texel_codec]
             r, g, b = rgb_im.getpixel((ii, jj))
-            bufimgtranslat.append(toSimpleRgb(r)*16 + toSimpleRgb(g)*4 + toSimpleRgb(b))
+            texel_value = (r//85)*16 + (g//85)*4 + (b//85)
+            bufimgtranslat.append(texel_value)
 
     cCode = codegen.buffer2cCode("texture_"+namerad, "unsigned char", bufimgtranslat)
 
@@ -43,6 +44,7 @@ def main():
     print("// CAUTION !! GENERATED FILE. DO NOT MODIFY BY HAND")
     print("// texture buffer generated from file : " + args.imagefile)
     print("// by script : " + os.path.basename(__file__))
+    print("// [ref texture_file2buffer]")
     print (image2TextureBuf (args.imagefile))
     # print (image2TextureBuf ('img/christmas.bmp'))
 

@@ -1,4 +1,6 @@
-
+// Raycasting system for Oric machine
+// Author : Jean-Baptiste PERIN
+// Date : 2021
 
 
 #define ANGLE_MAX       (signed char)0xC0

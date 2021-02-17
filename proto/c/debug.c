@@ -1,3 +1,6 @@
+// Convenience routines for debugging raycasting
+// Author : Jean-Baptiste PERIN
+// Date : 2021
 
 
 void detailPoints(){

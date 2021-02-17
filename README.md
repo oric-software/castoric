@@ -23,19 +23,19 @@
 --- 
 ## Configuration <a name="config"></a>
 
-[[config_generate]](https://github.com/oric-software/castoric/search?q=config_generate])
+[[config_generate]](https://github.com/oric-software/castoric/search?q=config_generate)
 
 
 
 --- 
 ## Viewport <a name="viewport"></a>
 
-[[config_viewport]](https://github.com/oric-software/castoric/search?q=config_viewport])
+[[config_viewport]](https://github.com/oric-software/castoric/search?q=config_viewport)
 
 --- 
 ## Raycasting <a name="raycast"></a>
 
-[[lookup_generate]](https://github.com/oric-software/castoric/search?q=lookup_generate])
+[[lookup_generate]](https://github.com/oric-software/castoric/search?q=lookup_generate)
 
 
 
@@ -44,7 +44,7 @@
 
 ### Scene description
 
-[[scene_describe]](https://github.com/oric-software/castoric/search?q=scene_describe])
+[[scene_describe]](https://github.com/oric-software/castoric/search?q=scene_describe)
 
 A scene is basically a list of walls that make a place we want to render on screen. And describing the scene consists in giving:
 - coordinates of walls'extremities named `points`

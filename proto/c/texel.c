@@ -4,6 +4,9 @@
 
 #include "tabTexelColor.h"
 
+extern unsigned char *theAdr;
+
+unsigned char renCurrentColor;
 
 #ifdef USE_C_COLORRIGHTTEXEL
 // [ref texel_codec]

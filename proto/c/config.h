@@ -3,6 +3,8 @@
 
 #include "constants.h"
 
+#undef USE_SPRITE
+
 #ifdef __GNUC__
 
 #define     USE_C_DDA

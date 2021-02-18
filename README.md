@@ -2,16 +2,25 @@
 
 ## Getting started
 
+If you have git installed on your PC, you can download the current version with the command:
+
 ``` bat
 git clone https://github.com/oric-software/castoric
+```
 
+If you don't have git, you can download an archive of the projet by clicking the download link provided on [this page](https://github.com/oric-software/castoric).
+
+Once the repository retrieved or the archive uncompressed, you should have a `castoric` directory created into which you can go:
+```bat
+cd castoric
+```
+
+If you have python and PIL libary installed, you can rebuild all files before rebuilding the tap file. 
+
+```bat
 cd castoric
 
 .\build.bat
-
-cd proto\c 
-
-osdk_build.bat && osdk_execute.bat
 ```
 
 The script [build.bat](build.bat) script 
@@ -21,9 +30,18 @@ The script [build.bat](build.bat) script
 - generates some header
 - generates texture buffers from image files
 
+If don't have Python and PIL, you can't rebuild files but you can still recompile the package with following commands. 
+
+```bat
+cd proto\c 
+
+osdk_build.bat && osdk_execute.bat
+```
 
 
-## 
+
+
+## Getting deeper into castoric
 
 - [Camera](#camera)
 
@@ -131,11 +149,6 @@ When file config.py is changed, it is required to run script build.bat for all p
 
 
 
---- 
-## Raycasting <a name="raycast"></a>
-
-[[lookup_generate]](https://github.com/oric-software/castoric/search?q=lookup_generate)
-
 
 
 --- 
@@ -207,6 +220,35 @@ In this format:
 
 
 **CAUTION:** If you plan to animate scene'elements you have to manipulate values in tables `lWallsPt1`, `lWallsPt2`, `lPointsX` and `lPointsY`. do not try to animate things in scene data `scene_00` for this table is only used at init stap to preload scene geometry in raycasting input buffers.
+
+
+--- 
+## Raycasting <a name="raycast"></a>
+
+[[lookup_generate]](https://github.com/oric-software/castoric/search?q=lookup_generate)
+
+Raycasting is a rendering technique to create a 3D perspective in a 2D map.
+It consists in splitting the viewport into many angular slices and cast a ray on each of these slices to determine at which distance the ray is going to hit a wall. From the distance between camera and the hit wall, we deduce the height on screen of this wall in the given slice. 
+
+The raycasting system of castoric take as input
+
+- The scene geometry defined through : `lPointsX`, `lPointsY`, `lWallsPt1` and `lWallsPt2`
+- The camera position and orientation : `rayCamPosX`, `rayCamPosY` and `rayCamRotZ`
+
+And, based on these informations, it mainly computes 3 tables indexed by slice number:
+
+```C
+unsigned char    raywall[NUMBER_OF_SLICE];
+unsigned char    TableVerticalPos[NUMBER_OF_SLICE];
+unsigned char    tabTexCol[NUMBER_OF_SLICE];
+```
+
+which content are decribed below:
+
+- `raywall[sliceId]` : contains the wall index (in tables lWallsPtX) that should be displayed on slice `sliceIdx` of viewport or 255 is no wall is seen on this slice.
+- `TableVerticalPos[sliceId]` : contains the height on screen of the well part that should be drawn on this slice. It reflects the distance.
+- `tabTexCol[sliceId]` :  contains the column index in the texture that must be drawn on this slice. 
+
 
 --- 
 ## Texel <a name="texel"></a>

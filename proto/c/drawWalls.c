@@ -2,10 +2,11 @@
 
 #include "dda.c"
 
+extern unsigned char *     ptrTexture;             // Address of the texture 
+extern unsigned int offTexture;
 #ifdef USE_C_DRAWWALLS
 
 
-unsigned char *     ptrTexture;             // Address of the texture 
 unsigned char *     ptrReadTexture;             // Address of the texture 
 unsigned char       idxCurrentSlice;
 unsigned char *     baseAdr;

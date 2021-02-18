@@ -38,7 +38,7 @@ void displaySprite02(unsigned char column, unsigned char height){
     int adrScreenCol        = 0;
     int adrScreenWrt        = 0;
 
-    ptrTexture = texture_pillar;
+    // ptrTexture = texture_pillar;
     precalcTexPixelRunthrough(height);
     // for (idxTexPixel = 0; idxTexPixel <= iea2NbStep; idxTexPixel ++) {
     //     printf ("%d\n", precalTexPixelOffset [idxTexPixel]);
@@ -187,7 +187,8 @@ void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
 
 
         //alpha glCamRotZ
-        
+        ptrTexture = texture ;             // Address of the texture 
+
         displaySprite02(column, height*2);
     } else {
         // displaySprite02(column, height);

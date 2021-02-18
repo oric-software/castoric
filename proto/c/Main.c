@@ -23,15 +23,16 @@
 
 #ifdef USE_SPRITE
 #include "sprite.c"
+#include "texture_pillar.h"
 #endif
 
 #define CHANGE_INK_TO_RED	            1		
 #define CHANGE_INK_TO_GREEN	            2		
 #define CHANGE_INK_TO_BLUE	            4		
 
-extern unsigned char *theAdr;
-unsigned int offTexture;
-unsigned char renCurrentColor;
+
+
+
 
 
 
@@ -75,7 +76,9 @@ void gameLoop() {
         memset(HIRES_SCREEN_ADDRESS, 64, 8000); // 5120 = 0xB400 (std char) - 0xA000 (hires screen)
         prepareRGB();
         drawWalls();
-        // drawSprite (6, 6, texture_pillar);
+#ifdef USE_SPRITE        
+        drawSprite (3, 3, texture_pillar);
+#endif
         // for (ii = 0; ii <= VIEWPORT_HEIGHT; ii++) {
         //     drawTexelOnScreen (ii, 40-VIEWPORT_WIDTH/2, 63);
         //     drawTexelOnScreen (ii, 40+VIEWPORT_WIDTH/2, 63);

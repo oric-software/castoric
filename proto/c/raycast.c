@@ -19,10 +19,10 @@ unsigned int     RayDistance;
 unsigned int     RayWallLog;
 unsigned char    rayzbuffer[NUMBER_OF_SLICE]; // FIXME .. should be int
 unsigned int     raylogdist[NUMBER_OF_SLICE];
+unsigned char    raywall[NUMBER_OF_SLICE];
 #ifdef USE_C_TOTO
 unsigned char*   tab_denom;
 #endif
-unsigned char    raywall[NUMBER_OF_SLICE];
 unsigned char    RayCurrentWall;
 signed char      lWallsCosBeta[NB_MAX_WALL];
 unsigned char    RayIdXPoint1, RayIdXPoint2;

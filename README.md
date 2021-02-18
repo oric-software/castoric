@@ -10,12 +10,13 @@ git clone https://github.com/oric-software/castoric
 
 If you don't have git, you can download an archive of the projet by clicking the download link provided on [this page](https://github.com/oric-software/castoric).
 
-Once the repository retrieved or the archive uncompressed, you should have a `castoric` directory created into which you can go:
+Once the repository is retrieved or the archive uncompressed, you should have a `castoric` directory created into which you can go:
+
 ```bat
 cd castoric
 ```
 
-If you have python and PIL libary installed, you can rebuild all files before rebuilding the tap file. 
+If you have python and PIL library installed, you can rebuild all generated files before rebuilding the tap file. 
 
 ```bat
 cd castoric
@@ -23,14 +24,14 @@ cd castoric
 .\build.bat
 ```
 
-The script [build.bat](build.bat) script 
+The script [build.bat](build.bat): 
 
 - generates precalculed lookup table
 - generates texel palette 
 - generates some header
 - generates texture buffers from image files
 
-If don't have Python and PIL, you can't rebuild files but you can still recompile the package with following commands. 
+But if don't have Python and PIL, you can't rebuild the tap file by using default pregenerated files that come with this repository. 
 
 ```bat
 cd proto\c 
@@ -98,11 +99,11 @@ The constant `HALF_FOV_FIX_ANGLE` is automatically elaborated by script `build.b
 [[config_generate]](https://github.com/oric-software/castoric/search?q=config_generate)
 
 
-The viewport is the part of the screen where we want the scene to be rendered. Dimenson and posiiton of this viewport is configured in file `tools/config.py` through following values:
+The viewport is the part of the screen where we want the scene to be rendered. Dimensions and posiiton of this viewport are configured in file `tools/config.py` through following values:
 
 
 - `HFOV_IN_DEGREES` : is the angle of Horizontal Field Of View expressed in degrees.
-- `VIEWPORT_WIDTH`  : expressed in number of texel. Must belong to interval `[24 .. 78]`
+- `VIEWPORT_WIDTH`  : expressed in number of texel. It is the number of column. It must belong to interval `[24 .. 78]`
 - `VIEWPORT_HEIGHT`  : expressed in number of texel. Should be within `[10 .. 64]`
 - `VIEWPORT_START_COLUMN` : Column number of top left corner of viewport within `[2 .. 80 - VIEWPORT_WIDTH]`
 - `VIEWPORT_START_LINE` : Line number of top left corner of viewport  within `[0 .. 64 - VIEWPORT_HEIGHT]`

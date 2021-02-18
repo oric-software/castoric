@@ -195,8 +195,40 @@ LeftCol_loop :
                  	lda _ptrReadTexture : sta tmp1 : lda _ptrReadTexture+1 : sta tmp1+1 :
                  	clc : lda tmp0 : adc tmp1 : sta tmp0 : lda tmp0+1 : adc tmp1+1 : sta tmp0+1 :
                  	ldy #0 : lda (tmp0),y : sta tmp0 :
-                 	lda tmp0 : sta _renCurrentColor :                
-                    jsr _colorLeftTexel : 
+                 	lda tmp0 : sta _renCurrentColor :   
+
+
+                    ;; jsr _colorLeftTexel : 
+                        ldx         _renCurrentColor
+
+                        ;; *theAdr = tabLeftGreen[renCurrentColor];
+                        ;; theAdr += NEXT_SCANLINE_INCREMENT;
+
+                        lda         _tabLeftRed,x
+                        ldy         #0
+                        sta         (_theAdr),y
+
+                        ;; *theAdr = tabLeftGreen[renCurrentColor];
+                        ;; theAdr += NEXT_SCANLINE_INCREMENT;
+
+                        lda         _tabLeftGreen,x
+                        ldy         #40
+                        sta         (_theAdr),y
+
+                        ;; *theAdr = tabLeftBlue[renCurrentColor];
+                        ;; theAdr += NEXT_SCANLINE_INCREMENT;
+
+                        lda         _tabLeftBlue,x
+                        ldy         #80
+                        sta         (_theAdr),y
+
+                        clc     
+                        lda         _theAdr
+                        adc         #120
+                        sta         _theAdr
+                    .(  
+                        bcc skip:    inc _theAdr+1: skip .)
+
                     inc _idxScreenLine : 
                     lda _idxScreenLine : 
                     cmp #VIEWPORT_HEIGHT + VIEWPORT_START_LINE : 
@@ -318,8 +350,50 @@ RightCol_loop :
                 	lda _ptrReadTexture : sta tmp1 : lda _ptrReadTexture+1 : sta tmp1+1 :
                 	clc : lda tmp0 : adc tmp1 : sta tmp0 : lda tmp0+1 : adc tmp1+1 : sta tmp0+1 :
                 	ldy #0 : lda (tmp0),y : sta tmp0 :
-                	lda tmp0 : sta _renCurrentColor :                
-                    jsr _colorRightTexel : 
+                	lda tmp0 : sta _renCurrentColor : 
+
+
+                    ;; jsr _colorRightTexel : 
+
+    ldy         #0
+    ldx         _renCurrentColor
+
+    lda         _tabRightRed,x
+    ora         (_theAdr),y
+    ;; ldy         #0
+    sta         (_theAdr),y
+;;     clc     
+;;     lda         _theAdr
+;;     adc         #40
+;;     sta         _theAdr
+;; .(  
+;;     bcc skip:    inc _theAdr+1: skip .)
+
+
+    ;; *theAdr |= tabRightGreen[renCurrentColor];
+    ;; theAdr += NEXT_SCANLINE_INCREMENT;
+
+    lda         _tabRightGreen,x
+    ldy         #40
+    ora         (_theAdr),y
+    sta         (_theAdr),y
+
+    ;; *theAdr |= tabRightBlue[renCurrentColor];
+    ;; theAdr += NEXT_SCANLINE_INCREMENT;
+
+    lda         _tabRightBlue,x
+    ldy         #80
+    ora         (_theAdr),y
+    sta         (_theAdr),y
+
+    clc     
+    lda         _theAdr 
+    adc         #120
+    sta         _theAdr
+.(  
+    bcc skip:    inc _theAdr+1: skip .)
+
+                    
                     inc _idxScreenLine : 
                     lda _idxScreenLine : 
                     cmp #VIEWPORT_HEIGHT + VIEWPORT_START_LINE : 

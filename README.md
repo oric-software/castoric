@@ -1,10 +1,35 @@
 # Ray Casting System for Oric Computers
 
+## Getting started
+
+``` bat
+git clone https://github.com/oric-software/castoric
+
+cd castoric
+
+.\build.bat
+
+cd proto\c 
+
+osdk_build.bat && osdk_execute.bat
+```
+
+The script [build.bat](build.bat) script 
+
+- generates precalculed lookup table
+- generates texel palette 
+- generates some header
+- generates texture buffers from image files
+
+
+
+## 
+
 - [Camera](#camera)
 
-- [Configuration](#config)
-
 - [Viewport](#viewport)
+
+- [Configuration](#config)
 
 - [Raycast](#raycast)
 
@@ -20,17 +45,91 @@
 
 [[camera_situation]](https://github.com/oric-software/castoric/search?q=camera_situation)
 
+
+Camera is the point from which the scene is beeing seen.
+It is stored in three bytes:
+- `rayCamPosX`  and `rayCamPosY` are signed 2D cartesian coordinates that belong to interval `[-128 .. 127]`
+- `rayCamRotZ` is a signed angle within `[-128 .. 127]`
+
+``` C
+signed char             rayCamPosX = 0;
+signed char             rayCamPosY = 0;
+signed char             rayCamRotZ = 0;
+```
+
+One other variable that has to be maintained when the camera angle is changed is the angle at which the raycasting start.
+
+It is stored in a variable named `RayLeftAlpha` and should be set the following way each time the value of `rayCamRotZ` is changed.
+
+``` C
+signed char RayLeftAlpha = rayCamRotZ+ HALF_FOV_FIX_ANGLE;
+```
+
+
+which basically reflects that the leftmost angle of the field of view is camera angle + half the size of the field of view.
+
+The constant `HALF_FOV_FIX_ANGLE` is automatically elaborated by script `build.bat` depending on the configuration of the viewport. 
+
+
 --- 
-## Configuration <a name="config"></a>
+## Viewport Configuration <a name="viewport"></a>
+
+[[config_viewport]](https://github.com/oric-software/castoric/search?q=config_viewport)
+
 
 [[config_generate]](https://github.com/oric-software/castoric/search?q=config_generate)
 
 
+The viewport is the part of the screen where we want the scene to be rendered. Dimenson and posiiton of this viewport is configured in file `tools/config.py` through following values:
 
---- 
-## Viewport <a name="viewport"></a>
 
-[[config_viewport]](https://github.com/oric-software/castoric/search?q=config_viewport)
+- `HFOV_IN_DEGREES` : is the angle of Horizontal Field Of View expressed in degrees.
+- `VIEWPORT_WIDTH`  : expressed in number of texel. Must belong to interval `[24 .. 78]`
+- `VIEWPORT_HEIGHT`  : expressed in number of texel. Should be within `[10 .. 64]`
+- `VIEWPORT_START_COLUMN` : Column number of top left corner of viewport within `[2 .. 80 - VIEWPORT_WIDTH]`
+- `VIEWPORT_START_LINE` : Line number of top left corner of viewport  within `[0 .. 64 - VIEWPORT_HEIGHT]`
+
+The typical viewport configuration for fullscreen rendering on an Oric is the following one:
+
+``` python
+HFOV_IN_DEGREES         = 112
+VIEWPORT_WIDTH          = 78
+VIEWPORT_HEIGHT         = 64
+VIEWPORT_START_COLUMN   = 2
+VIEWPORT_START_LINE     = 0
+```
+
+Values are expressed in [Texel]((#texel)). Texel being square of 3*3 pixels on screen, the possible values can be deduced from Oric screen capabilities:
+
+Oric Hires screen has a 240x200 resolution. If we group pixel by group of 3x3, there can be 80*66 os suche texel.
+64 being a nicer value than 66, the screen resolution is set to 80x64 texel.
+
+Actually, it is not possible to use all 80 column of the viewport because first columns on screen are going to hoste the `CHANGE_COLOR` attribute 
+That's the reason why the `VIEWPORT_START_COLUMN` is set to 2 for full screen rendering. It allows to avoid overwriting attribute previously written at the beginning of each scan line. 
+
+For better performance with smaller rendering, one can consider using this configuration.
+
+``` python
+HFOV_IN_DEGREES         = 70
+VIEWPORT_WIDTH          = 40
+VIEWPORT_HEIGHT         = 40
+VIEWPORT_START_COLUMN   = 20
+VIEWPORT_START_LINE     = 0
+```
+
+A good compromise can be following configuration:
+
+``` python
+HFOV_IN_DEGREES         = 100
+VIEWPORT_WIDTH          = 64
+VIEWPORT_HEIGHT         = 64
+VIEWPORT_START_COLUMN   = 8
+VIEWPORT_START_LINE     = 0
+```
+
+When file config.py is changed, it is required to run script build.bat for all precomputed tables to be regenerated.
+
+
 
 --- 
 ## Raycasting <a name="raycast"></a>

@@ -18,3 +18,4 @@ python tools\texture2buf.py img\bluestone.png > proto\c\texture_bluestone.h
 python tools\texture2buf.py img\logo.png > proto\c\texture_logo.h
 python tools\texture2buf.py img\redbrick.png > proto\c\texture_redbrick.h
 python tools\texture2buf.py img\christmas.bmp > proto\c\texture_christmas.h
+python tools\texture2buf.py img\pillar.png > proto\c\texture_pillar.h

@@ -136,7 +136,58 @@ drawWalls_loop
 
 ;;             ddaInit();
 
-                jsr _ddaInit
+                ;; jsr _ddaInit
+
+.(
+;     ddaCurrentValue         = ddaStartValue;
+    lda     _ddaStartValue
+    sta     _ddaCurrentValue
+
+;     ddaEndValue             = ddaStartValue + ddaNbVal;
+    lda     _ddaNbVal
+    clc
+    adc     _ddaStartValue
+    sta     _ddaEndValue
+; 
+;     if          (ddaNbVal > ddaNbStep) {
+    lda     _ddaNbStep
+    cmp     _ddaNbVal
+    beq     NbStepEqualsNbVal
+    bcs     NbStepGreaterThanNbVal
+;         ddaCurrentError     = ddaNbVal;
+            lda         _ddaNbVal
+            sta         _ddaCurrentError
+;         ddaStepFunction     = &ddaStep1;
+            lda         #<(_ddaStep1)
+            sta         _ddaStepFunction
+            lda         #>(_ddaStep1)
+            sta         _ddaStepFunction+1
+
+    jmp     ddaInitDone
+;     } else if   (ddaNbVal < ddaNbStep) {
+NbStepGreaterThanNbVal    
+;         ddaCurrentError     = ddaNbStep;
+            lda         _ddaNbStep
+            sta         _ddaCurrentError
+;         ddaStepFunction     = &ddaStep2;
+            lda         #<(_ddaStep2)
+            sta         _ddaStepFunction
+            lda         #>(_ddaStep2)
+            sta         _ddaStepFunction+1
+    jmp     ddaInitDone
+;     } else {
+NbStepEqualsNbVal    
+;         ddaCurrentError     = ddaEndValue;
+            lda         _ddaEndValue
+            sta         _ddaCurrentError
+;         ddaStepFunction     = &ddaStep0;
+            lda         #<(_ddaStep0)
+            sta         _ddaStepFunction
+            lda         #>(_ddaStep0)
+            sta         _ddaStepFunction+1
+;     }
+ddaInitDone
+.)                
 
 ;;             idxScreenLine       = VIEWPORT_HEIGHT/2 - columnHeight + VIEWPORT_START_LINE;
 
@@ -299,7 +350,59 @@ LeftSliceEmpty
 
 ;;             ddaInit();
 
-                jsr _ddaInit
+                ;;jsr _ddaInit
+
+.(
+;     ddaCurrentValue         = ddaStartValue;
+    lda     _ddaStartValue
+    sta     _ddaCurrentValue
+
+;     ddaEndValue             = ddaStartValue + ddaNbVal;
+    lda     _ddaNbVal
+    clc
+    adc     _ddaStartValue
+    sta     _ddaEndValue
+; 
+;     if          (ddaNbVal > ddaNbStep) {
+    lda     _ddaNbStep
+    cmp     _ddaNbVal
+    beq     NbStepEqualsNbVal
+    bcs     NbStepGreaterThanNbVal
+;         ddaCurrentError     = ddaNbVal;
+            lda         _ddaNbVal
+            sta         _ddaCurrentError
+;         ddaStepFunction     = &ddaStep1;
+            lda         #<(_ddaStep1)
+            sta         _ddaStepFunction
+            lda         #>(_ddaStep1)
+            sta         _ddaStepFunction+1
+
+    jmp     ddaInitDone
+;     } else if   (ddaNbVal < ddaNbStep) {
+NbStepGreaterThanNbVal    
+;         ddaCurrentError     = ddaNbStep;
+            lda         _ddaNbStep
+            sta         _ddaCurrentError
+;         ddaStepFunction     = &ddaStep2;
+            lda         #<(_ddaStep2)
+            sta         _ddaStepFunction
+            lda         #>(_ddaStep2)
+            sta         _ddaStepFunction+1
+    jmp     ddaInitDone
+;     } else {
+NbStepEqualsNbVal    
+;         ddaCurrentError     = ddaEndValue;
+            lda         _ddaEndValue
+            sta         _ddaCurrentError
+;         ddaStepFunction     = &ddaStep0;
+            lda         #<(_ddaStep0)
+            sta         _ddaStepFunction
+            lda         #>(_ddaStep0)
+            sta         _ddaStepFunction+1
+;     }
+ddaInitDone
+.)
+
 
 
 ;;             while (idxScreenLine < VIEWPORT_START_LINE){

@@ -48,11 +48,11 @@ osdk_build.bat && osdk_execute.bat
 
 - [Viewport](#viewport)
 
-- [Configuration](#config)
+- [Scene](#scene)
 
 - [Raycast](#raycast)
 
-- [Scene](#scene)
+- [Render](#render)
 
 - [Texel](#texel)
 
@@ -99,7 +99,9 @@ The constant `HALF_FOV_FIX_ANGLE` is automatically elaborated by script `build.b
 [[config_generate]](https://github.com/oric-software/castoric/search?q=config_generate)
 
 
-The viewport is the part of the screen where we want the scene to be rendered. Dimensions and posiiton of this viewport are configured in file `tools/config.py` through following values:
+The viewport is the part of the screen where we want the scene to be rendered. Dimensions and position of this viewport are configured in file `tools/config.py` expressed in [Texel]((#texel)) (which are basiclaly 3*3 pixels square on screen).  
+
+Viewport is configured through following parameters:
 
 
 - `HFOV_IN_DEGREES` : is the angle of Horizontal Field Of View expressed in degrees.
@@ -118,13 +120,13 @@ VIEWPORT_START_COLUMN   = 2
 VIEWPORT_START_LINE     = 0
 ```
 
-Values are expressed in [Texel]((#texel)). Texel being square of 3*3 pixels on screen, the possible values can be deduced from Oric screen capabilities:
+The possible values can be deduced from Oric screen capabilities:
 
-Oric Hires screen has a 240x200 resolution. If we group pixel by group of 3x3, there can be 80*66 os suche texel.
-64 being a nicer value than 66, the screen resolution is set to 80x64 texel.
+Oric Hires screen has a 240x200 resolution. If we group pixel by group of 3x3, there can be 80*66 of such texels.
+64 being a nicer value than 66, the screen resolution is set to 80x64 texels.
 
-Actually, it is not possible to use all 80 column of the viewport because first columns on screen are going to hoste the `CHANGE_COLOR` attribute 
-That's the reason why the `VIEWPORT_START_COLUMN` is set to 2 for full screen rendering. It allows to avoid overwriting attribute previously written at the beginning of each scan line. 
+Actually, it is not possible to use all 80 column of the viewport because first columns on screen are going to host the `CHANGE_COLOR` attribute that distribute RGB components along scanlines.
+That's the reason why the `VIEWPORT_START_COLUMN` is set to 2; not to overwrite attribute previously written at the beginning of each scan line. 
 
 For better performance with smaller rendering, one can consider using this configuration.
 
@@ -146,10 +148,11 @@ VIEWPORT_START_COLUMN   = 8
 VIEWPORT_START_LINE     = 0
 ```
 
-When file config.py is changed, it is required to run script build.bat for all precomputed tables to be regenerated.
+When file `config.py` is changed, it is required to run script `build.bat` to regenerate all precomputed tables.
 
-
-
+```shell
+build.bat
+```
 
 
 --- 
@@ -164,9 +167,10 @@ A scene is basically a list of walls that make a place we want to render on scre
 - link between this points that make wall
 - texture to be applied on wall
 
+
 These informations are stored in tables:
-- `lPointsX` and `lPointsY` which respectively contains X and Y coordinates of points 
-- `lWallsPt1` and `lWallsPt2` which contains index of extremities point as entry in tables `lPointsX` and `lPointsY`
+- `lPointsX[pointId]` and `lPointsY[pointId]` which respectively contains X and Y coordinates of points 
+- `lWallsPt1[wallId]` and `lWallsPt2[wallId]` which contains index of extremities point as entry in tables `lPointsX` and `lPointsY`
 - `wallTexture[]` which contains pointers to buffer containing texture assigned to wall.
 
 Thus, given a wall number `wallId`, it is possible to retrieve all information for this wall with the following code:
@@ -180,10 +184,10 @@ P2 = lWallsPt2[wallId] // pointId of extremity 2 of wall wallId
 
 // Retrieve X and Y coordinates of each extremity
 signed char P1X, P1Y, P2X, P2Y;
-P1X = lPointsX[pointId] // X coordinates of extremity 1
-P1Y = lPointsY[pointId] // Y coordinates of extremity 1
-P2X = lPointsX[pointId] // X coordinates of extremity 2
-P2Y = lPointsY[pointId] // Y coordinates of extremity 2
+P1X = lPointsX[P1] // X coordinates of extremity 1
+P1Y = lPointsY[P1] // Y coordinates of extremity 1
+P2X = lPointsX[P2] // X coordinates of extremity 2
+P2Y = lPointsY[P2] // Y coordinates of extremity 2
 
 // Retrieve the buffer of the texture to be applied on this wall
 unsigned char *ptr_texture;
@@ -231,6 +235,55 @@ In this format:
 Raycasting is a rendering technique to create a 3D perspective in a 2D map.
 It consists in splitting the viewport into many angular slices and cast a ray on each of these slices to determine at which distance the ray is going to hit a wall. From the distance between camera and the hit wall, we deduce the height on screen of this wall in the given slice. 
 
+
+The figure below desribes the dataflow involed in raycasting and rendering process:
+
+```
+        lPointsX, lPointsY, lWallsPt1, lWallsPt2, wallTexture
+                      |    |
+                      |    |      rayProcessPoints();
+RAYCASTING           \|    |/
+==========            \    /      rayProcessWalls();
+                       \  /
+                         V
+        raywall, TableVerticalPos, tabTexCol
+                      |    |
+RENDERING            \|    |/
+=========             \    /      drawWalls();
+                       \  /
+                         V
+              
+              texels on screen
+````
+
+The following C code shows hos it may be implemented in a typical gameloop.
+
+``` C
+    while (running) {
+
+        // Deal with player interaction
+        player ();
+
+        // Do the ray casting
+        rayInitCasting();
+        rayProcessPoints();
+        rayProcessWalls();
+
+        // TODO: Clean the Viewport Here ..
+
+        // Render the result of ray casting
+        drawWalls();
+
+    }
+```
+
+- `rayInitCasting()`, `rayProcessPoints()` and `rayProcessWalls()` are entry points to cast rays on each direction and retrieve wall to be displayed at each slice.
+- `drawWalls()` is the procedure to actually draw the wall on screen with texels. 
+
+Let's see how each part of the process is done.
+
+### Casting the ray
+
 The raycasting system of castoric take as input
 
 - The scene geometry defined through : `lPointsX`, `lPointsY`, `lWallsPt1` and `lWallsPt2`
@@ -247,8 +300,23 @@ unsigned char    tabTexCol[NUMBER_OF_SLICE];
 which content are decribed below:
 
 - `raywall[sliceId]` : contains the wall index (in tables lWallsPtX) that should be displayed on slice `sliceIdx` of viewport or 255 is no wall is seen on this slice.
-- `TableVerticalPos[sliceId]` : contains the height on screen of the well part that should be drawn on this slice. It reflects the distance.
+- `TableVerticalPos[sliceId]` : contains the height on screen of the wall part that should be drawn on this slice. It reflects the distance.
 - `tabTexCol[sliceId]` :  contains the column index in the texture that must be drawn on this slice. 
+
+
+
+
+### Render the scene <a name="render"></a>
+
+rendering the scene consists in running through all slice in viewport and, for each slice `sliceId`, draw a slice at offset `tabTexCol[sliceId]`of the texture for wall number `raywall[sliceId]` with height `TableVerticalPos[sliceId]`.
+
+This is done by a call to the `drawWalls` function.
+
+```
+        // Render the result of ray casting
+        drawWalls();
+```
+
 
 
 --- 
@@ -319,7 +387,7 @@ unsigned char encodeLeftColor = [ (0<<3)|0x40, (2<<3)|0x40, (5<<3)|0x40, (7<<3)|
 
 |||
 |--|--|
-| Textures are 32*32 pixels PNG or BMP files stored in [img](img) directory. For example this image made by rax ![img/christmas.bmp](img/christmas.bmp) that you can see a zoomed version beside | <img src="img/christmas.bmp" alt="drawing" width="400"/>|
+| Textures are 32*32 pixels PNG or BMP files stored in [img](img) directory. For example this image [made by rax](https://forum.defence-force.org/viewtopic.php?p=24170#p24170) ![img/christmas.bmp](img/christmas.bmp) that you can see a zoomed version beside | <img src="img/christmas.bmp" alt="drawing" width="400"/>|
 
 These textures files are first converted into buffer with the script [texture2buf.py](tools/texture2buf.py) called in [build.bat](build.bat).
 

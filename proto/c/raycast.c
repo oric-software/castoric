@@ -137,6 +137,7 @@ extern void preDraw();
 
 #define ANGLE_TO_COL(x) tabAngle2Col[HALF_FOV_FIX_ANGLE-lAngle[(x)]]
 
+#ifdef USE_C_RAYCAST
 void drawFullCrossingWall(){
 
     preDraw();
@@ -147,6 +148,7 @@ void drawFullCrossingWall(){
 
     toto();
 }
+#endif // USE_C_RAYCAST
 
 void drawFullVisibleWall(){
 
@@ -154,14 +156,14 @@ void drawFullVisibleWall(){
 
     if (lAngle[RayIdXPoint1] > lAngle[RayIdXPoint2]){
 
-        InterpIdxLeft       = ANGLE_TO_COL(RayIdXPoint1);
+        InterpIdxLeft       = tabAngle2Col[HALF_FOV_FIX_ANGLE-lAngle[(RayIdXPoint1)]] ; // ANGLE_TO_COL(RayIdXPoint1);
         InterpAngleLeft     = lAngle[RayIdXPoint1]+ rayCamRotZ;
-        RayNbSlice          = (ANGLE_TO_COL(RayIdXPoint2) - InterpIdxLeft)+1;
+        RayNbSlice          = (tabAngle2Col[HALF_FOV_FIX_ANGLE-lAngle[(RayIdXPoint2)]] - InterpIdxLeft)+1;
     } else {
 
-        InterpIdxLeft       = ANGLE_TO_COL(RayIdXPoint2);
+        InterpIdxLeft       = tabAngle2Col[HALF_FOV_FIX_ANGLE-lAngle[(RayIdXPoint2)]];
         InterpAngleLeft     = lAngle[RayIdXPoint2]+ rayCamRotZ;
-        RayNbSlice          = (ANGLE_TO_COL(RayIdXPoint1) - InterpIdxLeft)+1;
+        RayNbSlice          = (tabAngle2Col[HALF_FOV_FIX_ANGLE-lAngle[(RayIdXPoint1)]] - InterpIdxLeft)+1;
     }
 
     toto();
@@ -173,7 +175,7 @@ void drawLeftCuttingWall1Visible(){
     preDraw();
 
     InterpAngleLeft         = RayLeftAlpha;
-    RayNbSlice              = ANGLE_TO_COL(RayIdXPoint1);
+    RayNbSlice              = tabAngle2Col[HALF_FOV_FIX_ANGLE-lAngle[(RayIdXPoint1)]];
     InterpIdxLeft           = 0; 
 
     toto();
@@ -182,14 +184,14 @@ void drawLeftCuttingWall2Visible(){
     preDraw();
 
     InterpAngleLeft         = RayLeftAlpha;
-    RayNbSlice              = ANGLE_TO_COL(RayIdXPoint2);
+    RayNbSlice              = tabAngle2Col[HALF_FOV_FIX_ANGLE-lAngle[(RayIdXPoint2)]];
     InterpIdxLeft           = 0; 
     toto();
 }
 
 void drawRightCuttingWall1Visible(){
     preDraw();
-    InterpIdxLeft           = ANGLE_TO_COL(RayIdXPoint1);
+    InterpIdxLeft           = tabAngle2Col[HALF_FOV_FIX_ANGLE-lAngle[(RayIdXPoint1)]];
     InterpAngleLeft         = lAngle[RayIdXPoint1]+rayCamRotZ;
     RayNbSlice              = (NUMBER_OF_SLICE - InterpIdxLeft)+1;
  
@@ -198,9 +200,14 @@ void drawRightCuttingWall1Visible(){
 void drawRightCuttingWall2Visible(){
     preDraw();
     InterpAngleLeft         = lAngle[RayIdXPoint2]+rayCamRotZ;
-    InterpIdxLeft           = ANGLE_TO_COL(RayIdXPoint2);
+    InterpIdxLeft           = tabAngle2Col[HALF_FOV_FIX_ANGLE-lAngle[(RayIdXPoint2)]];
     RayNbSlice              = (NUMBER_OF_SLICE - InterpIdxLeft)+1;
     toto();
+
+
+    // asm (
+    //     ""
+    // );
 }
 
 void rayProcessWalls() {

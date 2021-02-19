@@ -2,7 +2,7 @@
 ;; Author : Jean-Baptiste PERIN
 ;; Date : 2021
 ;; 
-
+#include "constants.h"
 .zero 
 
 ; static unsigned char* tab_denom;
@@ -129,5 +129,31 @@ raycloserwall:
 toto_done:
     rts
 .)
-#endif // USE_C_TOTO
+#endif ;; USE_C_TOTO
 
+
+#ifndef USE_C_RAYCAST
+; static void drawFullCrossingWall(){
+_drawFullCrossingWall:
+.(
+    ;; preDraw();
+    jsr _preDraw
+
+    ; InterpAngleLeft     =RayLeftAlpha;
+    lda _RayLeftAlpha
+    sta _InterpAngleLeft
+
+    ; RayNbSlice          = NB_SLICES;
+    lda #NUMBER_OF_SLICE 
+    sta _RayNbSlice
+
+    ; InterpIdxLeft       = 0;
+    lda #0
+    sta _InterpIdxLeft
+
+    ;; toto();
+
+    jsr _toto
+    rts
+.)
+#endif ;; USE_C_RAYCAST

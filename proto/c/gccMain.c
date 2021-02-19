@@ -7,10 +7,10 @@
 #include "config.h"
 
 
-#include "dda.c"
+// #include "dda.c"
 
 
-#include "tabTexelColor.h"
+// #include "tabTexelColor.h"
 
 
 #include "raycast.c"
@@ -34,7 +34,7 @@ unsigned char           *baseAdr;
 #include "texel.c"
 
 
-#include "sprite.c"
+// #include "sprite.c"
 
 
 
@@ -50,14 +50,6 @@ void initCamera(){
     RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
 }
 
-void rayInitCasting(){
-    unsigned char ii;
-    for (ii=0; ii< NUMBER_OF_SLICE; ii++) {
-        rayzbuffer[ii]      = 255;
-        raywall[ii]         = 255;
-    }
-}
-
 
 void textCol () {
     unsigned char ii, jj;
@@ -70,57 +62,13 @@ void textCol () {
      }
 }
 
-void precalculateWallsAngle() {
-    unsigned char idxWall, idxPt1, idxPt2;
-    signed char dX, dY, angle;
 
-    for (idxWall = 0; idxWall < rayNbWalls; idxWall ++) { 
-
-        idxPt1 = lWallsPt1[idxWall];
-        idxPt2 = lWallsPt2[idxWall];
-
-        dX = lPointsX[idxPt2]-lPointsX[idxPt1];
-        dY = lPointsY[idxPt2]-lPointsY[idxPt1];
-
-        if (dX == 0) {
-            lWallsCosBeta[idxWall] = 0;
-        } else if (dY == 0) {
-            if (dX > 0) {
-                lWallsCosBeta[idxWall] = 32;
-            } else {
-                lWallsCosBeta[idxWall] = -32;
-            }
-        } else {
-            /* 
-             *  Not aligned walls not handled
-             */
-        }
-    }
-}
-
-void initScene (signed char sceneData[]){
-	unsigned int ii;
-	unsigned char jj;
-
-	ii=0;
-	rayNbPoints = (unsigned char)sceneData[ii++];
-	rayNbWalls = (unsigned char)sceneData[ii++];
-	for (jj=0; jj < rayNbPoints; jj++){
-		lPointsX[jj]= sceneData[ii++] ; lPointsY[jj] = sceneData[ii++];  // points 0
-	}
-	for (jj=0; jj < rayNbWalls; jj++){
-		lWallsPt1[jj]= (unsigned char)(sceneData[ii++]) ; lWallsPt2[jj] = (unsigned char)(sceneData[ii++]);// points 0
-	}
-    precalculateWallsAngle();
-}
 
 
 void main(){
 
     printf ("DEBUT\n");
     initCamera();
-    // drawSprite (6, 6, texture_pillar);
-
 
     initScene (scene_00);
 
@@ -128,11 +76,12 @@ void main(){
     rayProcessPoints();
     rayProcessWalls();
 
-    // textCol ();
+    textCol ();
 
-    // displaySprite02(3, 20);
     drawWalls();
+#ifdef USE_SPRITE    
     drawSprite (6, 6, texture_pillar);
+#endif // USE_SPRITE
     printf ("FIN\n");
 }
 

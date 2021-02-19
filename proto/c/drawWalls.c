@@ -2,9 +2,9 @@
 
 #include "dda.c"
 
-extern unsigned char *     ptrTexture;             // Address of the texture 
 extern unsigned int offTexture;
 #ifdef USE_C_DRAWWALLS
+unsigned char *     ptrTexture;             // Address of the texture 
 
 
 unsigned char *     ptrReadTexture;             // Address of the texture 
@@ -17,30 +17,30 @@ unsigned char       wallId;
 void drawWalls(){
 
 
-    // ddaNbVal            = TEXTURE_SIZE;
-    // idxScreenCol        = VIEWPORT_START_COLUMN-1;
-    // baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (idxScreenCol>>1));
-    // ddaStartValue       = 0;
-    // idxCurrentSlice     = 0;
+    ddaNbVal            = TEXTURE_SIZE;
+    idxScreenCol        = VIEWPORT_START_COLUMN-1;
+    baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (idxScreenCol>>1));
+    ddaStartValue       = 0;
+    idxCurrentSlice     = 0;
 
-    asm (
-        "lda #TEXTURE_SIZE;"
-        "sta _ddaNbVal;"
+    // asm (
+    //     "lda #TEXTURE_SIZE;"
+    //     "sta _ddaNbVal;"
 
-        "lda #VIEWPORT_START_COLUMN-1;"
-        "sta    _idxScreenCol;"
-        "lsr;"
+    //     "lda #VIEWPORT_START_COLUMN-1;"
+    //     "sta    _idxScreenCol;"
+    //     "lsr;"
 
-        "adc #<(HIRES_SCREEN_ADDRESS);"
-        "sta _baseAdr;"
-        "lda #>(HIRES_SCREEN_ADDRESS);"
-        "adc #0;"
-        "sta _baseAdr+1;"
+    //     "adc #<(HIRES_SCREEN_ADDRESS);"
+    //     "sta _baseAdr;"
+    //     "lda #>(HIRES_SCREEN_ADDRESS);"
+    //     "adc #0;"
+    //     "sta _baseAdr+1;"
 
-        "lda #0;"
-        "sta _ddaStartValue;"
-        "sta _idxCurrentSlice;"
-    )
+    //     "lda #0;"
+    //     "sta _ddaStartValue;"
+    //     "sta _idxCurrentSlice;"
+    // );
 
 
 
@@ -185,8 +185,8 @@ void drawWalls(){
 
         if (wallId !=255) {
 
-            // ptrTexture          = wallTexture[wallId];
-            asm ("lda _wallId: asl : tay: lda _wallTexture,Y: sta _ptrTexture: iny: lda _wallTexture,Y: sta _ptrTexture+1");
+            ptrTexture          = wallTexture[wallId];
+            // asm ("lda _wallId: asl : tay: lda _wallTexture,Y: sta _ptrTexture: iny: lda _wallTexture,Y: sta _ptrTexture+1");
 
     // =====================================
     // ============ RIGHT TEXEL

@@ -1,3 +1,5 @@
 {
-    "python.pythonPath": "C:\\Users\\TBPK7658\\Applis\\Python\\python.exe"
+    "files.associations": {
+        "tabtexelcolor.h": "c"
+    }
 }

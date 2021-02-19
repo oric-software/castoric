@@ -94,10 +94,10 @@ RayLoop:
         sta _RayDistance+1;
 
 
-        // if (rayzbuffer[RaySliceIdx] > RayDistance){
-        //      rayzbuffer[RaySliceIdx] = RayDistance;
-        //      raywall[RaySliceIdx] = RayCurrentWall;
-        // }
+        ;; if (rayzbuffer[RaySliceIdx] > RayDistance){
+        ;;      rayzbuffer[RaySliceIdx] = RayDistance;
+        ;;      raywall[RaySliceIdx] = RayCurrentWall;
+        ;; }
 
         ldy _RaySliceIdx
         lda _rayzbuffer,Y
@@ -110,14 +110,14 @@ RayLoop:
             sta _raywall,Y
 raycloserwall:
 
-        // if ((--RayNbSlice) == 0) break;
+        ;; if ((--RayNbSlice) == 0) break;
         dec _RayNbSlice
         beq  toto_done
 
-        // RaySliceIdx += 1;
+        ;; RaySliceIdx += 1;
         inc _RaySliceIdx
 
-        // RayAlpha = rayCamRotZ + tabRayAngles[RaySliceIdx];
+        ;; RayAlpha = rayCamRotZ + tabRayAngles[RaySliceIdx];
         ldy _RaySliceIdx
         lda _tabRayAngles,Y
         clc

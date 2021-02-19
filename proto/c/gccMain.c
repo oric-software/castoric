@@ -7,10 +7,6 @@
 #include "config.h"
 
 
-// #include "dda.c"
-
-
-// #include "tabTexelColor.h"
 
 
 #include "raycast.c"
@@ -34,14 +30,7 @@ unsigned char           *baseAdr;
 #include "texel.c"
 
 
-// #include "sprite.c"
-
-
-
 #include "drawWalls.c"
-
-// #define PROFILE_ENTER(x)
-// #define PROFILE_LEAVE(x)
 
 void initCamera(){
     rayCamPosX               = 3; // 0; // -62; // 39;  //

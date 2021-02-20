@@ -167,6 +167,8 @@ A scene is basically a list of walls that make a place we want to render on scre
 - link between this points that make wall
 - texture to be applied on wall
 
+**CAUTION**: Walls can't ne longer than 24 units and must be either (O,y) aligned or (O,x) aligned (i.e theyr extremities point share either the X or the Y coordinate).
+
 
 These informations are stored in tables:
 - `lPointsX[pointId]` and `lPointsY[pointId]` which respectively contains X and Y coordinates of points 

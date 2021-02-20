@@ -2,7 +2,7 @@
 
 ## Getting started
 
-If you have git installed on your PC, you can download the current version with the command:
+If you have [git](https://git-scm.com/downloads) installed on your PC, you can download the current version with the command:
 
 ``` bat
 git clone https://github.com/oric-software/castoric
@@ -16,7 +16,7 @@ Once the repository is retrieved or the archive uncompressed, you should have a 
 cd castoric
 ```
 
-If you have python and PIL library installed, you can rebuild all generated files before rebuilding the tap file. 
+If you have [python](www.python.org) (3.8.5 or above) and [PIL](https://pypi.org/project/Pillow/) library installed, you can rebuild all generated files before rebuilding the tap file. 
 
 ```bat
 cd castoric

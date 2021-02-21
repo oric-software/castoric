@@ -169,7 +169,7 @@ void drawFullVisibleWall(){
     toto();
 }
 
-
+#ifdef USE_C_RAYCAST
 void drawLeftCuttingWall1Visible(){
     
     preDraw();
@@ -179,6 +179,7 @@ void drawLeftCuttingWall1Visible(){
     InterpIdxLeft           = 0; 
 
     toto();
+
 }
 void drawLeftCuttingWall2Visible(){
     preDraw();
@@ -187,7 +188,9 @@ void drawLeftCuttingWall2Visible(){
     RayNbSlice              = tabAngle2Col[HALF_FOV_FIX_ANGLE-lAngle[(RayIdXPoint2)]];
     InterpIdxLeft           = 0; 
     toto();
+
 }
+#endif // USE_C_RAYCAST
 
 void drawRightCuttingWall1Visible(){
     preDraw();
@@ -204,10 +207,6 @@ void drawRightCuttingWall2Visible(){
     RayNbSlice              = (NUMBER_OF_SLICE - InterpIdxLeft)+1;
     toto();
 
-
-    // asm (
-    //     ""
-    // );
 }
 
 void rayProcessWalls() {

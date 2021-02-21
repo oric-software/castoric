@@ -156,4 +156,49 @@ _drawFullCrossingWall:
     jsr _toto
     rts
 .)
+
+
+_drawLeftCuttingWall1Visible
+.(
+
+    jsr         _preDraw
+
+    lda         _RayLeftAlpha
+    sta         _InterpAngleLeft
+
+    lda         #0
+    sta         _InterpIdxLeft
+
+    ldy         _RayIdXPoint1
+    lda         _lAngle, Y
+    eor         #$FF
+    sec     
+    adc         #HALF_FOV_FIX_ANGLE
+    tay     
+    lda         _tabAngle2Col, Y
+    sta         _RayNbSlice
+
+    jsr         _toto
+.)
+    rts
+
+_drawLeftCuttingWall2Visible
+.(
+    jsr         _preDraw
+    lda         _RayLeftAlpha
+    sta         _InterpAngleLeft
+    lda         #0
+    sta         _InterpIdxLeft
+    ldy         _RayIdXPoint2
+    lda         _lAngle, Y
+    eor         #$FF
+    sec     
+    adc         #HALF_FOV_FIX_ANGLE
+    tay     
+    lda         _tabAngle2Col, Y
+    sta         _RayNbSlice
+    jsr         _toto
+.)
+    rts
+
 #endif ;; USE_C_RAYCAST

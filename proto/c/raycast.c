@@ -137,18 +137,10 @@ extern void preDraw();
 
 #define ANGLE_TO_COL(x) tabAngle2Col[HALF_FOV_FIX_ANGLE-lAngle[(x)]]
 
+
+
 #ifdef USE_C_RAYCAST
-void drawFullCrossingWall(){
 
-    preDraw();
-
-    InterpAngleLeft     = RayLeftAlpha;
-    RayNbSlice          = NUMBER_OF_SLICE;
-    InterpIdxLeft       = 0;
-
-    toto();
-}
-#endif // USE_C_RAYCAST
 
 void drawFullVisibleWall(){
 
@@ -169,7 +161,18 @@ void drawFullVisibleWall(){
     toto();
 }
 
-#ifdef USE_C_RAYCAST
+
+void drawFullCrossingWall(){
+
+    preDraw();
+
+    InterpAngleLeft     = RayLeftAlpha;
+    RayNbSlice          = NUMBER_OF_SLICE;
+    InterpIdxLeft       = 0;
+
+    toto();
+}
+
 void drawLeftCuttingWall1Visible(){
     
     preDraw();
@@ -190,7 +193,44 @@ void drawLeftCuttingWall2Visible(){
     toto();
 
 }
-#endif // USE_C_RAYCAST
+
+
+void drawRightCuttingWall2Visible(){
+    preDraw();
+    InterpAngleLeft         = lAngle[RayIdXPoint2]+rayCamRotZ;
+    InterpIdxLeft           = tabAngle2Col[HALF_FOV_FIX_ANGLE-lAngle[(RayIdXPoint2)]];
+    RayNbSlice              = (NUMBER_OF_SLICE - InterpIdxLeft)+1;
+    toto();
+
+    // asm(
+    //     "jsr _preDraw;"
+
+    //     "ldy _RayIdXPoint2;"
+    //     "lda _lAngle, Y;"
+    //     "tay;" //save lAngle[RayIdXPoint2] in Y
+    //     "clc;"
+    //     "adc _rayCamRotZ;"
+    //     "sta _InterpAngleLeft;"
+
+    //     "tya;" //retrieve lAngle[RayIdXPoint2] from Y
+    //     "eor #$FF;"
+    //     "sec;"
+    //     "adc #HALF_FOV_FIX_ANGLE;"
+    //     "tay;"
+    //     "lda _tabAngle2Col, Y;"
+    //     "sta _InterpIdxLeft;"
+
+    //     "eor #$FF;"
+    //     "sec;"
+    //     "adc #NUMBER_OF_SLICE;"
+    //     "sta _RayNbSlice;"
+
+    //     "jsr _toto;"
+    // );
+
+}
+
+
 
 void drawRightCuttingWall1Visible(){
     preDraw();
@@ -199,15 +239,34 @@ void drawRightCuttingWall1Visible(){
     RayNbSlice              = (NUMBER_OF_SLICE - InterpIdxLeft)+1;
  
     toto();
-}
-void drawRightCuttingWall2Visible(){
-    preDraw();
-    InterpAngleLeft         = lAngle[RayIdXPoint2]+rayCamRotZ;
-    InterpIdxLeft           = tabAngle2Col[HALF_FOV_FIX_ANGLE-lAngle[(RayIdXPoint2)]];
-    RayNbSlice              = (NUMBER_OF_SLICE - InterpIdxLeft)+1;
-    toto();
+
+    // asm (
+    //     "jsr _preDraw;"
+
+    //     "ldy _RayIdXPoint1;"
+    //     "lda _lAngle, Y;"
+    //     "tay;" //save lAngle[RayIdXPoint1] in Y
+    //     "clc;"
+    //     "adc _rayCamRotZ;"
+    //     "sta _InterpAngleLeft;"
+
+    //     "tya;" //retrieve lAngle[RayIdXPoint1] from Y
+    //     "eor #$FF;"
+    //     "sec;"
+    //     "adc #HALF_FOV_FIX_ANGLE;"
+    //     "tay;"
+    //     "lda _tabAngle2Col, Y;"
+    //     "sta _InterpIdxLeft;"
+
+    //     "eor #$FF;"
+    //     "sec;"
+    //     "adc #NUMBER_OF_SLICE;"
+    //     "sta _RayNbSlice;"
+    //     "jsr _toto;"
+    // );
 
 }
+#endif // USE_C_RAYCAST
 
 void rayProcessWalls() {
     int v0, v2;

@@ -201,4 +201,140 @@ _drawLeftCuttingWall2Visible
 .)
     rts
 
+_drawRightCuttingWall1Visible
+.(
+    jsr _preDraw
+    ldy _RayIdXPoint1
+    lda _lAngle, Y
+    tay  ;;save lAngle[RayIdXPoint1] in Y
+    clc
+    adc _rayCamRotZ
+    sta _InterpAngleLeft
+    tya  ;;retrieve lAngle[RayIdXPoint1] from Y
+    eor #$FF
+    sec
+    adc #HALF_FOV_FIX_ANGLE
+    tay
+    lda _tabAngle2Col, Y
+    sta _InterpIdxLeft
+    eor #$FF
+    sec
+    adc #NUMBER_OF_SLICE
+    sta _RayNbSlice
+    jsr _toto
+.)
+    rts
+
+_drawRightCuttingWall2Visible
+.(
+    jsr _preDraw
+    ldy _RayIdXPoint2
+    lda _lAngle, Y
+    tay ;; save lAngle[RayIdXPoint2] in Y
+    clc
+    adc _rayCamRotZ
+    sta _InterpAngleLeft
+    tya ;; retrieve lAngle[RayIdXPoint2] from Y
+    eor #$FF
+    sec
+    adc #HALF_FOV_FIX_ANGLE
+    tay
+    lda _tabAngle2Col, Y
+    sta _InterpIdxLeft
+    eor #$FF
+    sec
+    adc #NUMBER_OF_SLICE
+    sta _RayNbSlice
+
+    jsr _toto
+
+.)
+    rts
+
+_drawFullVisibleWall
+.(
+    ; preDraw();
+    jsr _preDraw
+
+    ; if (lAngle[RayIdXPoint1] > lAngle[RayIdXPoint2]){
+    ldy _RayIdXPoint2
+    lda _lAngle,Y
+    ldy _RayIdXPoint1
+    sec
+    sbc  _lAngle,Y
+    bpl Point1OnTheRight
+
+        ldy _RayIdXPoint1
+        lda _lAngle, Y
+        tax ;; save lAngle[(RayIdXPoint1)]] in X
+
+        clc
+        adc _rayCamRotZ
+        sta _InterpAngleLeft
+
+        txa ;; retrieve lAngle[(RayIdXPoint1)]] from X
+        eor #$FF
+        sec
+        adc #HALF_FOV_FIX_ANGLE
+        tay
+        lda _tabAngle2Col, Y
+        sta _InterpIdxLeft
+        tax ;; save InterpIdxLeft in X
+
+        ldy _RayIdXPoint2
+        lda _lAngle, Y
+        eor #$FF
+        sec
+        adc #HALF_FOV_FIX_ANGLE
+        tay
+        lda _tabAngle2Col, Y
+        sta _RayNbSlice
+
+        txa ;; retrieve InterpIdxLeft from X
+        eor #$FF
+        sec
+        adc _RayNbSlice
+        sta _RayNbSlice
+
+    jmp ReadyForToto
+    ; } else {
+Point1OnTheRight:
+
+        ldy _RayIdXPoint2
+        lda _lAngle, Y
+        tax ;; save lAngle[(RayIdXPoint2)]] in X
+
+        clc
+        adc _rayCamRotZ
+        sta _InterpAngleLeft
+
+        txa ;; retrieve lAngle[(RayIdXPoint2)]] from X
+        eor #$FF
+        sec
+        adc #HALF_FOV_FIX_ANGLE
+        tay
+        lda _tabAngle2Col, Y
+        sta _InterpIdxLeft
+        tax ;; save InterpIdxLeft in X
+
+        ldy _RayIdXPoint1
+        lda _lAngle, Y
+        eor #$FF
+        sec
+        adc #HALF_FOV_FIX_ANGLE
+        tay
+        lda _tabAngle2Col, Y
+        sta _RayNbSlice
+
+        txa ;; retrieve InterpIdxLeft from X
+        eor #$FF
+        sec
+        adc _RayNbSlice
+        sta _RayNbSlice
+
+ReadyForToto:
+    ; toto();
+    jsr _toto
+.)    
+    rts
 #endif ;; USE_C_RAYCAST

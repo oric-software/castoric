@@ -159,9 +159,13 @@ drawWalls_loop
             sta         _ddaCurrentError
 ;         ddaStepFunction     = &ddaStep1;
             lda         #<(_ddaStep1)
-            sta         _ddaStepFunction
+            ;; sta         _ddaStepFunction
+            sta         _patchCallStep_01+1
+            sta         _patchCallStep_02+1
             lda         #>(_ddaStep1)
-            sta         _ddaStepFunction+1
+            ;; sta         _ddaStepFunction+1
+            sta         _patchCallStep_01+2
+            sta         _patchCallStep_02+2
 
     jmp     ddaInitDone
 ;     } else if   (ddaNbVal < ddaNbStep) {
@@ -171,9 +175,13 @@ NbStepGreaterThanNbVal
             sta         _ddaCurrentError
 ;         ddaStepFunction     = &ddaStep2;
             lda         #<(_ddaStep2)
-            sta         _ddaStepFunction
+            ;; sta         _ddaStepFunction
+            sta         _patchCallStep_01+1
+            sta         _patchCallStep_02+1
             lda         #>(_ddaStep2)
-            sta         _ddaStepFunction+1
+            ;; sta         _ddaStepFunction+1
+            sta         _patchCallStep_01+2
+            sta         _patchCallStep_02+2
     jmp     ddaInitDone
 ;     } else {
 NbStepEqualsNbVal    
@@ -182,9 +190,13 @@ NbStepEqualsNbVal
             sta         _ddaCurrentError
 ;         ddaStepFunction     = &ddaStep0;
             lda         #<(_ddaStep0)
-            sta         _ddaStepFunction
+            ;; sta         _ddaStepFunction
+            sta         _patchCallStep_01+1
+            sta         _patchCallStep_02+1
             lda         #>(_ddaStep0)
-            sta         _ddaStepFunction+1
+            ;; sta         _ddaStepFunction+1
+            sta         _patchCallStep_01+2
+            sta         _patchCallStep_02+2
 ;     }
 ddaInitDone
 .)                
@@ -200,15 +212,19 @@ ddaInitDone
 ;;             } 
 
 
-                .( : loop : lda _idxScreenLine : 
+loop_000 : lda _idxScreenLine : 
                 cmp #VIEWPORT_START_LINE : 
-                bpl end_loop : 
+                bpl end_loop_000 
+
                    ;; jsr (_ddaStepFunction)
-	               lda _ddaStepFunction : sta tmp0 : lda _ddaStepFunction+1 : sta tmp0+1 :
-	               .( : lda tmp0 : sta call+1: lda tmp0+1 : sta call+2 : ldy #0 :call : jsr 0000 : .) :
+	               ;; lda _ddaStepFunction : sta tmp0 : lda _ddaStepFunction+1 : sta tmp0+1 :
+	               ;;.( : lda tmp0 : sta call+1: lda tmp0+1 : sta call+2 : ldy #0 :call : jsr 0000 : .) :
+_patchCallStep_01 
+                    jsr 0000
+
                    inc _idxScreenLine
-                   jmp loop 
-                end_loop : .) : 
+                   jmp loop_000 
+                end_loop_000
 
 
 
@@ -236,10 +252,13 @@ ddaInitDone
 ;;             } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
 
 
-                .( : 
-LeftCol_loop :
-                    lda _ddaStepFunction : sta tmp0 : lda _ddaStepFunction+1 : sta tmp0+1
-                    .( : lda tmp0 : sta call+1: lda tmp0+1 : sta call+2 : ldy #0 :call : jsr 0000 : .)
+                 
+LeftCol_loop_001 :
+
+
+                    ;; lda _ddaStepFunction : sta tmp0 : lda _ddaStepFunction+1 : sta tmp0+1
+                    ;; .( : lda tmp0 : sta call+1: lda tmp0+1 : sta call+2 : ldy #0 :call : jsr 0000 : .)
+_patchCallStep_02 : jsr 0000
                     ldy _ddaCurrentValue : lda _ptrReadTexture,Y : sta _renCurrentColor : 
                  	lda _ddaCurrentValue : sta tmp0 :
                  	lda tmp0 : sta tmp0 : lda #0 : sta tmp0+1 :
@@ -283,12 +302,12 @@ LeftCol_loop :
                     inc _idxScreenLine : 
                     lda _idxScreenLine : 
                     cmp #VIEWPORT_HEIGHT + VIEWPORT_START_LINE : 
-                    bcs LeftCol_endloop : 
+                    bcs LeftCol_endloop_001 : 
                     lda _ddaCurrentValue : 
                     cmp _ddaEndValue : 
-                    bcs LeftCol_endloop : 
-                    jmp LeftCol_loop : 
-                    LeftCol_endloop : .) : 
+                    bcs LeftCol_endloop_001 : 
+                    jmp LeftCol_loop_001 : 
+                    LeftCol_endloop_001 
 
 
 
@@ -373,9 +392,13 @@ LeftSliceEmpty
             sta         _ddaCurrentError
 ;         ddaStepFunction     = &ddaStep1;
             lda         #<(_ddaStep1)
-            sta         _ddaStepFunction
+            ;; sta         _ddaStepFunction
+            sta         _patchCallStep_03+1
+            sta         _patchCallStep_04+1
             lda         #>(_ddaStep1)
-            sta         _ddaStepFunction+1
+            ;; sta         _ddaStepFunction+1
+            sta         _patchCallStep_03+2
+            sta         _patchCallStep_04+2
 
     jmp     ddaInitDone
 ;     } else if   (ddaNbVal < ddaNbStep) {
@@ -385,9 +408,13 @@ NbStepGreaterThanNbVal
             sta         _ddaCurrentError
 ;         ddaStepFunction     = &ddaStep2;
             lda         #<(_ddaStep2)
-            sta         _ddaStepFunction
+            ;; sta         _ddaStepFunction
+            sta         _patchCallStep_03+1
+            sta         _patchCallStep_04+1
             lda         #>(_ddaStep2)
-            sta         _ddaStepFunction+1
+            ;; sta         _ddaStepFunction+1
+            sta         _patchCallStep_03+2
+            sta         _patchCallStep_04+2
     jmp     ddaInitDone
 ;     } else {
 NbStepEqualsNbVal    
@@ -396,9 +423,13 @@ NbStepEqualsNbVal
             sta         _ddaCurrentError
 ;         ddaStepFunction     = &ddaStep0;
             lda         #<(_ddaStep0)
-            sta         _ddaStepFunction
+            ;; sta         _ddaStepFunction
+            sta         _patchCallStep_03+1
+            sta         _patchCallStep_04+1
             lda         #>(_ddaStep0)
-            sta         _ddaStepFunction+1
+            ;; sta         _ddaStepFunction+1
+            sta         _patchCallStep_03+2
+            sta         _patchCallStep_04+2
 ;     }
 ddaInitDone
 .)
@@ -410,15 +441,18 @@ ddaInitDone
 ;;                 idxScreenLine   += 1;
 ;;             } 
 
-                .( : loop : lda _idxScreenLine :
+loop_002 : lda _idxScreenLine :
                 cmp #VIEWPORT_START_LINE :
-                bpl end_loop : 
+                bpl end_loop_002 : 
+
                    ;; jsr (_ddaStepFunction)
-	               lda _ddaStepFunction : sta tmp0 : lda _ddaStepFunction+1 : sta tmp0+1 :
-	               .( : lda tmp0 : sta call+1: lda tmp0+1 : sta call+2 : ldy #0 :call : jsr 0000 : .) :
+	               ;; lda _ddaStepFunction : sta tmp0 : lda _ddaStepFunction+1 : sta tmp0+1 :
+	               ;; .( : lda tmp0 : sta call+1: lda tmp0+1 : sta call+2 : ldy #0 :call : jsr 0000 : .) :
+_patchCallStep_03 : jsr 0000
+
                    inc _idxScreenLine :
-                   jmp loop :
-                end_loop : .) :
+                   jmp loop_002 :
+                end_loop_002
 
 
 ;;             // theAdr = (unsigned char *)(HIRES_SCREEN_ADDRESS + multi120[idxScreenLine] + (idxScreenCol>>1));
@@ -444,10 +478,13 @@ ddaInitDone
 ;;                 idxScreenLine   += 1;
 ;;             } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
 
-                .( : 
-RightCol_loop : 
-                    lda _ddaStepFunction : sta tmp0 : lda _ddaStepFunction+1 : sta tmp0+1 :
-                    .( : lda tmp0 : sta call+1: lda tmp0+1 : sta call+2 : ldy #0 :call : jsr 0000 : .) :
+
+RightCol_loop_003 : 
+                    ;; lda _ddaStepFunction : sta tmp0 : lda _ddaStepFunction+1 : sta tmp0+1 :
+                    ;; .( : lda tmp0 : sta call+1: lda tmp0+1 : sta call+2 : ldy #0 :call : jsr 0000 : .) :
+
+_patchCallStep_04 : jsr 0000
+
                 	lda _ddaCurrentValue : sta tmp0 :
                 	lda tmp0 : sta tmp0 : lda #0 : sta tmp0+1 :
                 	lda _ptrReadTexture : sta tmp1 : lda _ptrReadTexture+1 : sta tmp1+1 :
@@ -500,12 +537,12 @@ RightCol_loop :
                     inc _idxScreenLine : 
                     lda _idxScreenLine : 
                     cmp #VIEWPORT_HEIGHT + VIEWPORT_START_LINE : 
-                    bcs RightCol_endloop : 
+                    bcs RightCol_endloop_003 : 
                     lda _ddaCurrentValue : 
                     cmp _ddaEndValue : 
-                    bcs RightCol_endloop : 
-                    jmp RightCol_loop : 
-                    RightCol_endloop : .) : 
+                    bcs RightCol_endloop_003 : 
+                    jmp RightCol_loop_003 : 
+                    RightCol_endloop_003
 
 ;;         }
 RightSliceEmpty

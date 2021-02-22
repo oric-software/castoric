@@ -259,13 +259,15 @@ LeftCol_loop_001 :
                     ;; lda _ddaStepFunction : sta tmp0 : lda _ddaStepFunction+1 : sta tmp0+1
                     ;; .( : lda tmp0 : sta call+1: lda tmp0+1 : sta call+2 : ldy #0 :call : jsr 0000 : .)
 _patchCallStep_02 : jsr 0000
-                    ldy _ddaCurrentValue : lda _ptrReadTexture,Y : sta _renCurrentColor : 
-                 	lda _ddaCurrentValue : sta tmp0 :
-                 	lda tmp0 : sta tmp0 : lda #0 : sta tmp0+1 :
-                 	lda _ptrReadTexture : sta tmp1 : lda _ptrReadTexture+1 : sta tmp1+1 :
-                 	clc : lda tmp0 : adc tmp1 : sta tmp0 : lda tmp0+1 : adc tmp1+1 : sta tmp0+1 :
-                 	ldy #0 : lda (tmp0),y : sta tmp0 :
-                 	lda tmp0 : sta _renCurrentColor :   
+
+
+                    ldy _ddaCurrentValue : lda (_ptrReadTexture),Y : sta _renCurrentColor : 
+                 	;; lda _ddaCurrentValue : sta tmp0 :
+                 	;; lda tmp0 : sta tmp0 : lda #0 : sta tmp0+1 :
+                 	;; lda _ptrReadTexture : sta tmp1 : lda _ptrReadTexture+1 : sta tmp1+1 :
+                 	;; clc : lda tmp0 : adc tmp1 : sta tmp0 : lda tmp0+1 : adc tmp1+1 : sta tmp0+1 :
+                 	;; ldy #0 : lda (tmp0),y : sta tmp0 :
+                 	;; lda tmp0 : sta _renCurrentColor :   
 
 
                     ;; jsr _colorLeftTexel : 
@@ -485,12 +487,15 @@ RightCol_loop_003 :
 
 _patchCallStep_04 : jsr 0000
 
-                	lda _ddaCurrentValue : sta tmp0 :
-                	lda tmp0 : sta tmp0 : lda #0 : sta tmp0+1 :
-                	lda _ptrReadTexture : sta tmp1 : lda _ptrReadTexture+1 : sta tmp1+1 :
-                	clc : lda tmp0 : adc tmp1 : sta tmp0 : lda tmp0+1 : adc tmp1+1 : sta tmp0+1 :
-                	ldy #0 : lda (tmp0),y : sta tmp0 :
-                	lda tmp0 : sta _renCurrentColor : 
+
+                    ldy _ddaCurrentValue : lda (_ptrReadTexture),Y : sta _renCurrentColor :
+
+                	;; lda _ddaCurrentValue : sta tmp0 :
+                	;; lda tmp0 : sta tmp0 : lda #0 : sta tmp0+1 :
+                	;; lda _ptrReadTexture : sta tmp1 : lda _ptrReadTexture+1 : sta tmp1+1 :
+                	;; clc : lda tmp0 : adc tmp1 : sta tmp0 : lda tmp0+1 : adc tmp1+1 : sta tmp0+1 :
+                	;; ldy #0 : lda (tmp0),y : sta tmp0 :
+                	;; lda tmp0 : sta _renCurrentColor : 
 
 
                     ;; jsr _colorRightTexel : 

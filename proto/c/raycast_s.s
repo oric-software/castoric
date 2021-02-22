@@ -2,7 +2,8 @@
 ;; Author : Jean-Baptiste PERIN
 ;; Date : 2021
 ;; 
-#include "constants.h"
+#include "config.h"
+
 .zero 
 
 ; static unsigned char* tab_denom;

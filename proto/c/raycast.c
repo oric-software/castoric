@@ -288,30 +288,82 @@ void rayProcessWalls() {
                     if ((lAngle[RayIdXPoint1] & 0x80) == (lAngle[RayIdXPoint2] & 0x80)) {
                         drawLeftCuttingWall1Visible();
                     } else {
+#ifdef USE_C_RAYCAST
                         if (abs(lAngle[RayIdXPoint1] - lAngle[RayIdXPoint2]) > 127){
                             drawLeftCuttingWall1Visible();
                         } else {
                             drawRightCuttingWall1Visible();
                         }
+#else 
+                        asm (
+                            "ldy _RayIdXPoint2;"
+                            "lda _lAngle,Y;"
+                            "sta reg7;"
+                            "ldy _RayIdXPoint1;"
+                            "lda _lAngle,Y;"
+                            "sec;"
+                            "sbc reg7;"
+                            "bvc VeryWideAngle_01;"
+                            "jsr _drawLeftCuttingWall1Visible;"
+                            "jmp endAngleSpecific_01;"
+                        "VeryWideAngle_01;"
+                            "jsr _drawRightCuttingWall1Visible;"
+                        "endAngleSpecific_01;"
+
+                        );
+#endif 
                     }
 
                 } else if (lAngle[RayIdXPoint1] < 0) {
                     if ((lAngle[RayIdXPoint1] & 0x80) == (lAngle[RayIdXPoint2] & 0x80)) {
                         drawRightCuttingWall1Visible();
                     } else {
+#ifdef USE_C_RAYCAST
                         if (abs(lAngle[RayIdXPoint1] - lAngle[RayIdXPoint2]) > 127){
                             drawRightCuttingWall1Visible();
                         } else {
                             drawLeftCuttingWall1Visible();
                         }
+#else
+                        asm (
+                            "ldy _RayIdXPoint2;"
+                            "lda _lAngle,Y;"
+                            "sta reg7;"
+                            "ldy _RayIdXPoint1;"
+                            "lda _lAngle,Y;"
+                            "sec;"
+                            "sbc reg7;"
+                            "bvc VeryWideAngle_02;"
+                            "jsr _drawRightCuttingWall1Visible;"
+                            "jmp endAngleSpecific_02;"
+                        "VeryWideAngle_02;"
+                            "jsr _drawLeftCuttingWall1Visible;"
+                        "endAngleSpecific_02;"
+
+                        );
+#endif
                     }
 
                 } else { // (lAngle[idxPt1] < 0)
+#ifdef USE_C_RAYCAST
                     if (lAngle[RayIdXPoint2] < 0) {
                         drawRightCuttingWall1Visible();
                     } else {
                         drawLeftCuttingWall1Visible();
                     }
+#else
+                    asm (
+                        "ldy _RayIdXPoint2;"
+                        "lda _lAngle,Y;"
+                        "bpl PositivPoint2Angle;"
+                            "jsr _drawRightCuttingWall1Visible;"
+                        "jmp endPositivPoint2Angle;"
+                        "PositivPoint2Angle;"
+                            "jsr _drawLeftCuttingWall1Visible;"
+                        "endPositivPoint2Angle;"
+
+                    );
+#endif
                 }
             }
         } else {
@@ -322,28 +374,81 @@ void rayProcessWalls() {
                     if ((lAngle[RayIdXPoint1] & 0x80) == (lAngle[RayIdXPoint2] & 0x80)) {
                         drawLeftCuttingWall2Visible();
                     } else {
+#ifdef USE_C_RAYCAST
                         if (abs(lAngle[RayIdXPoint2] - lAngle[RayIdXPoint1]) > 127){
                             drawLeftCuttingWall2Visible();
                         } else {
                             drawRightCuttingWall2Visible();
                         }
+#else
+                        asm (
+                            "ldy _RayIdXPoint1;"
+                            "lda _lAngle,Y;"
+                            "sta reg7;"
+                            "ldy _RayIdXPoint2;"
+                            "lda _lAngle,Y;"
+                            "sec;"
+                            "sbc reg7;"
+                            "bvc VeryWideAngle_03;"
+                            "jsr _drawLeftCuttingWall2Visible;"
+                            "jmp endAngleSpecific_03;"
+                        "VeryWideAngle_03;"
+                            "jsr _drawRightCuttingWall2Visible;"
+                        "endAngleSpecific_03;"
+
+                        );
+#endif
                     }
                 } else if (lAngle[RayIdXPoint2] < 0) {
                     if ((lAngle[RayIdXPoint1] & 0x80) == (lAngle[RayIdXPoint2] & 0x80)) {
                         drawRightCuttingWall2Visible();
                     } else {
+#ifdef USE_C_RAYCAST
+
                         if (abs(lAngle[RayIdXPoint2] - lAngle[RayIdXPoint1]) > 127){
                             drawRightCuttingWall2Visible();
                         } else {
                             drawLeftCuttingWall2Visible();
                         }
+#else
+                        asm (
+                            "ldy _RayIdXPoint1;"
+                            "lda _lAngle,Y;"
+                            "sta reg7;"
+                            "ldy _RayIdXPoint2;"
+                            "lda _lAngle,Y;"
+                            "sec;"
+                            "sbc reg7;"
+                            "bvc VeryWideAngle_04;"
+                            "jsr _drawRightCuttingWall2Visible;"
+                            "jmp endAngleSpecific_04;"
+                        "VeryWideAngle_04;"
+                            "jsr _drawLeftCuttingWall2Visible;"
+                        "endAngleSpecific_04;"
+
+                        );
+#endif
                     }
                 } else { // (lAngle[idxPt1] == 0
+#ifdef USE_C_RAYCAST
                     if (lAngle[RayIdXPoint1] < 0) {
                         drawRightCuttingWall2Visible();
                     } else {
                         drawLeftCuttingWall2Visible();
                     }
+#else 
+                    asm (
+                        "ldy _RayIdXPoint1;"
+                        "lda _lAngle,Y;"
+                        "bpl PositivPoint2Angle_02;"
+                            "jsr _drawRightCuttingWall2Visible;"
+                        "jmp endPositivPoint2Angle_02;"
+                        "PositivPoint2Angle_02;"
+                            "jsr _drawLeftCuttingWall2Visible;"
+                        "endPositivPoint2Angle_02;"
+
+                    );
+#endif
                 }
             } else {
                 if (   (isFront[RayIdXPoint1] 

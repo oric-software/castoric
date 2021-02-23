@@ -12,7 +12,7 @@ ficcontent_header = f"""
 _clearViewport
 .(
 	lda #$40	; pixel eteint
-	ldx #VIEWPORT_WIDTH/2	
+	ldx #VIEWPORT_WIDTH/2-1	
 loop_x
 """	
 

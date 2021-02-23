@@ -7,6 +7,9 @@ python tools\precalcUnfish.py > proto\c\tabunfish.h
 python tools\precalcLogTrigo.py > proto\c\tablogtrigo.h
 python tools\precalcRayAngle.py > proto\c\tabrayangle.h
 
+REM [ref config_viewport]
+python tools\clearViewport.py > proto\c\viewport_s.s
+
 REM [ref texel_codec]
 python tools\precalcTexel.py > proto\c\tabTexelColor.h
 

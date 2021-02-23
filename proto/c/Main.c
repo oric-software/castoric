@@ -31,14 +31,6 @@
 #define CHANGE_INK_TO_BLUE	            4		
 
 
-
-
-
-
-
-
-
-
 void prepareRGB(){
     int ii;
 
@@ -63,6 +55,9 @@ void initCamera(){
 #ifdef DEBUG
 #include "debug.c"
 #endif
+
+#include "viewport.c"
+
 void gameLoop() {
 
     while (running) {
@@ -70,11 +65,11 @@ void gameLoop() {
         player ();
 
         rayInitCasting();
+
         rayProcessPoints();
         rayProcessWalls();
 
-        memset(HIRES_SCREEN_ADDRESS, 64, 8000); // 5120 = 0xB400 (std char) - 0xA000 (hires screen)
-        prepareRGB();
+        clearViewport();
         drawWalls();
 #ifdef USE_SPRITE        
         drawSprite (3, 3, texture_pillar);
@@ -116,9 +111,9 @@ void main(){
 #endif
 
     hires();
+    prepareRGB();
 
 #ifdef DEBUG
-    prepareRGB();
     drawWalls();
     // drawSprite (6, 6, texture_pillar);
 #endif

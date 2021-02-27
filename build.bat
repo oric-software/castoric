@@ -22,3 +22,8 @@ python tools\texture2buf.py img\logo.png > proto\c\texture_logo.h
 python tools\texture2buf.py img\redbrick.png > proto\c\texture_redbrick.h
 python tools\texture2buf.py img\christmas.bmp > proto\c\texture_christmas.h
 python tools\texture2buf.py img\pillar.png > proto\c\texture_pillar.h
+
+python tools\texture2buf.py img\ceologo.png > proto\c\texture_ceologo.h
+python tools\texture2buf.py img\oriclogo.png > proto\c\texture_oriclogo.h
+python tools\texture2buf.py img\greystone.png > proto\c\texture_greystone.h
+python tools\texture2buf.py img\purplestone.png > proto\c\texture_purplestone.h

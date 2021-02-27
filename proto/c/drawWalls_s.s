@@ -93,7 +93,7 @@ drawWalls_loop
             sta _wallId
 
 ;;         if (wallId !=255) {
-                lda     _wallId
+                ; SAVED lda     _wallId : cause A already contains wallId
                 cmp     #$FF
                 .( : bne LeftSliceNotEmpy : jmp LeftSliceEmpty : LeftSliceNotEmpy : .)
 ;; 
@@ -138,7 +138,8 @@ drawWalls_loop
 
 ;;             ddaNbStep           = columnHeight<<1;
 
-                lda _columnHeight : asl : sta _ddaNbStep
+                ; SAVED lda _columnHeight : cause A already contains _columnHeight
+                asl : sta _ddaNbStep
 
 ;;             ddaInit();
 

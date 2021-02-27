@@ -94,7 +94,7 @@ void main(){
     initCamera();
     
     // [ref scene_load]
-    initScene (scene_00);
+    initScene (scene_00, texture_00);
 
 #ifdef DEBUG
 

@@ -111,7 +111,7 @@ drawWalls_loop
 
 ;;             ptrTexture          = wallTexture[wallId];
 
-                lda _wallId: asl: tay: lda _wallTexture,Y: sta _ptrTexture: iny: lda _wallTexture,Y: sta _ptrTexture+1
+                ldy _wallId: lda _wallTexture_low,Y: sta _ptrTexture: lda _wallTexture_high,Y: sta _ptrTexture+1
 
 ;;             ptrReadTexture      = &(ptrTexture[offTexture]);
 
@@ -328,7 +328,7 @@ LeftSliceEmpty
 
 ;;             ptrTexture          = wallTexture[wallId];
 
-                lda _wallId: asl : tay: lda _wallTexture,Y: sta _ptrTexture: iny: lda _wallTexture,Y: sta _ptrTexture+1
+                ldy _wallId: lda _wallTexture_low,Y: sta _ptrTexture: lda _wallTexture_high,Y: sta _ptrTexture+1
 
 ;;     // =====================================
 ;;     // ============ RIGHT TEXEL
@@ -345,7 +345,7 @@ LeftSliceEmpty
 
 ;;             ptrTexture          = wallTexture[wallId];
 
-                lda _wallId: asl: tay: lda _wallTexture,Y: sta _ptrTexture: iny: lda _wallTexture,Y: sta _ptrTexture+1
+                ldy _wallId: lda _wallTexture_low,Y: sta _ptrTexture: lda _wallTexture_high,Y: sta _ptrTexture+1
 
 ;;             ptrReadTexture      = &(ptrTexture[offTexture]);
 

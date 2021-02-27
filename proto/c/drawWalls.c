@@ -71,7 +71,7 @@ void drawWalls(){
             //     "lda _columnTextureCoord: asl : tay : lda _multi32,Y: sta _offTexture : iny : lda _multi32,Y : sta _offTexture+1"
             // );
 
-            ptrTexture          = wallTexture[wallId];
+            ptrTexture          = (unsigned char *)((wallTexture_high[wallId] << 8) | wallTexture_low[wallId]);
             // asm (
             //     "lda _wallId: asl: tay: lda _wallTexture,Y: sta _ptrTexture: iny: lda _wallTexture,Y: sta _ptrTexture+1"
             // );
@@ -185,7 +185,7 @@ void drawWalls(){
 
         if (wallId !=255) {
 
-            ptrTexture          = wallTexture[wallId];
+            ptrTexture          = (unsigned char *)((wallTexture_high[wallId] << 8) | wallTexture_low[wallId]);
             // asm ("lda _wallId: asl : tay: lda _wallTexture,Y: sta _ptrTexture: iny: lda _wallTexture,Y: sta _ptrTexture+1");
 
     // =====================================
@@ -205,7 +205,7 @@ void drawWalls(){
             //     "lda _columnTextureCoord: asl : tay : lda _multi32,Y: sta _offTexture : iny : lda _multi32,Y : sta _offTexture+1"
             // );
            
-            ptrTexture          = wallTexture[wallId];
+            ptrTexture          = (unsigned char*)((wallTexture_high[wallId] << 8) | wallTexture_low[wallId]); // wallTexture[wallId];
             // asm (
             //     "lda _wallId: asl: tay: lda _wallTexture,Y: sta _ptrTexture: iny: lda _wallTexture,Y: sta _ptrTexture+1"
             // );

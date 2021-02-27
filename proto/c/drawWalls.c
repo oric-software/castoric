@@ -3,8 +3,8 @@
 #include "dda.c"
 
 extern unsigned int offTexture;
+extern unsigned char *     ptrTexture;             // Address of the texture 
 #ifdef USE_C_DRAWWALLS
-unsigned char *     ptrTexture;             // Address of the texture 
 
 
 unsigned char *     ptrReadTexture;             // Address of the texture 
@@ -65,7 +65,7 @@ void drawWalls(){
 
 
             columnTextureCoord  = tabTexCol[idxCurrentSlice]&(TEXTURE_SIZE-1); // modulo 32
-            offTexture          = multi32[columnTextureCoord];
+            offTexture          = (multi32_high[columnTextureCoord] << 8) | multi32_low[columnTextureCoord];
             // asm (
             //     "ldy _idxCurrentSlice: lda _tabTexCol,Y: and #TEXTURE_SIZE-1: sta _columnTextureCoord;"
             //     "lda _columnTextureCoord: asl : tay : lda _multi32,Y: sta _offTexture : iny : lda _multi32,Y : sta _offTexture+1"
@@ -120,7 +120,7 @@ void drawWalls(){
             // );
 
             // theAdr = (unsigned char *)(HIRES_SCREEN_ADDRESS + multi120[idxScreenLine] + (idxScreenCol>>1));
-            theAdr              = (unsigned char *)(baseAdr + multi120[idxScreenLine]); 
+            theAdr              = (unsigned char *)(baseAdr + (int)((multi120_high[idxScreenLine]<<8) | multi120_low[idxScreenLine])); 
 
             // asm (
             //     "lda _idxScreenLine;"
@@ -199,7 +199,7 @@ void drawWalls(){
             // );
 
             columnTextureCoord  = tabTexCol[idxCurrentSlice]&(TEXTURE_SIZE-1);  // modulo 32
-            offTexture          = multi32[columnTextureCoord];
+            offTexture          = (multi32_high[columnTextureCoord] << 8) | multi32_low[columnTextureCoord];
             // asm (
             //     "ldy _idxCurrentSlice: lda _tabTexCol,Y: and #TEXTURE_SIZE-1: sta _columnTextureCoord;"
             //     "lda _columnTextureCoord: asl : tay : lda _multi32,Y: sta _offTexture : iny : lda _multi32,Y : sta _offTexture+1"
@@ -251,7 +251,7 @@ void drawWalls(){
 
 
             // theAdr = (unsigned char *)(HIRES_SCREEN_ADDRESS + multi120[idxScreenLine] + (idxScreenCol>>1));
-            theAdr              = (unsigned char *)(baseAdr + multi120[idxScreenLine]);
+            theAdr              = (unsigned char *)(baseAdr + (int)((multi120_high[idxScreenLine]<<8) | multi120_low[idxScreenLine]));
             // asm (
             //     "lda _idxScreenLine;"
             //     "asl;"

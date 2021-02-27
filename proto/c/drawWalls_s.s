@@ -106,7 +106,7 @@ drawWalls_loop
 ;;             offTexture          = multi32[columnTextureCoord];
 
                 ldy _idxCurrentSlice: lda _tabTexCol,Y: and #TEXTURE_SIZE-1: sta _columnTextureCoord
-                lda _columnTextureCoord: asl : tay : lda _multi32,Y: sta _offTexture : iny : lda _multi32,Y : sta _offTexture+1
+                ldy _columnTextureCoord: lda _multi32_low,Y: sta _offTexture : lda _multi32_high,Y : sta _offTexture+1
 
 
 ;;             ptrTexture          = wallTexture[wallId];
@@ -231,15 +231,12 @@ _patchCallStep_01
 ;;             // theAdr = (unsigned char *)(HIRES_SCREEN_ADDRESS + multi120[idxScreenLine] + (idxScreenCol>>1));
 ;;             theAdr              = (unsigned char *)(baseAdr + multi120[idxScreenLine]); 
 
-                lda _idxScreenLine
-                asl
-                tay
-                lda _multi120,Y
-                iny
+                ldy _idxScreenLine
+                lda _multi120_low,Y
                 clc
                 adc _baseAdr
                 sta _theAdr
-                lda _multi120,Y
+                lda _multi120_high,Y
                 adc _baseAdr+1
                 sta _theAdr+1
 
@@ -343,7 +340,7 @@ LeftSliceEmpty
 ;;             offTexture          = multi32[columnTextureCoord];
 
                 ldy _idxCurrentSlice: lda _tabTexCol,Y: and #TEXTURE_SIZE-1: sta _columnTextureCoord
-                lda _columnTextureCoord: asl : tay : lda _multi32,Y: sta _offTexture : iny : lda _multi32,Y : sta _offTexture+1
+                ldy _columnTextureCoord: lda _multi32_low,Y: sta _offTexture : lda _multi32_high,Y : sta _offTexture+1
 
 
 ;;             ptrTexture          = wallTexture[wallId];
@@ -460,15 +457,12 @@ _patchCallStep_03 : jsr 0000
 ;;             // theAdr = (unsigned char *)(HIRES_SCREEN_ADDRESS + multi120[idxScreenLine] + (idxScreenCol>>1));
 ;;             theAdr              = (unsigned char *)(baseAdr + multi120[idxScreenLine]);
 
-                lda _idxScreenLine
-                asl
-                tay
-                lda _multi120,Y
-                iny
+                ldy _idxScreenLine
+                lda _multi120_low,Y
                 clc
                 adc _baseAdr
                 sta _theAdr
-                lda _multi120,Y
+                lda _multi120_high,Y
                 adc _baseAdr+1
                 sta _theAdr+1
 

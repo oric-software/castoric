@@ -1,31 +1,58 @@
 
 // [ref texture_file2buffer]
-#include "texture_christmas.h"
+//#include "texture_christmas.h"
 #include "texture_bluestone.h"
 #include "texture_redbrick.h"
-#include "texture_logo.h"
+#include "texture_ceologo.h"
+#include "texture_oriclogo.h"
+#include "texture_purplestone.h"
+#include "texture_greystone.h"
 
 // [ref scene_describe]
 signed char scene_00[] = {
 
-    /* nbPoints = */ 4, /* nbWall = */ 4
-	, -6, -6	 	// P0
-	, -6,  6		// P1
-	,  6,  6		// P2
-	,  6, -6		// P3
+    /* nbPoints = */ 11, /* nbWall = */ 12
+	, -12, -12	 	// P0
+	, -12,  12		// P1
+	,  12,  12		// P2
+	,  12, -12		// P3
+    ,  -6,  -6     // P4       
+    ,   0,  -6     // P5       
+    ,  -6,   0     // P6       
+    ,   0,   0     // P7       
+    ,   6,   0     // P8
+    ,   0,   6     // P9
+    ,   6,   6     // P10
 	, 0, 1   // W0
 	, 1, 2   // W1
 	, 2, 3   // W2
-	, 3, 0   // W2
+	, 3, 0   // W3
+	, 4, 5   // W4
+	, 6, 4   // W5
+	, 5, 7   // W6
+	, 7, 6   // W7
+	, 8, 7   // W8
+	, 7, 9   // W9
+	, 8, 10  // W10
+	, 9, 10  // W11
 
 };
 
 // [ref texture_file2buffer]
 unsigned char *wallTexture[] = {
 	texture_bluestone		// W0
-	, texture_christmas		// W1
+	, texture_bluestone		// W1
 	, texture_redbrick		// W2
-	, texture_logo			// W3
+	, texture_redbrick    // W3
+	, texture_purplestone   // W4
+	, texture_purplestone			// W5
+	, texture_ceologo			// W6
+	, texture_oriclogo			// W7
+	, texture_greystone			// W8
+	, texture_greystone			// W9
+	, texture_purplestone			// W10
+	, texture_purplestone			// W11
+
 };
 
 

@@ -36,7 +36,7 @@ _idxScreenCol           .dsb 1
 
 ;; unsigned char       columnHeight, columnTextureCoord;
 _columnHeight           .dsb 1
-_columnTextureCoord     .dsb 1
+_columnTextureCoord     .dsb 1 ;; TODO remove me cause I'm useless
 
 ;; unsigned char       wallId;
 _wallId                 .dsb 1
@@ -65,7 +65,7 @@ _drawWalls
 
         lda     #VIEWPORT_START_COLUMN-1
         sta     _idxScreenCol
-        lsr     ;"
+        lsr     
 
         adc     #<($A000)
         sta     _baseAdr
@@ -105,8 +105,9 @@ drawWalls_loop
 ;;             columnTextureCoord  = tabTexCol[idxCurrentSlice]&(TEXTURE_SIZE-1); // modulo 32
 ;;             offTexture          = multi32[columnTextureCoord];
 
-                ldy _idxCurrentSlice: lda _tabTexCol,Y: and #TEXTURE_SIZE-1: sta _columnTextureCoord
-                ldy _columnTextureCoord: lda _multi32_low,Y: sta _offTexture : lda _multi32_high,Y : sta _offTexture+1
+                ldy _idxCurrentSlice: lda _tabTexCol,Y: and #TEXTURE_SIZE-1: 
+                tay ;; SAVED : sta _columnTextureCoord: ldy _columnTextureCoord: 
+                lda _multi32_low,Y: sta _offTexture : lda _multi32_high,Y : sta _offTexture+1
 
 
 ;;             ptrTexture          = wallTexture[wallId];
@@ -242,33 +243,21 @@ _patchCallStep_01
 
 ;;             do {
 ;;                 (*ddaStepFunction)();
-                   ;; jsr (_ddaStepFunction)
 ;;                 renCurrentColor = ptrReadTexture[ddaCurrentValue];
 ;;                 colorLeftTexel();  // theAdr          += 120;
 ;;                 idxScreenLine   += 1;
 ;;             } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
-
-
                  
 LeftCol_loop_001 :
 
-
-                    ;; lda _ddaStepFunction : sta tmp0 : lda _ddaStepFunction+1 : sta tmp0+1
-                    ;; .( : lda tmp0 : sta call+1: lda tmp0+1 : sta call+2 : ldy #0 :call : jsr 0000 : .)
 _patchCallStep_02 : jsr 0000
 
-
-                    ldy _ddaCurrentValue : lda (_ptrReadTexture),Y : sta _renCurrentColor : 
-                 	;; lda _ddaCurrentValue : sta tmp0 :
-                 	;; lda tmp0 : sta tmp0 : lda #0 : sta tmp0+1 :
-                 	;; lda _ptrReadTexture : sta tmp1 : lda _ptrReadTexture+1 : sta tmp1+1 :
-                 	;; clc : lda tmp0 : adc tmp1 : sta tmp0 : lda tmp0+1 : adc tmp1+1 : sta tmp0+1 :
-                 	;; ldy #0 : lda (tmp0),y : sta tmp0 :
-                 	;; lda tmp0 : sta _renCurrentColor :   
+                    ldy _ddaCurrentValue : lda (_ptrReadTexture),Y : 
+                    tax ;; SAVED sta _renCurrentColor : 
 
 
                     ;; jsr _colorLeftTexel : 
-                        ldx         _renCurrentColor
+                        ;; SAVED ldx         _renCurrentColor
 
                         ;; *theAdr = tabLeftGreen[renCurrentColor];
                         ;; theAdr += NEXT_SCANLINE_INCREMENT;
@@ -320,7 +309,7 @@ LeftSliceEmpty
             inc _idxScreenCol : inc _idxCurrentSlice : ldy _idxCurrentSlice : lda _raywall,Y : sta _wallId
 
 ;;         if (wallId !=255) {
-                lda     _wallId
+                ; SAVED because A already contains _wallId : lda     _wallId
                 cmp     #$FF
                 .( : bne RightSliceNotEmpy : jmp RightSliceEmpty : RightSliceNotEmpy : .)
 
@@ -328,7 +317,8 @@ LeftSliceEmpty
 
 ;;             ptrTexture          = wallTexture[wallId];
 
-                ldy _wallId: lda _wallTexture_low,Y: sta _ptrTexture: lda _wallTexture_high,Y: sta _ptrTexture+1
+                tay ; SAVED ldy _wallId: because A contains _wallId
+                lda _wallTexture_low,Y: sta _ptrTexture: lda _wallTexture_high,Y: sta _ptrTexture+1
 
 ;;     // =====================================
 ;;     // ============ RIGHT TEXEL
@@ -339,8 +329,10 @@ LeftSliceEmpty
 ;;             columnTextureCoord  = tabTexCol[idxCurrentSlice]&(TEXTURE_SIZE-1);  // modulo 32
 ;;             offTexture          = multi32[columnTextureCoord];
 
-                ldy _idxCurrentSlice: lda _tabTexCol,Y: and #TEXTURE_SIZE-1: sta _columnTextureCoord
-                ldy _columnTextureCoord: lda _multi32_low,Y: sta _offTexture : lda _multi32_high,Y : sta _offTexture+1
+                ;; SAVED ldy _idxCurrentSlice: because Y already contains _idxCurrentSlice
+                lda _tabTexCol,Y: and #TEXTURE_SIZE-1: 
+                tay ; SAVED : sta _columnTextureCoord: ldy _columnTextureCoord: 
+                lda _multi32_low,Y: sta _offTexture : lda _multi32_high,Y : sta _offTexture+1
 
 
 ;;             ptrTexture          = wallTexture[wallId];
@@ -482,7 +474,8 @@ RightCol_loop_003 :
 _patchCallStep_04 : jsr 0000
 
 
-                    ldy _ddaCurrentValue : lda (_ptrReadTexture),Y : sta _renCurrentColor :
+                    ldy _ddaCurrentValue : lda (_ptrReadTexture),Y : 
+                    tax ; SAVED sta _renCurrentColor :
 
                 	;; lda _ddaCurrentValue : sta tmp0 :
                 	;; lda tmp0 : sta tmp0 : lda #0 : sta tmp0+1 :
@@ -495,7 +488,7 @@ _patchCallStep_04 : jsr 0000
                     ;; jsr _colorRightTexel : 
 
     ldy         #0
-    ldx         _renCurrentColor
+    ; SAVED ldx         _renCurrentColor
 
     lda         _tabRightRed,x
     ora         (_theAdr),y

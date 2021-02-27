@@ -60,8 +60,8 @@ _drawWalls
 ;;     ddaStartValue       = 0;
 
 
-        lda     #TEXTURE_SIZE
-        sta     _ddaNbVal
+        ;; lda     #TEXTURE_SIZE
+        ;; sta     _ddaNbVal
 
         lda     #VIEWPORT_START_COLUMN-1
         sta     _idxScreenCol
@@ -74,7 +74,7 @@ _drawWalls
         sta     _baseAdr+1
 
         lda     #0
-        sta     _ddaStartValue
+        ;; sta     _ddaStartValue
         sta     _idxCurrentSlice
 
 
@@ -146,22 +146,22 @@ drawWalls_loop
 
 .(
 ;     ddaCurrentValue         = ddaStartValue;
-    lda     _ddaStartValue
+    lda     #0
     sta     _ddaCurrentValue
 
 ;     ddaEndValue             = ddaStartValue + ddaNbVal;
-    lda     _ddaNbVal
-    clc
-    adc     _ddaStartValue
-    sta     _ddaEndValue
+    ; lda     #TEXTURE_SIZE
+    ; clc
+    ; adc     _ddaStartValue
+    ; sta     _ddaEndValue
 ; 
 ;     if          (ddaNbVal > ddaNbStep) {
     lda     _ddaNbStep
-    cmp     _ddaNbVal
+    cmp     #TEXTURE_SIZE
     beq     NbStepEqualsNbVal
     bcs     NbStepGreaterThanNbVal
 ;         ddaCurrentError     = ddaNbVal;
-            lda         _ddaNbVal
+            lda         #TEXTURE_SIZE
             sta         _ddaCurrentError
 ;         ddaStepFunction     = &ddaStep1;
             lda         #<(_ddaStep1)
@@ -192,7 +192,7 @@ NbStepGreaterThanNbVal
 ;     } else {
 NbStepEqualsNbVal    
 ;         ddaCurrentError     = ddaEndValue;
-            lda         _ddaEndValue
+            lda         #TEXTURE_SIZE ; _ddaEndValue
             sta         _ddaCurrentError
 ;         ddaStepFunction     = &ddaStep0;
             lda         #<(_ddaStep0)
@@ -297,7 +297,7 @@ _patchCallStep_02 : jsr 0000
                     cmp #VIEWPORT_HEIGHT + VIEWPORT_START_LINE : 
                     bcs LeftCol_endloop_001 : 
                     lda _ddaCurrentValue : 
-                    cmp _ddaEndValue : 
+                    cmp #TEXTURE_SIZE ; _ddaEndValue : 
                     bcs LeftCol_endloop_001 : 
                     jmp LeftCol_loop_001 : 
                     LeftCol_endloop_001 
@@ -375,22 +375,22 @@ LeftSliceEmpty
 
 .(
 ;     ddaCurrentValue         = ddaStartValue;
-    lda     _ddaStartValue
+    lda     #0
     sta     _ddaCurrentValue
 
 ;     ddaEndValue             = ddaStartValue + ddaNbVal;
-    lda     _ddaNbVal
-    clc
-    adc     _ddaStartValue
-    sta     _ddaEndValue
+    ; lda     #TEXTURE_SIZE ; _ddaNbVal
+    ; clc
+    ; adc     _ddaStartValue
+    ; sta     _ddaEndValue
 ; 
 ;     if          (ddaNbVal > ddaNbStep) {
     lda     _ddaNbStep
-    cmp     _ddaNbVal
+    cmp     #TEXTURE_SIZE 
     beq     NbStepEqualsNbVal
     bcs     NbStepGreaterThanNbVal
 ;         ddaCurrentError     = ddaNbVal;
-            lda         _ddaNbVal
+            lda         #TEXTURE_SIZE
             sta         _ddaCurrentError
 ;         ddaStepFunction     = &ddaStep1;
             lda         #<(_ddaStep1)
@@ -421,7 +421,7 @@ NbStepGreaterThanNbVal
 ;     } else {
 NbStepEqualsNbVal    
 ;         ddaCurrentError     = ddaEndValue;
-            lda         _ddaEndValue
+            lda         #TEXTURE_SIZE ; _ddaEndValue
             sta         _ddaCurrentError
 ;         ddaStepFunction     = &ddaStep0;
             lda         #<(_ddaStep0)
@@ -542,7 +542,7 @@ _patchCallStep_04 : jsr 0000
                     cmp #VIEWPORT_HEIGHT + VIEWPORT_START_LINE : 
                     bcs RightCol_endloop_003 : 
                     lda _ddaCurrentValue : 
-                    cmp _ddaEndValue : 
+                    cmp #TEXTURE_SIZE ; _ddaEndValue : 
                     bcs RightCol_endloop_003 : 
                     jmp RightCol_loop_003 : 
                     RightCol_endloop_003

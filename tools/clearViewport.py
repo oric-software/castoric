@@ -11,7 +11,6 @@ ficcontent_header = f"""
 #ifndef  USE_C_VIEWPORT
 _clearViewport
 .(
-	lda #$40	; pixel eteint
 	ldx #VIEWPORT_WIDTH/2-1	
 loop_x
 """	
@@ -30,8 +29,26 @@ clearViewportDone
 def main ():
     
 	content = ficcontent_header
-	for ii in range (config.VIEWPORT_HEIGHT * 3):
+	# Generate Sky part of viewport
+	content += f"lda #$40	; pixel eteint\n"
+	for ii in range (0, (config.VIEWPORT_HEIGHT * 3)//2, 3):
 		content += f"sta HIRES_SCREEN_ADDRESS + VIEWPORT_START_COLUMN/2 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + {ii}),x\n"
+		content += f"sta HIRES_SCREEN_ADDRESS + VIEWPORT_START_COLUMN/2 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + {ii+1}),x\n"
+
+	content += f"lda #$7F	; pixel allume\n"
+	for ii in range (0, (config.VIEWPORT_HEIGHT * 3)//2, 3):
+		content += f"sta HIRES_SCREEN_ADDRESS + VIEWPORT_START_COLUMN/2 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + {ii+2}),x\n"
+
+	# Generate Ground part of viewport
+	content += f"lda #$40	; pixel eteint\n"
+	for ii in range ((config.VIEWPORT_HEIGHT * 3)//2, (config.VIEWPORT_HEIGHT * 3), 3):
+		content += f"sta HIRES_SCREEN_ADDRESS + VIEWPORT_START_COLUMN/2 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + {ii}),x\n"
+		content += f"sta HIRES_SCREEN_ADDRESS + VIEWPORT_START_COLUMN/2 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + {ii+2}),x\n"
+
+	content += f"lda #$7F	; pixel allume\n"
+	for ii in range ((config.VIEWPORT_HEIGHT * 3)//2, (config.VIEWPORT_HEIGHT * 3), 3):
+		content += f"sta HIRES_SCREEN_ADDRESS + VIEWPORT_START_COLUMN/2 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + {ii+1}),x\n"
+
 	content += ficcontent_trailer
 	print (content)
 

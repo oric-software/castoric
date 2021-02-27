@@ -7,7 +7,7 @@
 
 ;; Variables shared with sprite
 ;; unsigned char *         ptrTexture;
-_ptrTexture             .dsb 2
+_ptrTexture             .dsb 2 ;; TODO: Remove me cause i am useless
 
 .text
 
@@ -111,18 +111,23 @@ drawWalls_loop
 
 
 ;;             ptrTexture          = wallTexture[wallId];
-
-                ldy _wallId: lda _wallTexture_low,Y: sta _ptrTexture: lda _wallTexture_high,Y: sta _ptrTexture+1
-
 ;;             ptrReadTexture      = &(ptrTexture[offTexture]);
 
+                ldy _wallId: lda _wallTexture_low,Y: 
                 clc
-                lda _ptrTexture
                 adc _offTexture
-                sta _ptrReadTexture
-                lda _ptrTexture+1
-                adc _offTexture+1
-                sta _ptrReadTexture+1
+                sta _ptrReadTexture: ; sta _ptrTexture
+                lda _wallTexture_high,Y: adc _offTexture+1: 
+                sta _ptrReadTexture+1: ; sta _ptrTexture+1
+
+
+                ;clc
+                ;lda _ptrTexture
+                ;adc _offTexture
+                ;sta _ptrReadTexture
+                ;lda _ptrTexture+1
+                ;adc _offTexture+1
+                ;sta _ptrReadTexture+1
 
 
 ;;             columnHeight        = TableVerticalPos[idxCurrentSlice]; 
@@ -317,8 +322,8 @@ LeftSliceEmpty
 
 ;;             ptrTexture          = wallTexture[wallId];
 
-                tay ; SAVED ldy _wallId: because A contains _wallId
-                lda _wallTexture_low,Y: sta _ptrTexture: lda _wallTexture_high,Y: sta _ptrTexture+1
+                ; tay ; SAVED ldy _wallId: because A contains _wallId
+                ; lda _wallTexture_low,Y: sta _ptrTexture: lda _wallTexture_high,Y: sta _ptrTexture+1
 
 ;;     // =====================================
 ;;     // ============ RIGHT TEXEL
@@ -336,18 +341,24 @@ LeftSliceEmpty
 
 
 ;;             ptrTexture          = wallTexture[wallId];
-
-                ldy _wallId: lda _wallTexture_low,Y: sta _ptrTexture: lda _wallTexture_high,Y: sta _ptrTexture+1
-
 ;;             ptrReadTexture      = &(ptrTexture[offTexture]);
 
+                ldy _wallId: lda _wallTexture_low,Y: 
                 clc
-                lda _ptrTexture
                 adc _offTexture
-                sta _ptrReadTexture
-                lda _ptrTexture+1
+                sta _ptrReadTexture ; sta _ptrTexture: 
+                lda _wallTexture_high,Y: 
                 adc _offTexture+1
-                sta _ptrReadTexture+1
+                sta _ptrReadTexture+1 ; sta _ptrTexture+1
+
+
+                ; clc
+                ; lda _ptrTexture
+                ; adc _offTexture
+                ; sta _ptrReadTexture
+                ; lda _ptrTexture+1
+                ; adc _offTexture+1
+                ; sta _ptrReadTexture+1
 
 
 

@@ -77,10 +77,14 @@ _drawWalls
         ;; sta     _ddaStartValue
         sta     _idxCurrentSlice
 
+        
+
 
 
 ;;     do {
 drawWalls_loop
+
+            
 
 ;;         baseAdr             += 1;
 ;;         idxScreenCol        += 1;
@@ -88,6 +92,9 @@ drawWalls_loop
 
             inc _baseAdr: .( : bne skip : inc _baseAdr+1: skip:.)
             inc _idxScreenCol
+
+            jsr _clearColumn
+            
             ldy _idxCurrentSlice
             lda _raywall,Y
             sta _wallId
@@ -299,8 +306,8 @@ _patchCallStep_02 : jsr 0000
                     bcs LeftCol_endloop_001 : 
                     lda _ddaCurrentValue : 
                     cmp #TEXTURE_SIZE ; _ddaEndValue : 
-                    bcs LeftCol_endloop_001 : 
-                    jmp LeftCol_loop_001 : 
+                    bcc LeftCol_loop_001 :
+                    ; jmp LeftCol_loop_001 : 
                     LeftCol_endloop_001 
 
 
@@ -551,8 +558,12 @@ _patchCallStep_04 : jsr 0000
 ;;         }
 RightSliceEmpty
 
+
 ;;         idxCurrentSlice++;
             inc         _idxCurrentSlice
+    
+
+
 
 ;;     } while (idxCurrentSlice < NUMBER_OF_SLICE-1);
         lda         _idxCurrentSlice

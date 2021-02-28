@@ -45,9 +45,9 @@ void prepareRGB(){
 
 // [ref camera_situation]
 void initCamera(){
-    rayCamPosX               = 0;
-    rayCamPosY               = 0; 
-    rayCamRotZ               = 0;
+    rayCamPosX               = 3;
+    rayCamPosY               = 3; 
+    rayCamRotZ               = 32;
     RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
 }
 
@@ -61,7 +61,7 @@ void initCamera(){
 void gameLoop() {
 
     while (running) {
-
+        doke(630,0);
         player ();
 
         rayInitCasting();
@@ -69,7 +69,7 @@ void gameLoop() {
         rayProcessPoints();
         rayProcessWalls();
 
-        clearViewport();
+        // clearViewport();
         drawWalls();
 #ifdef USE_SPRITE        
         drawSprite (3, 3, texture_pillar);
@@ -82,7 +82,7 @@ void gameLoop() {
         //     drawTexelOnScreen (VIEWPORT_HEIGHT, 40+ii, 63);
         //     drawTexelOnScreen (VIEWPORT_HEIGHT, 40-ii, 63);
         // }
-        printf("\nColor Textured Raycasting on Oric\n      Jean-Baptiste PERIN 2021\n(X=%d Y=%d) [a=%d]", rayCamPosX, rayCamPosY, rayCamRotZ);
+        printf("\nColor Textured Raycasting on Oric\n      Jean-Baptiste PERIN 2021\n(X=%d Y=%d) [a=%d] [t=%d]", rayCamPosX, rayCamPosY, rayCamRotZ, 65535-deek(630));
     }
 }
 

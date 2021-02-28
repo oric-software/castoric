@@ -14,7 +14,7 @@ void shiftRight();
 // [ref camera_situation]
 
 void player () {
-    switch (get()) {
+    switch (key()) {
     case 8:  // left 
         rayCamRotZ += ROT_ANGLE_STEP;
         RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;

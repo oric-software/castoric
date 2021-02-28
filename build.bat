@@ -9,6 +9,7 @@ python tools\precalcRayAngle.py > proto\c\tabrayangle.h
 
 REM [ref config_viewport]
 python tools\clearViewport.py > proto\c\viewport_s.s
+python tools\clearColumn.py > proto\c\column_s.s
 
 REM [ref texel_codec]
 python tools\precalcTexel.py > proto\c\tabTexelColor.h

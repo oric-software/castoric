@@ -10,28 +10,13 @@ git clone https://github.com/oric-software/castoric
 
 If you don't have git, you can download an archive of the projet by clicking the download link provided on [this page](https://github.com/oric-software/castoric).
 
-Once the repository is retrieved or the archive uncompressed, you should have a `castoric` directory created into which you can go:
+Once the repository is retrieved or the archive uncompressed, you should have a directory named `castoric` (or `castoric-main` if you downloaded the archive) created into which you can go:
 
 ```bat
 cd castoric
 ```
 
-If you have [python](www.python.org) (3.8.5 or above) and [PIL](https://pypi.org/project/Pillow/) library installed, you can rebuild all generated files before rebuilding the tap file. 
-
-```bat
-cd castoric
-
-.\build.bat
-```
-
-The script [build.bat](build.bat): 
-
-- generates precalculed lookup table
-- generates texel palette 
-- generates some header
-- generates texture buffers from image files
-
-But if don't have Python and PIL, you can't rebuild the tap file by using default pregenerated files that come with this repository. 
+Once in the directory, run the following commands to build and run the prototype:
 
 ```bat
 cd proto\c 

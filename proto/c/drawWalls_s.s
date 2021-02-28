@@ -43,131 +43,188 @@ _wallId                 .dsb 1
 
 .text
 
-PREPARE
-.(
-    ; columnTextureCoord  = tabTexCol[idxCurrentSlice]&(TEXTURE_SIZE-1);\
-    ; offTexture          = (multi32_high[columnTextureCoord] << 8) | multi32_low[columnTextureCoord];\
-    ldy _idxCurrentSlice: lda _tabTexCol,Y: and #TEXTURE_SIZE-1: 
-    tay
-    lda _multi32_low,Y: sta _offTexture : lda _multi32_high,Y : sta _offTexture+1
-    ; ptrTexture          = (unsigned char *)((wallTexture_high[wallId] << 8) | wallTexture_low[wallId]);\
-    ; ptrReadTexture      = &(ptrTexture[offTexture]);\
-    ldy _wallId: lda _wallTexture_low,Y: 
-    clc
-    adc _offTexture
-    sta _ptrReadTexture: ; sta _ptrTexture
-    lda _wallTexture_high,Y: adc _offTexture+1: 
-    sta _ptrReadTexture+1: ; sta _ptrTexture+1
-    ; columnHeight        = TableVerticalPos[idxCurrentSlice];\
-    ; ddaNbStep           = columnHeight<<1;\
-    ldy _idxCurrentSlice
-    lda _TableVerticalPos,Y
-    sta _columnHeight
-    asl : sta _ddaNbStep
-    ; idxScreenLine       = VIEWPORT_HEIGHT/2 - columnHeight + VIEWPORT_START_LINE;\
-    sec : lda #VIEWPORT_HEIGHT/2+VIEWPORT_START_LINE : sbc _columnHeight : sta _idxScreenLine
-    ; ddaCurrentValue     = 0;
-    lda #0 : sta _ddaCurrentValue
+; PREPARE
+; .(
+;     ; columnTextureCoord  = tabTexCol[idxCurrentSlice]&(TEXTURE_SIZE-1);\
+;     ; offTexture          = (multi32_high[columnTextureCoord] << 8) | multi32_low[columnTextureCoord];\
+;     ldy _idxCurrentSlice: lda _tabTexCol,Y: and #TEXTURE_SIZE-1: 
+;     tay
+;     lda _multi32_low,Y: sta _offTexture : lda _multi32_high,Y : sta _offTexture+1
+;     ; ptrTexture          = (unsigned char *)((wallTexture_high[wallId] << 8) | wallTexture_low[wallId]);\
+;     ; ptrReadTexture      = &(ptrTexture[offTexture]);\
+;     ldy _wallId: lda _wallTexture_low,Y: 
+;     clc
+;     adc _offTexture
+;     sta _ptrReadTexture: ; sta _ptrTexture
+;     lda _wallTexture_high,Y: adc _offTexture+1: 
+;     sta _ptrReadTexture+1: ; sta _ptrTexture+1
+;     ; columnHeight        = TableVerticalPos[idxCurrentSlice];\
+;     ; ddaNbStep           = columnHeight<<1;\
+;     ldy _idxCurrentSlice
+;     lda _TableVerticalPos,Y
+;     sta _columnHeight
+;     asl : sta _ddaNbStep
+;     ; idxScreenLine       = VIEWPORT_HEIGHT/2 - columnHeight + VIEWPORT_START_LINE;\
+;     sec : lda #VIEWPORT_HEIGHT/2+VIEWPORT_START_LINE : sbc _columnHeight : sta _idxScreenLine
+;     ; ddaCurrentValue     = 0;
+;     lda #0 : sta _ddaCurrentValue
+; .)
+;     rts
+; 
+
+#define PREPARE :.(:\
+    ldy _idxCurrentSlice: lda _tabTexCol,Y: and #TEXTURE_SIZE-1: :\
+    tay:\
+    lda _multi32_low,Y: sta _offTexture : lda _multi32_high,Y : sta _offTexture+1:\
+    ldy _wallId: lda _wallTexture_low,Y: :\
+    clc:\
+    adc _offTexture:\
+    sta _ptrReadTexture:\
+    lda _wallTexture_high,Y: adc _offTexture+1:\
+    sta _ptrReadTexture+1::\
+    ldy _idxCurrentSlice:\
+    lda _TableVerticalPos,Y:\
+    sta _columnHeight:\
+    asl : sta _ddaNbStep:\
+    sec : lda #VIEWPORT_HEIGHT/2+VIEWPORT_START_LINE : sbc _columnHeight : sta _idxScreenLine:\
+    lda #0 : sta _ddaCurrentValue:\
 .)
-    rts
+
 
 ; x contains _renCurrentColor
-COLOR_LEFT_TEXEL
-.(
-    lda         _tabLeftRed,x
-    ldy         #0
-    sta         (_theAdr),y
-    lda         _tabLeftGreen,x
-    ldy         #40
-    sta         (_theAdr),y
-    lda         _tabLeftBlue,x
-    ldy         #80
-    sta         (_theAdr),y
-    clc     
-    lda         _theAdr
-    adc         #120
-    sta         _theAdr
-.(  
-    bcc skip:    inc _theAdr+1: skip .)
+#define COLOR_LEFT_TEXEL :.(:\
+    lda         _tabLeftRed,x:\
+    ldy         #0:\
+    sta         (_theAdr),y:\
+    lda         _tabLeftGreen,x:\
+    ldy         #40:\
+    sta         (_theAdr),y:\
+    lda         _tabLeftBlue,x:\
+    ldy         #80:\
+    sta         (_theAdr),y:\
+    clc     :\
+    lda         _theAdr:\
+    adc         #120:\
+    sta         _theAdr:\
+.(  :\
+    bcc skip:    inc _theAdr+1: skip .):\
 .)
-    rts
 
 ; x contains _renCurrentColor
-COLOR_RIGHT_TEXEL
-.(
-    lda         _tabRightRed,x
-    ldy         #0
-    ora         (_theAdr),y
-    sta         (_theAdr),y
-    lda         _tabRightGreen,x
-    ldy         #40
-    ora         (_theAdr),y
-    sta         (_theAdr),y
-    lda         _tabRightBlue,x
-    ldy         #80
-    ora         (_theAdr),y
-    sta         (_theAdr),y
-    clc     
-    lda         _theAdr 
-    adc         #120
-    sta         _theAdr
-.(  
-    bcc skip:    inc _theAdr+1: skip .)
+#define COLOR_RIGHT_TEXEL :.(:\
+    lda         _tabRightRed,x:\
+    ldy         #0:\
+    ora         (_theAdr),y:\
+    sta         (_theAdr),y:\
+    lda         _tabRightGreen,x:\
+    ldy         #40:\
+    ora         (_theAdr),y:\
+    sta         (_theAdr),y:\
+    lda         _tabRightBlue,x:\
+    ldy         #80:\
+    ora         (_theAdr),y:\
+    sta         (_theAdr),y:\
+    clc     :\
+    lda         _theAdr :\
+    adc         #120:\
+    sta         _theAdr:\
+.(  :\
+    bcc skip:    inc _theAdr+1: skip .):\
 .)
-    rts
 
-DDA_STEP_0
-.(
-    inc         _ddaCurrentValue
-.)
-    rts
 
-DDA_STEP_1
-.(
-loop
-    lda         _ddaCurrentError
-    bmi         end_loop
-    asl         
-    cmp         _ddaNbStep
-    bcc         end_loop
-            lda         _ddaCurrentError
-            sec ;; FIXME : this sec is useless
-            sbc         _ddaNbStep
-            sta         _ddaCurrentError
-            inc         _ddaCurrentValue
-    jmp         loop
-end_loop
-    lda         _ddaCurrentError
-    clc
-    adc         #TEXTURE_SIZE
-    sta         _ddaCurrentError
-.)
-    rts
+; DDA_STEP_0
+; .(
+;     inc         _ddaCurrentValue
+; .)
+;     rts
+#define DDA_STEP_0 inc _ddaCurrentValue:
 
-DDA_STEP_2
-.(
-    lda         _ddaCurrentError
-    sec
-    sbc         #TEXTURE_SIZE
-    sta         _ddaCurrentError
-;     if ((ddaCurrentError<<1) < ddaNbStep) {
-    bmi         updateError
-    asl
-    cmp         _ddaNbStep
-    bcc         updateError
-    rts
-updateError
-;         ddaCurrentError     += ddaNbStep;
-            lda         _ddaCurrentError
-            clc
-            adc         _ddaNbStep
-            sta         _ddaCurrentError
-;         ddaCurrentValue     += 1;
-            inc         _ddaCurrentValue
-;     }
-.)
-    rts
+; DDA_STEP_1
+; .(
+; loop
+;     lda         _ddaCurrentError
+;     bmi         end_loop
+;     asl         
+;     cmp         _ddaNbStep
+;     bcc         end_loop
+;             lda         _ddaCurrentError
+;             sec ;; FIXME : this sec is useless
+;             sbc         _ddaNbStep
+;             sta         _ddaCurrentError
+;             inc         _ddaCurrentValue
+;     jmp         loop
+; end_loop
+;     lda         _ddaCurrentError
+;     clc
+;     adc         #TEXTURE_SIZE
+;     sta         _ddaCurrentError
+; .)
+;     rts
 
+;; FIXME : this sec is useless
+#define DDA_STEP_1 :.(:loop:\
+    lda         _ddaCurrentError:\
+    bmi         end_loop:\
+    asl         :\
+    cmp         _ddaNbStep:\
+    bcc         end_loop:\
+            lda         _ddaCurrentError:\
+            sec :\
+            sbc         _ddaNbStep:\
+            sta         _ddaCurrentError:\
+            inc         _ddaCurrentValue:\
+    jmp         loop:\
+end_loop:\
+    lda         _ddaCurrentError:\
+    clc:\
+    adc         #TEXTURE_SIZE:\
+    sta         _ddaCurrentError:\
+.):
+
+
+; DDA_STEP_2
+; .(
+;     lda         _ddaCurrentError
+;     sec
+;     sbc         #TEXTURE_SIZE
+;     sta         _ddaCurrentError
+; ;     if ((ddaCurrentError<<1) < ddaNbStep) {
+;     bmi         updateError
+;     asl
+;     cmp         _ddaNbStep
+;     bcc         updateError
+;     rts
+; updateError
+; ;         ddaCurrentError     += ddaNbStep;
+;             lda         _ddaCurrentError
+;             clc
+;             adc         _ddaNbStep
+;             sta         _ddaCurrentError
+; ;         ddaCurrentValue     += 1;
+;             inc         _ddaCurrentValue
+; ;     }
+; .)
+;     rts
+
+;; FIXME : this clc is useless
+#define DDA_STEP_2 :.( :\
+     lda         _ddaCurrentError:\
+     sec:\
+     sbc         #TEXTURE_SIZE:\
+     sta         _ddaCurrentError:\
+     bmi         updateError:\
+     asl:\
+     cmp         _ddaNbStep:\
+     bcs         step2Done:\
+updateError:\
+        lda         _ddaCurrentError:\
+        clc:\
+        adc         _ddaNbStep:\
+        sta         _ddaCurrentError:\
+        inc         _ddaCurrentValue:\
+step2Done:\
+ .)
 
 UNDER_SAMPLE_LEFT
 .(
@@ -180,7 +237,7 @@ UNDER_SAMPLE_LEFT
 loop_000 : lda _idxScreenLine : 
         cmp #VIEWPORT_START_LINE : 
         bpl end_loop_000 
-        jsr DDA_STEP_1
+        DDA_STEP_1
         inc _idxScreenLine
         jmp loop_000 
 end_loop_000
@@ -203,12 +260,12 @@ end_loop_000
     ; } while ((ddaCurrentValue < TEXTURE_SIZE) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
 loop_001 :
 
-        jsr DDA_STEP_1
+        DDA_STEP_1
 
         ldy _ddaCurrentValue : lda (_ptrReadTexture),Y : 
         tax ;; SAVED sta _renCurrentColor : 
 
-        jsr COLOR_LEFT_TEXEL
+        COLOR_LEFT_TEXEL
 
         inc _idxScreenLine
 
@@ -235,7 +292,7 @@ OVER_SAMPLE_LEFT
 loop_000 : lda _idxScreenLine : 
         cmp #VIEWPORT_START_LINE : 
         bpl end_loop_000 
-        jsr DDA_STEP_2
+        DDA_STEP_2
         inc _idxScreenLine
         jmp loop_000 
 end_loop_000
@@ -258,12 +315,12 @@ end_loop_000
     ; } while ((ddaCurrentValue < TEXTURE_SIZE) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
 loop_001 :
 
-        jsr DDA_STEP_2
+        DDA_STEP_2
 
         ldy _ddaCurrentValue : lda (_ptrReadTexture),Y : 
         tax ;; SAVED sta _renCurrentColor : 
 
-        jsr COLOR_LEFT_TEXEL
+        COLOR_LEFT_TEXEL
 
         inc _idxScreenLine
 
@@ -290,7 +347,7 @@ COPY_SAMPLE_LEFT
 loop_000 : lda _idxScreenLine : 
         cmp #VIEWPORT_START_LINE : 
         bpl end_loop_000 
-        jsr DDA_STEP_0
+        DDA_STEP_0
         inc _idxScreenLine
         jmp loop_000 
 end_loop_000
@@ -313,12 +370,12 @@ end_loop_000
     ; } while ((ddaCurrentValue < TEXTURE_SIZE) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
 loop_001 :
 
-        jsr DDA_STEP_0
+        DDA_STEP_0
 
         ldy _ddaCurrentValue : lda (_ptrReadTexture),Y : 
         tax ;; SAVED sta _renCurrentColor : 
 
-        jsr COLOR_LEFT_TEXEL
+        COLOR_LEFT_TEXEL
 
         inc _idxScreenLine
 
@@ -345,7 +402,7 @@ UNDER_SAMPLE_RIGHT
 loop_000 : lda _idxScreenLine : 
         cmp #VIEWPORT_START_LINE : 
         bpl end_loop_000 
-        jsr DDA_STEP_1
+        DDA_STEP_1
         inc _idxScreenLine
         jmp loop_000 
 end_loop_000
@@ -368,12 +425,12 @@ end_loop_000
     ; } while ((ddaCurrentValue < TEXTURE_SIZE) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
 loop_001 :
 
-        jsr DDA_STEP_1
+        DDA_STEP_1
 
         ldy _ddaCurrentValue : lda (_ptrReadTexture),Y : 
         tax ;; SAVED sta _renCurrentColor : 
 
-        jsr COLOR_RIGHT_TEXEL
+        COLOR_RIGHT_TEXEL
 
         inc _idxScreenLine
 
@@ -400,7 +457,7 @@ OVER_SAMPLE_RIGHT
 loop_000 : lda _idxScreenLine : 
         cmp #VIEWPORT_START_LINE : 
         bpl end_loop_000 
-        jsr DDA_STEP_2
+        DDA_STEP_2
         inc _idxScreenLine
         jmp loop_000 
 end_loop_000
@@ -423,12 +480,12 @@ end_loop_000
     ; } while ((ddaCurrentValue < TEXTURE_SIZE) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
 loop_001 :
 
-        jsr DDA_STEP_2
+        DDA_STEP_2
 
         ldy _ddaCurrentValue : lda (_ptrReadTexture),Y : 
         tax ;; SAVED sta _renCurrentColor : 
 
-        jsr COLOR_RIGHT_TEXEL
+        COLOR_RIGHT_TEXEL
 
         inc _idxScreenLine
 
@@ -455,7 +512,7 @@ COPY_SAMPLE_RIGHT
 loop_000 : lda _idxScreenLine : 
         cmp #VIEWPORT_START_LINE : 
         bpl end_loop_000 
-        jsr DDA_STEP_0
+        DDA_STEP_0
         inc _idxScreenLine
         jmp loop_000 
 end_loop_000
@@ -478,12 +535,12 @@ end_loop_000
     ; } while ((ddaCurrentValue < TEXTURE_SIZE) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
 loop_001 :
 
-        jsr DDA_STEP_0
+        DDA_STEP_0
 
         ldy _ddaCurrentValue : lda (_ptrReadTexture),Y : 
         tax ;; SAVED sta _renCurrentColor : 
 
-        jsr COLOR_RIGHT_TEXEL
+        COLOR_RIGHT_TEXEL
 
         inc _idxScreenLine
 
@@ -500,7 +557,7 @@ endloop_001
 
 drawLeftColumn
 .(
-    jsr     PREPARE
+    PREPARE
 
     lda     _ddaNbStep
     cmp     #TEXTURE_SIZE
@@ -520,7 +577,7 @@ drawLeftColumnDone
 
 drawRightColumn
 .(
-    jsr     PREPARE
+    PREPARE
 
     lda     _ddaNbStep
     cmp     #TEXTURE_SIZE

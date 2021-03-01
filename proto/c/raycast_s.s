@@ -153,6 +153,7 @@ _atan2_8:
     clc
     bpl Xpositiv
     eor #$ff
+    adc #1
     sec
 Xpositiv:
     tax
@@ -162,6 +163,7 @@ Xpositiv:
     clc
     bpl Ypositiv
     eor #$ff
+    adc #1
     sec
 Ypositiv:
     tay

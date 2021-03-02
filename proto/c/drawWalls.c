@@ -1,9 +1,13 @@
 #include "config.h"
-
+#include "tabidxrdtexture.h"
 #include "dda.c"
 
 extern unsigned int offTexture;
 extern unsigned char *     ptrTexture;             // Address of the texture 
+
+//unsigned char *ptrOffsetIndex;
+unsigned char nxtOffsetIndex;
+
 #ifdef USE_C_DRAWWALLS
 
 
@@ -28,13 +32,6 @@ extern unsigned char *     ptrTexture;             // Address of the texture
     *theAdr |= tabRightGreen[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;\
     *theAdr |= tabRightBlue[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;
 
-#define DDA_STEP_0 ddaCurrentValue         += 1;
-
-#define DDA_STEP_1  while ((ddaCurrentError<<1) >= ddaNbStep) {\
-                ddaCurrentError         -= ddaNbStep;\
-                ddaCurrentValue         += 1;\
-            }\
-            ddaCurrentError     += TEXTURE_SIZE;
 
 
 #define DDA_STEP_2  ddaCurrentError         -= TEXTURE_SIZE;\
@@ -44,45 +41,37 @@ extern unsigned char *     ptrTexture;             // Address of the texture
             }
 
 
-#define UNDER_SAMPLE(prim)         ddaCurrentError     = TEXTURE_SIZE;\
-        while (idxScreenLine < VIEWPORT_START_LINE){\
-            DDA_STEP_1;\
-            idxScreenLine   += 1;\
-        } \
-        theAdr              = (unsigned char *)(baseAdr + (int)((multi120_high[idxScreenLine]<<8) | multi120_low[idxScreenLine]));\
-        do {\
-            DDA_STEP_1;\
-            renCurrentColor = ptrReadTexture [ddaCurrentValue];\
-            prim;\
-            idxScreenLine   += 1;\
-        } while ((ddaCurrentValue < TEXTURE_SIZE) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
 
 #define OVER_SAMPLE(prim) ddaCurrentError     = ddaNbStep;\
         while (idxScreenLine < VIEWPORT_START_LINE){\
             DDA_STEP_2;\
+            ddaNbIter       -= 1;\
             idxScreenLine   += 1;\
         } \
         theAdr              = (unsigned char *)(baseAdr + (int)((multi120_high[idxScreenLine]<<8) | multi120_low[idxScreenLine]));\
         do {\
             DDA_STEP_2;\
+            ddaNbIter       -= 1;\
             renCurrentColor = ptrReadTexture [ddaCurrentValue];\
             prim;\
             idxScreenLine   += 1;\
-        } while ((ddaCurrentValue < TEXTURE_SIZE) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
+        } while ((ddaNbIter > 0) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
 
-#define COPY_SAMPLE(prim)         ddaCurrentError     = TEXTURE_SIZE;\
+
+#define UNROLL_SAMPLE(prim)         ddaCurrentError     = TEXTURE_SIZE;\
         while (idxScreenLine < VIEWPORT_START_LINE){\
-            DDA_STEP_0;\
+            ddaCurrentValue = ptrOffsetIndex[nxtOffsetIndex++];\
+            ddaNbIter       -= 1;\
             idxScreenLine   += 1;\
         } \
         theAdr              = (unsigned char *)(baseAdr + (int)((multi120_high[idxScreenLine]<<8) | multi120_low[idxScreenLine]));\
         do {\
-            DDA_STEP_0;\
+            ddaCurrentValue = ptrOffsetIndex[nxtOffsetIndex++];\
+            ddaNbIter       -= 1;\
             renCurrentColor = ptrReadTexture [ddaCurrentValue];\
             prim;\
             idxScreenLine   += 1;\
-        } while ((ddaCurrentValue < TEXTURE_SIZE) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
-
+        } while ((ddaNbIter > 0) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
 
 unsigned char *     ptrReadTexture;             // Address of the texture 
 unsigned char       idxCurrentSlice;
@@ -90,7 +79,7 @@ unsigned char *     baseAdr;
 signed char         idxScreenLine, idxScreenCol;
 unsigned char       columnHeight, columnTextureCoord;
 unsigned char       wallId;
-
+unsigned char       ddaNbIter;
 
 // =====================================
 // ============ LEFT TEXEL
@@ -99,13 +88,15 @@ unsigned char       wallId;
 void drawLeftColumn(){
 
     PREPARE;
+    ddaNbIter           = ddaNbStep;
 
-    if (TEXTURE_SIZE > ddaNbStep) {
-        UNDER_SAMPLE(COLOR_LEFT_TEXEL)
-    } else if   (TEXTURE_SIZE < ddaNbStep) {
+    if (ddaNbStep >= 64) {
         OVER_SAMPLE(COLOR_LEFT_TEXEL)
     } else {
-        COPY_SAMPLE(COLOR_LEFT_TEXEL)
+        ptrOffsetIndex = &(tabIdxRdTexture[((ddaNbStep+1)*ddaNbStep)/2]);
+        nxtOffsetIndex = 0;
+        ddaCurrentValue = ptrOffsetIndex[nxtOffsetIndex++];
+        UNROLL_SAMPLE(COLOR_LEFT_TEXEL)
     }
 }
 
@@ -118,15 +109,17 @@ void drawRightColumn(){
 
 
     PREPARE;
+    ddaNbIter           = ddaNbStep;
 
-    if  (TEXTURE_SIZE > ddaNbStep) {
-        UNDER_SAMPLE(COLOR_RIGHT_TEXEL)
-    } else if   (TEXTURE_SIZE < ddaNbStep) {
+    if (ddaNbStep >= 64){
         OVER_SAMPLE(COLOR_RIGHT_TEXEL)
     } else {
-        COPY_SAMPLE(COLOR_RIGHT_TEXEL)
-    }
+        ptrOffsetIndex = &(tabIdxRdTexture[((ddaNbStep+1)*ddaNbStep)/2]);
+        nxtOffsetIndex = 0;
+        ddaCurrentValue = ptrOffsetIndex[nxtOffsetIndex++];
+        UNROLL_SAMPLE(COLOR_RIGHT_TEXEL)
 
+    }
 }
 
 void drawWalls(){

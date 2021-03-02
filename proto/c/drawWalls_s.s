@@ -2,7 +2,7 @@
 ;; Date : 2021
 ;; 
 #include "config.h"
-
+#include "tabAdrTabIdxRd.h"
 .zero 
 
 ;; Variables shared with sprite
@@ -20,6 +20,10 @@ _offTexture              .dsb 2
 .zero
 ;; unsigned char *     ptrReadTexture;             // Address of the texture 
 _ptrReadTexture         .dsb 2
+
+;; unsigned char *ptrOffsetIndex;
+_ptrOffsetIndex         .dsb 2
+
 
 ;; unsigned char *     ptrTexture;             // Address of the texture 
 _prtTexture             .dsb 2
@@ -40,6 +44,9 @@ _columnTextureCoord     .dsb 1 ;; TODO remove me cause I'm useless
 
 ;; unsigned char       wallId;
 _wallId                 .dsb 1
+
+;; unsigned char       ddaNbIter;
+_ddaNbIter              .dsb 1
 
 .text
 
@@ -104,29 +111,14 @@ _wallId                 .dsb 1
 .)
 
 
-#define DDA_STEP_0 inc _ddaCurrentValue:
-
-;; FIXME : this sec is useless
-#define DDA_STEP_1 :.(:loop:\
-    lda         _ddaCurrentError:\
-    bmi         end_loop:\
-    asl         :\
-    cmp         _ddaNbStep:\
-    bcc         end_loop:\
-            lda         _ddaCurrentError:\
-            sec :\
-            sbc         _ddaNbStep:\
-            sta         _ddaCurrentError:\
-            inc         _ddaCurrentValue:\
-    jmp         loop:\
-end_loop:\
-    lda         _ddaCurrentError:\
-    clc:\
-    adc         #TEXTURE_SIZE:\
-    sta         _ddaCurrentError:\
+;; ddaCurrentValue = ptrOffsetIndex[nxtOffsetIndex++];
+#define DDA_STEP :.( :\
+     ldy        _nxtOffsetIndex:\
+     lda        (_ptrOffsetIndex), Y:\
+     sta        _ddaCurrentValue:\
+     iny:\
+     sty         _nxtOffsetIndex:\
 .):
-
-
 ;; FIXME : this clc is useless
 #define DDA_STEP_2 :.( :\
      lda         _ddaCurrentError:\
@@ -147,32 +139,6 @@ step2Done:\
  .)
 
 
-;\ TODO : this loop is useless when undersampling 
-#define UNDER_SAMPLE(prim) :.(:\
-    lda     #TEXTURE_SIZE: sta _ddaCurrentError :\
-loop_000 : lda _idxScreenLine :\
-        cmp #VIEWPORT_START_LINE :\
-        bpl end_loop_000 :\
-        DDA_STEP_1 :\
-        inc _idxScreenLine :\
-        jmp loop_000 :\
-end_loop_000 :\
-    ldy _idxScreenLine:lda _multi120_low,Y:clc:adc _baseAdr:sta _theAdr:lda _multi120_high,Y:adc _baseAdr+1:sta _theAdr+1 :\
-loop_001 :\
-        DDA_STEP_1 :\
-        ldy _ddaCurrentValue : lda (_ptrReadTexture),Y :\
-        tax :\
-        prim :\
-        inc _idxScreenLine :\
-        lda _idxScreenLine :\
-        cmp #VIEWPORT_HEIGHT + VIEWPORT_START_LINE :\
-        bcs endloop_001 :\
-        lda _ddaCurrentValue :\
-        cmp #TEXTURE_SIZE :\
-        bcs endloop_001 :\
-        jmp loop_001 :\
-endloop_001 :\
-.)
 
 
 #define OVER_SAMPLE(prim) :.(:\
@@ -202,18 +168,19 @@ endloop_001 :\
 .)
 
 
-#define COPY_SAMPLE(prim) :.(:\
+#define UNROLL_SAMPLE(prim) :.(:\
     lda     #TEXTURE_SIZE: sta _ddaCurrentError:\
 loop_000 : lda _idxScreenLine :\
         cmp #VIEWPORT_START_LINE :\
         bpl end_loop_000:\
-        DDA_STEP_0:\
+        DDA_STEP:\
+        dec _ddaNbIter:\
         inc _idxScreenLine:\
         jmp loop_000 :\
 end_loop_000:\
     ldy _idxScreenLine:lda _multi120_low,Y:clc:adc _baseAdr:sta _theAdr:lda _multi120_high,Y:adc _baseAdr+1:sta _theAdr+1 :\
 loop_001 :\
-        DDA_STEP_0:\
+        DDA_STEP:\
         ldy _ddaCurrentValue : lda (_ptrReadTexture),Y :\
         tax:\
         prim:\
@@ -221,9 +188,8 @@ loop_001 :\
         lda _idxScreenLine :\
         cmp #VIEWPORT_HEIGHT + VIEWPORT_START_LINE :\
         bcs endloop_001 :\
-        lda _ddaCurrentValue :\
-        cmp #TEXTURE_SIZE :\
-        bcs endloop_001 : \
+        dec _ddaNbIter:\
+        beq endloop_001 : \
         jmp loop_001 :\
 endloop_001 :\
 .)
@@ -232,18 +198,39 @@ endloop_001 :\
 drawLeftColumn
 .(
     PREPARE
-
-    lda     _ddaNbStep
-    cmp     #TEXTURE_SIZE : 
-    .( : bne skip : jmp     NbStepEqualsNbVal: skip :.)
-    .( : bcc skip : jmp NbStepGreaterThanNbVal : skip: .)
-        UNDER_SAMPLE(COLOR_LEFT_TEXEL)
-    jmp     drawLeftColumnDone
-NbStepGreaterThanNbVal    
+    lda _ddaNbStep: sta _ddaNbIter 
+    cmp #64
+    bcs goOverSample
+    jmp goUnroll
+goOverSample    
         OVER_SAMPLE(COLOR_LEFT_TEXEL)
-    jmp     drawLeftColumnDone
-NbStepEqualsNbVal    
-        COPY_SAMPLE(COLOR_LEFT_TEXEL)
+    jmp drawLeftColumnDone
+goUnroll    
+        ; ptrOffsetIndex = &(tabIdxRdTexture[((ddaNbStep+1)*ddaNbStep)/2]);
+        ldy _ddaNbStep 
+        lda _adrTabIdxRd_low,Y
+        sta _ptrOffsetIndex
+        lda _adrTabIdxRd_high,Y
+        sta _ptrOffsetIndex+1
+        ; nxtOffsetIndex = 0;
+        lda #0 : sta _nxtOffsetIndex
+        ; ddaCurrentValue = ptrOffsetIndex[nxtOffsetIndex++];
+        DDA_STEP
+        ; UNROLL_SAMPLE(COLOR_LEFT_TEXEL)
+        UNROLL_SAMPLE(COLOR_LEFT_TEXEL)
+
+
+;     lda     _ddaNbStep
+;     cmp     #TEXTURE_SIZE : 
+;     .( : bne skip : jmp     NbStepEqualsNbVal: skip :.)
+;     .( : bcc skip : jmp NbStepGreaterThanNbVal : skip: .)
+;         UNDER_SAMPLE(COLOR_LEFT_TEXEL)
+;     jmp     drawLeftColumnDone
+; NbStepGreaterThanNbVal    
+;         OVER_SAMPLE(COLOR_LEFT_TEXEL)
+;     jmp     drawLeftColumnDone
+; NbStepEqualsNbVal    
+;         COPY_SAMPLE(COLOR_LEFT_TEXEL)
 drawLeftColumnDone
 .)
     rts
@@ -251,18 +238,39 @@ drawLeftColumnDone
 drawRightColumn
 .(
     PREPARE
-
-    lda     _ddaNbStep
-    cmp     #TEXTURE_SIZE
-    .( : bne skip : jmp     NbStepEqualsNbVal: skip :.)
-    .( : bcc skip : jmp NbStepGreaterThanNbVal : skip: .)
-        UNDER_SAMPLE(COLOR_RIGHT_TEXEL)
-    jmp     drawRightColumnDone
-NbStepGreaterThanNbVal    
+    lda _ddaNbStep: sta _ddaNbIter 
+    cmp #64
+    bcs goOverSample
+    jmp goUnroll
+goOverSample    
         OVER_SAMPLE(COLOR_RIGHT_TEXEL)
-    jmp     drawRightColumnDone
-NbStepEqualsNbVal    
-        COPY_SAMPLE(COLOR_RIGHT_TEXEL)
+    jmp drawRightColumnDone
+goUnroll    
+        ; ptrOffsetIndex = &(tabIdxRdTexture[((ddaNbStep+1)*ddaNbStep)/2]);
+        ldy _ddaNbStep 
+        lda _adrTabIdxRd_low,Y
+        sta _ptrOffsetIndex
+        lda _adrTabIdxRd_high,Y
+        sta _ptrOffsetIndex+1
+        ; nxtOffsetIndex = 0;
+        lda #0 : sta _nxtOffsetIndex
+        ; ddaCurrentValue = ptrOffsetIndex[nxtOffsetIndex++];
+        DDA_STEP
+        ; UNROLL_SAMPLE(COLOR_LEFT_TEXEL)
+        UNROLL_SAMPLE(COLOR_RIGHT_TEXEL)
+
+;     lda     _ddaNbStep
+;     cmp     #TEXTURE_SIZE
+;     .( : bne skip : jmp     NbStepEqualsNbVal: skip :.)
+;     .( : bcc skip : jmp NbStepGreaterThanNbVal : skip: .)
+;         UNDER_SAMPLE(COLOR_RIGHT_TEXEL)
+;     jmp     drawRightColumnDone
+; NbStepGreaterThanNbVal    
+;         OVER_SAMPLE(COLOR_RIGHT_TEXEL)
+;     jmp     drawRightColumnDone
+; NbStepEqualsNbVal    
+;         COPY_SAMPLE(COLOR_RIGHT_TEXEL)
+
 drawRightColumnDone
 .)
     rts

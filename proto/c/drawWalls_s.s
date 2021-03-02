@@ -100,6 +100,42 @@ _ddaNbIter              .dsb 1
     bcc skip:    inc _theAdr+1: skip .):\
 .)
 
+
+; x contains _renCurrentColor
+#define COLOR_LEFT_TEXEL_FIRST :.(:\
+    lda         _tabLeftRed,x:\
+    ldy         #0:\
+    sta         (_theAdr),y:\
+    lda         _tabLeftGreen,x:\
+    ldy         #40:\
+    sta         (_theAdr),y:\
+    lda         _tabLeftBlue,x:\
+    ldy         #80:\
+    sta         (_theAdr),y:\
+.(  :\
+    bcc skip:    inc _theAdr+1: skip .):\
+.)
+
+
+; x contains _renCurrentColor
+#define COLOR_LEFT_TEXEL_SECOND :.(:\
+    lda         _tabLeftRed,x:\
+    ldy         #120:\
+    sta         (_theAdr),y:\
+    lda         _tabLeftGreen,x:\
+    ldy         #160:\
+    sta         (_theAdr),y:\
+    lda         _tabLeftBlue,x:\
+    ldy         #200:\
+    sta         (_theAdr),y:\
+    clc     :\
+    lda         _theAdr:\
+    adc         #240:\
+    sta         _theAdr:\
+.(  :\
+    bcc skip:    inc _theAdr+1: skip .):\
+.)
+
 ; x contains _renCurrentColor
 #define COLOR_RIGHT_TEXEL :.(:\
     lda         _tabRightRed,x:\
@@ -122,6 +158,46 @@ _ddaNbIter              .dsb 1
     bcc skip:    inc _theAdr+1: skip .):\
 .)
 
+
+; x contains _renCurrentColor
+#define COLOR_RIGHT_TEXEL_FIRST :.(:\
+    lda         _tabRightRed,x:\
+    ldy         #0:\
+    ora         (_theAdr),y:\
+    sta         (_theAdr),y:\
+    lda         _tabRightGreen,x:\
+    ldy         #40:\
+    ora         (_theAdr),y:\
+    sta         (_theAdr),y:\
+    lda         _tabRightBlue,x:\
+    ldy         #80:\
+    ora         (_theAdr),y:\
+    sta         (_theAdr),y:\
+.(  :\
+    bcc skip:    inc _theAdr+1: skip .):\
+.)
+
+; x contains _renCurrentColor
+#define COLOR_RIGHT_TEXEL_SECOND :.(:\
+    lda         _tabRightRed,x:\
+    ldy         #120:\
+    ora         (_theAdr),y:\
+    sta         (_theAdr),y:\
+    lda         _tabRightGreen,x:\
+    ldy         #160:\
+    ora         (_theAdr),y:\
+    sta         (_theAdr),y:\
+    lda         _tabRightBlue,x:\
+    ldy         #200:\
+    ora         (_theAdr),y:\
+    sta         (_theAdr),y:\
+    clc     :\
+    lda         _theAdr :\
+    adc         #240:\
+    sta         _theAdr:\
+.(  :\
+    bcc skip:    inc _theAdr+1: skip .):\
+.)
 
 ;; ddaCurrentValue = ptrOffsetIndex[nxtOffsetIndex++];
 #define DDA_STEP :.( :\
@@ -177,7 +253,7 @@ endloop_001 :\
 .)
 
 
-#define UNROLL_SAMPLE(prim) :.(:\
+#define UNROLL_SAMPLE(prim_frst,prim_scnd) :.(:\
     lda     #TEXTURE_SIZE: sta _ddaCurrentError:\
 loop_000 : lda _idxScreenLine :\
         cmp #VIEWPORT_START_LINE :\
@@ -192,7 +268,14 @@ loop_001 :\
         DDA_STEP:\
         ldy _ddaCurrentValue : lda (_ptrReadTexture),Y :\
         tax:\
-        prim:\
+        prim_frst:\
+        inc _idxScreenLine:\
+        dec _ddaNbIter:\
+        beq endloop_001 : \
+        DDA_STEP:\
+        ldy _ddaCurrentValue : lda (_ptrReadTexture),Y :\
+        tax:\
+        prim_scnd:\
         inc _idxScreenLine:\
         lda _idxScreenLine :\
         cmp #VIEWPORT_HEIGHT + VIEWPORT_START_LINE :\
@@ -219,7 +302,7 @@ goUnroll
         PREPARE_UNROLL_SAMPLE
         DDA_STEP
 
-        UNROLL_SAMPLE(COLOR_LEFT_TEXEL)
+        UNROLL_SAMPLE(COLOR_LEFT_TEXEL_FIRST,COLOR_LEFT_TEXEL_SECOND)
 
 drawLeftColumnDone
 .)
@@ -244,7 +327,7 @@ goUnroll
 
         DDA_STEP
 
-        UNROLL_SAMPLE(COLOR_RIGHT_TEXEL)
+        UNROLL_SAMPLE(COLOR_RIGHT_TEXEL_FIRST,COLOR_RIGHT_TEXEL_SECOND)
 
 drawRightColumnDone
 .)

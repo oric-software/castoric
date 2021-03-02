@@ -75,13 +75,18 @@ unsigned char       ddaNbIter;
 
 #define UNROLL_SAMPLE(prim)         ddaCurrentError     = TEXTURE_SIZE;\
         while (idxScreenLine < VIEWPORT_START_LINE){\
-            ddaCurrentValue = ptrOffsetIndex[nxtOffsetIndex++];\
+            DDA_STEP\
             ddaNbIter       -= 1;\
             idxScreenLine   += 1;\
         } \
         theAdr              = (unsigned char *)(baseAdr + (int)((multi120_high[idxScreenLine]<<8) | multi120_low[idxScreenLine]));\
         do {\
-            ddaCurrentValue = ptrOffsetIndex[nxtOffsetIndex++];\
+            DDA_STEP\
+            ddaNbIter       -= 1;\
+            renCurrentColor = ptrReadTexture [ddaCurrentValue];\
+            prim;\
+            idxScreenLine   += 1;\
+            DDA_STEP\
             ddaNbIter       -= 1;\
             renCurrentColor = ptrReadTexture [ddaCurrentValue];\
             prim;\

@@ -2,16 +2,27 @@
 #include "tabidxrdtexture.h"
 #include "dda.c"
 
-extern unsigned int offTexture;
-extern unsigned char *     ptrTexture;             // Address of the texture 
+extern unsigned int         offTexture;
+extern unsigned char *      ptrTexture;             // Address of the texture 
 
 #ifdef __GNUC__
-unsigned char *ptrOffsetIndex;
-unsigned char *     ptrTexture;             // Address of the texture 
+unsigned char *             ptrOffsetIndex;
+unsigned char *             ptrTexture;             // Address of the texture 
+#else 
+extern unsigned char *      ptrOffsetIndex;
 #endif
-unsigned char nxtOffsetIndex;
+unsigned char               nxtOffsetIndex;
 
 #ifdef USE_C_DRAWWALLS
+
+unsigned char *     ptrReadTexture;             // Address of the texture 
+unsigned char       idxCurrentSlice;
+unsigned char *     baseAdr;
+signed char         idxScreenLine, idxScreenCol;
+unsigned char       columnHeight, columnTextureCoord;
+unsigned char       wallId;
+unsigned char       ddaNbIter;
+
 
 
 #define PREPARE    columnTextureCoord  = tabTexCol[idxCurrentSlice]&(TEXTURE_SIZE-1);\
@@ -35,6 +46,7 @@ unsigned char nxtOffsetIndex;
     *theAdr |= tabRightGreen[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;\
     *theAdr |= tabRightBlue[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;
 
+#define DDA_STEP ddaCurrentValue = ptrOffsetIndex[nxtOffsetIndex++];\
 
 
 #define DDA_STEP_2  ddaCurrentError         -= TEXTURE_SIZE;\
@@ -76,13 +88,6 @@ unsigned char nxtOffsetIndex;
             idxScreenLine   += 1;\
         } while ((ddaNbIter > 0) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
 
-unsigned char *     ptrReadTexture;             // Address of the texture 
-unsigned char       idxCurrentSlice;
-unsigned char *     baseAdr;
-signed char         idxScreenLine, idxScreenCol;
-unsigned char       columnHeight, columnTextureCoord;
-unsigned char       wallId;
-unsigned char       ddaNbIter;
 
 // =====================================
 // ============ LEFT TEXEL
@@ -91,14 +96,14 @@ unsigned char       ddaNbIter;
 void drawLeftColumn(){
 
     PREPARE;
-    ddaNbIter           = ddaNbStep;
 
     if (ddaNbStep >= 64) {
         OVER_SAMPLE(COLOR_LEFT_TEXEL)
     } else {
+        ddaNbIter           = ddaNbStep;
         ptrOffsetIndex = &(tabIdxRdTexture[((ddaNbStep+1)*ddaNbStep)/2]);
         nxtOffsetIndex = 0;
-        ddaCurrentValue = ptrOffsetIndex[nxtOffsetIndex++];
+        DDA_STEP
         UNROLL_SAMPLE(COLOR_LEFT_TEXEL)
     }
 }
@@ -112,21 +117,21 @@ void drawRightColumn(){
 
 
     PREPARE;
-    ddaNbIter           = ddaNbStep;
 
     if (ddaNbStep >= 64){
         OVER_SAMPLE(COLOR_RIGHT_TEXEL)
     } else {
+        ddaNbIter           = ddaNbStep;
         ptrOffsetIndex = &(tabIdxRdTexture[((ddaNbStep+1)*ddaNbStep)/2]);
         nxtOffsetIndex = 0;
-        ddaCurrentValue = ptrOffsetIndex[nxtOffsetIndex++];
+        DDA_STEP
         UNROLL_SAMPLE(COLOR_RIGHT_TEXEL)
 
     }
 }
 #ifdef __GNUC__
 void clearColumn(){
-    
+
 }
 #endif
 void drawWalls(){

@@ -9,6 +9,9 @@
 ;; unsigned char *         ptrTexture;
 _ptrTexture             .dsb 2 ;; TODO: Remove me cause i am useless
 
+;; unsigned char *ptrOffsetIndex;
+_ptrOffsetIndex         .dsb 2
+
 .text
 
 ;; unsigned int offTexture;
@@ -20,9 +23,6 @@ _offTexture              .dsb 2
 .zero
 ;; unsigned char *     ptrReadTexture;             // Address of the texture 
 _ptrReadTexture         .dsb 2
-
-;; unsigned char *ptrOffsetIndex;
-_ptrOffsetIndex         .dsb 2
 
 
 ;; unsigned char *     ptrTexture;             // Address of the texture 

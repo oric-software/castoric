@@ -5,7 +5,10 @@
 extern unsigned int offTexture;
 extern unsigned char *     ptrTexture;             // Address of the texture 
 
-//unsigned char *ptrOffsetIndex;
+#ifdef __GNUC__
+unsigned char *ptrOffsetIndex;
+unsigned char *     ptrTexture;             // Address of the texture 
+#endif
 unsigned char nxtOffsetIndex;
 
 #ifdef USE_C_DRAWWALLS
@@ -121,7 +124,11 @@ void drawRightColumn(){
 
     }
 }
-
+#ifdef __GNUC__
+void clearColumn(){
+    
+}
+#endif
 void drawWalls(){
 
     idxScreenCol        = VIEWPORT_START_COLUMN-1;

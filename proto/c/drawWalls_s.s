@@ -50,24 +50,36 @@ _ddaNbIter              .dsb 1
 
 .text
 
+
 #define PREPARE :.(:\
     ldy _idxCurrentSlice: lda _tabTexCol,Y: and #TEXTURE_SIZE-1: :\
     tay:\
     lda _multi32_low,Y: sta _offTexture : lda _multi32_high,Y : sta _offTexture+1:\
-    ldy _wallId: lda _wallTexture_low,Y: :\
-    clc:\
-    adc _offTexture:\
-    sta _ptrReadTexture:\
-    lda _wallTexture_high,Y: adc _offTexture+1:\
-    sta _ptrReadTexture+1::\
     ldy _idxCurrentSlice:\
     lda _TableVerticalPos,Y:\
     sta _columnHeight:\
     asl : sta _ddaNbStep:\
     sec : lda #VIEWPORT_HEIGHT/2+VIEWPORT_START_LINE : sbc _columnHeight : sta _idxScreenLine:\
     lda #0 : sta _ddaCurrentValue:\
+    ldy _wallId: lda _wallTexture_low,Y: :\
+    clc:\
+    adc _offTexture:\
+    sta _ptrReadTexture:\
+    lda _wallTexture_high,Y: adc _offTexture+1:\
+    sta _ptrReadTexture+1::\
 .)
 
+
+
+#define PREPARE_UNROLL_SAMPLE :.(:\
+        lda _ddaNbStep: sta _ddaNbIter :\
+        tay  :\
+        lda _adrTabIdxRd_low,Y :\
+        sta _ptrOffsetIndex :\
+        lda _adrTabIdxRd_high,Y :\
+        sta _ptrOffsetIndex+1 :\
+        lda #0 : sta _nxtOffsetIndex :\
+.)
 
 ; x contains _renCurrentColor
 #define COLOR_LEFT_TEXEL :.(:\
@@ -160,9 +172,6 @@ loop_001 :\
         lda _idxScreenLine :\
         cmp #VIEWPORT_HEIGHT + VIEWPORT_START_LINE :\
         bcs endloop_001 :\
-        lda _ddaCurrentValue :\
-        cmp #TEXTURE_SIZE :\
-        bcs endloop_001 :\
         jmp loop_001 :\
 endloop_001 :\
 .)
@@ -198,39 +207,20 @@ endloop_001 :\
 drawLeftColumn
 .(
     PREPARE
-    lda _ddaNbStep: sta _ddaNbIter 
+    lda _ddaNbStep: 
     cmp #64
     bcs goOverSample
     jmp goUnroll
 goOverSample    
+        ;; PREPARE_OVER_SAMPLE
         OVER_SAMPLE(COLOR_LEFT_TEXEL)
     jmp drawLeftColumnDone
 goUnroll    
-        ; ptrOffsetIndex = &(tabIdxRdTexture[((ddaNbStep+1)*ddaNbStep)/2]);
-        ldy _ddaNbStep 
-        lda _adrTabIdxRd_low,Y
-        sta _ptrOffsetIndex
-        lda _adrTabIdxRd_high,Y
-        sta _ptrOffsetIndex+1
-        ; nxtOffsetIndex = 0;
-        lda #0 : sta _nxtOffsetIndex
-        ; ddaCurrentValue = ptrOffsetIndex[nxtOffsetIndex++];
+        PREPARE_UNROLL_SAMPLE
         DDA_STEP
-        ; UNROLL_SAMPLE(COLOR_LEFT_TEXEL)
+
         UNROLL_SAMPLE(COLOR_LEFT_TEXEL)
 
-
-;     lda     _ddaNbStep
-;     cmp     #TEXTURE_SIZE : 
-;     .( : bne skip : jmp     NbStepEqualsNbVal: skip :.)
-;     .( : bcc skip : jmp NbStepGreaterThanNbVal : skip: .)
-;         UNDER_SAMPLE(COLOR_LEFT_TEXEL)
-;     jmp     drawLeftColumnDone
-; NbStepGreaterThanNbVal    
-;         OVER_SAMPLE(COLOR_LEFT_TEXEL)
-;     jmp     drawLeftColumnDone
-; NbStepEqualsNbVal    
-;         COPY_SAMPLE(COLOR_LEFT_TEXEL)
 drawLeftColumnDone
 .)
     rts
@@ -238,38 +228,23 @@ drawLeftColumnDone
 drawRightColumn
 .(
     PREPARE
-    lda _ddaNbStep: sta _ddaNbIter 
+
+    
+    lda _ddaNbStep:
     cmp #64
     bcs goOverSample
     jmp goUnroll
 goOverSample    
+
         OVER_SAMPLE(COLOR_RIGHT_TEXEL)
+
     jmp drawRightColumnDone
 goUnroll    
-        ; ptrOffsetIndex = &(tabIdxRdTexture[((ddaNbStep+1)*ddaNbStep)/2]);
-        ldy _ddaNbStep 
-        lda _adrTabIdxRd_low,Y
-        sta _ptrOffsetIndex
-        lda _adrTabIdxRd_high,Y
-        sta _ptrOffsetIndex+1
-        ; nxtOffsetIndex = 0;
-        lda #0 : sta _nxtOffsetIndex
-        ; ddaCurrentValue = ptrOffsetIndex[nxtOffsetIndex++];
-        DDA_STEP
-        ; UNROLL_SAMPLE(COLOR_LEFT_TEXEL)
-        UNROLL_SAMPLE(COLOR_RIGHT_TEXEL)
+        PREPARE_UNROLL_SAMPLE
 
-;     lda     _ddaNbStep
-;     cmp     #TEXTURE_SIZE
-;     .( : bne skip : jmp     NbStepEqualsNbVal: skip :.)
-;     .( : bcc skip : jmp NbStepGreaterThanNbVal : skip: .)
-;         UNDER_SAMPLE(COLOR_RIGHT_TEXEL)
-;     jmp     drawRightColumnDone
-; NbStepGreaterThanNbVal    
-;         OVER_SAMPLE(COLOR_RIGHT_TEXEL)
-;     jmp     drawRightColumnDone
-; NbStepEqualsNbVal    
-;         COPY_SAMPLE(COLOR_RIGHT_TEXEL)
+        DDA_STEP
+
+        UNROLL_SAMPLE(COLOR_RIGHT_TEXEL)
 
 drawRightColumnDone
 .)
@@ -299,7 +274,6 @@ _drawWalls
     sta     _baseAdr+1
 
     lda     #0
-
     sta     _idxCurrentSlice
 
     

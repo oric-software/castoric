@@ -7,6 +7,9 @@ python tools\precalcUnfish.py > proto\c\tabunfish.h
 python tools\precalcLogTrigo.py > proto\c\tablogtrigo.h
 python tools\precalcRayAngle.py > proto\c\tabrayangle.h
 
+python tools\precalcTextureIndex.py > proto\c\tabIdxRdTexture.h
+python tools\precalcIdxOfIdxRd.py > proto\c\tabAdrTabIdxRd.h
+
 REM [ref config_viewport]
 python tools\clearViewport.py > proto\c\viewport_s.s
 python tools\clearColumn.py > proto\c\column_s.s

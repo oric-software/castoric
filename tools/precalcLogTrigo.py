@@ -28,10 +28,10 @@ def genLogTrigoTables(coeff):
     return [tabLog2Sin, tabLog2Cos]
 
 def log1oversin():
-    return [255] + [round(32*math.log2(abs(1/math.sin(angle*math.pi/128)))) for angle in range (1,128)] + [round(32*math.log2(abs(1/math.sin(angle*math.pi/128)))) for angle in range (-127,0)]
+    return [255] + [round(32*math.log2(abs(1/math.sin(angle*math.pi/128)))) for angle in range (1,128)] + [min(255,round(32*math.log2(abs(1/math.sin(angle*math.pi/128))))) for angle in range (-128,0)]
 
 def log1overcos():
-    return [min(255,round(32*math.log2(abs(1/math.cos(angle*math.pi/128))))) for angle in range (0,128)] + [min(255,round(32*math.log2(abs(1/math.cos(angle*math.pi/128))))) for angle in range (-127,0)]
+    return [min(255,round(32*math.log2(abs(1/math.cos(angle*math.pi/128))))) for angle in range (0,128)] + [min(255,round(32*math.log2(abs(1/math.cos(angle*math.pi/128))))) for angle in range (-128,0)]
 
 
 def main():

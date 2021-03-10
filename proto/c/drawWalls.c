@@ -34,17 +34,27 @@ unsigned char       ddaNbIter;
     idxScreenLine       = VIEWPORT_HEIGHT/2 - columnHeight + VIEWPORT_START_LINE;\
     ddaCurrentValue     = 0;
 
-
+#ifdef __GNUC__
+#define COLOR_LEFT_TEXEL  theAdr += NEXT_SCANLINE_INCREMENT;\
+    theAdr += NEXT_SCANLINE_INCREMENT;\
+    theAdr += NEXT_SCANLINE_INCREMENT;
+#else
 // #define COLOR_LEFT_TEXEL colorLeftTexel()
 #define COLOR_LEFT_TEXEL  *theAdr = tabLeftRed[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;\
     *theAdr = tabLeftGreen[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;\
     *theAdr = tabLeftBlue[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;
-
+#endif
 
 // #define COLOR_RIGHT_TEXEL colorRightTexel()
+#ifdef __GNUC__
+#define COLOR_RIGHT_TEXEL theAdr += NEXT_SCANLINE_INCREMENT;\
+    theAdr += NEXT_SCANLINE_INCREMENT;\
+    theAdr += NEXT_SCANLINE_INCREMENT;
+#else
 #define COLOR_RIGHT_TEXEL *theAdr |= tabRightRed[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;\
     *theAdr |= tabRightGreen[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;\
     *theAdr |= tabRightBlue[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;
+#endif
 
 #define DDA_STEP ddaCurrentValue = ptrOffsetIndex[nxtOffsetIndex++];\
 
@@ -54,8 +64,6 @@ unsigned char       ddaNbIter;
                 ddaCurrentError     += ddaNbStep;\
                 ddaCurrentValue     += 1;\
             }
-
-
 
 #define OVER_SAMPLE(prim) ddaCurrentError     = ddaNbStep;\
         while (idxScreenLine < VIEWPORT_START_LINE){\

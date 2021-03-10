@@ -541,13 +541,17 @@ void rayProcessWalls() {
 
 }
 
+#ifdef USE_C_PROCESS_POINT
 void rayProcessPoints() {
 
-    for (RayIdXPoint1 = 0; RayIdXPoint1 < rayNbPoints; RayIdXPoint1 ++) {
+    RayIdXPoint1 = rayNbPoints;
 
+    do {
+        RayIdXPoint1                -= 1;
         lAngle[RayIdXPoint1]        =  ATAN2(lPointsY[RayIdXPoint1]-rayCamPosY, lPointsX[RayIdXPoint1]-rayCamPosX) - rayCamRotZ;
 
         isVisible[RayIdXPoint1]     = (abs(lAngle[RayIdXPoint1])<HALF_FOV_FIX_ANGLE)?1:0;
         isFront[RayIdXPoint1]       = IS_FRONT(RayIdXPoint1)?1:0;
-    }
+    } while ( RayIdXPoint1 != 0 );
 }
+#endif // USE_C_PROCESS_POINT

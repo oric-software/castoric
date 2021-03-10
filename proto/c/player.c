@@ -14,18 +14,22 @@ void shiftRight();
 // [ref camera_situation]
 
 void player () {
-    switch (get()) {
+    switch (key()) {
     case 8:  // left 
-        rayCamRotZ += ROT_ANGLE_STEP;
+        rayCamRotZ              += ROT_ANGLE_STEP;
         RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
+        refreshNeeded           = 1;
         break;
     case 9:  // right 
-        rayCamRotZ -= ROT_ANGLE_STEP; 
+        rayCamRotZ              -= ROT_ANGLE_STEP; 
         RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
+        refreshNeeded           = 1;
         break;
     case 10:  // down
+        refreshNeeded           = 1;
         backward(); break;
     case 11:  // up
+        refreshNeeded           = 1;
         forward(); break;
     // case 80:  // P        HEP !! DONT TOUCH THAT !!!
     //     glCamPosZ += 1; break;
@@ -36,8 +40,10 @@ void player () {
     // case 65:  // A
     //     glCamRotX -= 2; break;
     case 90:  // Z
+        refreshNeeded           = 1;
         shiftLeft(); break;
     case 88:  // X
+        refreshNeeded           = 1;
         shiftRight(); break;
     default:
         break;

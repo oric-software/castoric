@@ -90,7 +90,7 @@ void displaySprite02(unsigned char column, unsigned char height){
 #endif
                 idxLinTexture ++;
             }
-            theAdr              = (unsigned char *)(baseAdr + multi120[viewportLinIdx]);
+            theAdr              = (unsigned char *)(baseAdr + (multi120_high[viewportLinIdx]<<8) | multi120_low[viewportLinIdx] ); // multi120[viewportLinIdx]); // 
             // Parcours ligne
             do {
 
@@ -98,7 +98,7 @@ void displaySprite02(unsigned char column, unsigned char height){
                 // theAdr              = (unsigned char *)(baseAdr + multi120[idxLinTexture]); 
                 // Si couleur [ligneTGexture][colonneTexture] != EMPTY
                 texcolumn           = precalTexPixelOffset [idxColTexture];
-                offTexture          = multi32[texcolumn];
+                offTexture          = (multi32_high[texcolumn] << 8) | multi32_low[texcolumn];
                 texline             = precalTexPixelOffset [idxLinTexture];
                 renCurrentColor     = ptrTexture[offTexture + texline];
                 if (renCurrentColor != EMPTY_ALPHA) {

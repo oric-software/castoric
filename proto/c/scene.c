@@ -8,6 +8,9 @@
 #include "texture_purplestone.h"
 #include "texture_greystone.h"
 
+unsigned char wallTexture_high[NB_MAX_WALL] ;
+unsigned char wallTexture_low[NB_MAX_WALL] ;
+
 // [ref scene_describe]
 signed char scene_00[] = {
 
@@ -39,7 +42,7 @@ signed char scene_00[] = {
 };
 
 // [ref texture_file2buffer]
-unsigned char *wallTexture[] = {
+unsigned char *texture_00[]= {
 	texture_bluestone		// W0
 	, texture_bluestone		// W1
 	, texture_redbrick		// W2
@@ -86,7 +89,7 @@ void precalculateWallsAngle() {
 }
 
 // [ref scene_describe] [ref scene_load]
-void initScene (signed char sceneData[]){
+void initScene (signed char sceneData[], unsigned char *wallTexture[]){
 	unsigned int ii;
 	unsigned char jj;
 
@@ -98,6 +101,8 @@ void initScene (signed char sceneData[]){
 	}
 	for (jj=0; jj < rayNbWalls; jj++){
 		lWallsPt1[jj]= (unsigned char)(sceneData[ii++]) ; lWallsPt2[jj] = (unsigned char)(sceneData[ii++]);// points 0
+        wallTexture_high[jj]    = (unsigned char)((((int)(wallTexture[jj])&0xFF00) >> 8) & 0x00FF);
+        wallTexture_low[jj]     = (unsigned char)(((int)(wallTexture[jj])&0x00FF));
 	}
     precalculateWallsAngle();
 }

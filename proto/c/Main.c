@@ -15,6 +15,7 @@
 
 #include "game.c"
 
+unsigned char refreshNeeded;
 #include "player.c"
 
 #include "texel.c"
@@ -58,22 +59,31 @@ void initCamera(){
 
 #include "viewport.c"
 
+
+
+
 void gameLoop() {
 
-    while (running) {
+    refreshNeeded           = 1;
 
+    while (running) {
+        doke(630,0);
         player ();
 
-        rayInitCasting();
+        if (refreshNeeded) {
+            rayInitCasting();
 
-        rayProcessPoints();
-        rayProcessWalls();
+            rayProcessPoints();
+            rayProcessWalls();
 
-        clearViewport();
-        drawWalls();
+            // clearViewport();
+            drawWalls();
 #ifdef USE_SPRITE        
-        drawSprite (3, 3, texture_pillar);
+            drawSprite (3, 3, texture_pillar);
 #endif
+            printf("\nColor Textured Raycasting on Oric\n      Jean-Baptiste PERIN 2021\n(X=%d Y=%d) [a=%d] [t=%d]", rayCamPosX, rayCamPosY, rayCamRotZ, 65535-deek(630));
+            refreshNeeded = 0;
+        }
         // for (ii = 0; ii <= VIEWPORT_HEIGHT; ii++) {
         //     drawTexelOnScreen (ii, 40-VIEWPORT_WIDTH/2, 63);
         //     drawTexelOnScreen (ii, 40+VIEWPORT_WIDTH/2, 63);
@@ -82,7 +92,6 @@ void gameLoop() {
         //     drawTexelOnScreen (VIEWPORT_HEIGHT, 40+ii, 63);
         //     drawTexelOnScreen (VIEWPORT_HEIGHT, 40-ii, 63);
         // }
-        printf("\nColor Textured Raycasting on Oric\n      Jean-Baptiste PERIN 2021\n(X=%d Y=%d) [a=%d]", rayCamPosX, rayCamPosY, rayCamRotZ);
     }
 }
 
@@ -94,7 +103,7 @@ void main(){
     initCamera();
     
     // [ref scene_load]
-    initScene (scene_00);
+    initScene (scene_00, texture_00);
 
 #ifdef DEBUG
 

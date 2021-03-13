@@ -150,7 +150,7 @@ Point1NotVisible_00
 ;;             if (isVisible[RayIdXPoint2]) {
             ldy         _RayIdXPoint2
             lda         _isVisible,Y
-            beq         Point2Visible_01
+            bne         Point2Visible_01
             jmp         Point2NotVisible_01
 ;; 
 Point2Visible_01
@@ -158,7 +158,9 @@ Point2Visible_01
 ;;                 if (lAngle[RayIdXPoint2] > 0){
                 ldy         _RayIdXPoint2
                 lda         _lAngle,Y
-                bmi         Angle2Positiv_01
+                beq         Angle2Null_00
+                bpl         Angle2Positiv_01
+Angle2Null_00
                 jmp         Angle2NegativeOrNull_01
 Angle2Positiv_01                
 ;;                     if ((lAngle[RayIdXPoint1] & 0x80) == (lAngle[RayIdXPoint2] & 0x80)) {
@@ -235,14 +237,14 @@ EndIfAngleSameSign_03
 ;;                 } else { // (lAngle[idxPt2] == 0
 Angle2Null_01
 
-;;                        ldy _RayIdXPoint1
-;;                        lda _lAngle,Y
-;;                        bpl PositivPoint2Angle_02
-;;                            jsr _drawRightCuttingWall2Visible
-;;                        jmp endPositivPoint2Angle_02
-;;PositivPoint2Angle_02
-;;                            jsr _drawLeftCuttingWall2Visible
-;;endPositivPoint2Angle_02
+                        ldy _RayIdXPoint1
+                        lda _lAngle,Y
+                        bpl PositivPoint2Angle_02
+                            jsr _drawRightCuttingWall2Visible
+                        jmp endPositivPoint2Angle_02
+PositivPoint2Angle_02
+                            jsr _drawLeftCuttingWall2Visible
+endPositivPoint2Angle_02
 
 EndIfAngle2_03
 ;;                 }

@@ -11,7 +11,8 @@ _tab_denom:             .dsb 2
 
 .text
 
-_zbuffWalls2:
+#ifndef USE_C_ZBUFFWALLS
+_zbuffWalls:
 .(
     lda     _rayNbWalls
     sta     _RayCurrentWall
@@ -257,7 +258,30 @@ Point2NotVisible_01
 ;;                     && ((lAngle[RayIdXPoint1] & 0x80) != (lAngle[RayIdXPoint2] & 0x80)) 
 ;;                     && (abs(lAngle[RayIdXPoint2]) < 127 - abs(lAngle[RayIdXPoint1])) 
 ;;                 ) {
+                    ldy         _RayIdXPoint1
+                    lda         _isFront, Y
+                    ldy         _RayIdXPoint2
+                    ora         _isFront, Y
+                    beq         EndIfFullCrossingWall
+
+                    ldy         _RayIdXPoint1
+                    lda         _lAngle,Y
+                    ldy         _RayIdXPoint2
+                    eor         _lAngle,Y
+                    and         #$80
+                    beq         EndIfFullCrossingWall
+
+                    ldy _RayIdXPoint1   ;; FIXME  // not sure about this way to code the condition.
+                    lda _lAngle,Y
+                    sta reg7
+                    ldy _RayIdXPoint2
+                    lda _lAngle,Y
+                    sec
+                    sbc reg7
+                    bvs EndIfFullCrossingWall
 ;;                     drawFullCrossingWall();
+                        jsr         _drawFullCrossingWall
+EndIfFullCrossingWall
 ;;                 }
 EndIfPoint2Visible_01
 ;;             }
@@ -273,6 +297,10 @@ wallsendloop
 
 .)
     rts
+
+#endif // USE_C_ZBUFFWALLS
+
+
 
 #ifndef USE_C_RAYCAST
 

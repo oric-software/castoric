@@ -272,6 +272,7 @@ void drawRightCuttingWall1Visible(){
 }
 #endif // USE_C_RAYCAST
 
+#ifdef USE_C_ZBUFFWALLS
 void zbuffWalls() {
     
     RayCurrentWall = rayNbWalls;
@@ -466,6 +467,7 @@ void zbuffWalls() {
     } while (RayCurrentWall != 0);
 }
 
+#endif // USE_C_ZBUFFWALLS
 
 void rayProcessWalls() {
     int v0, v2;
@@ -474,7 +476,6 @@ void rayProcessWalls() {
     signed char angle;
     
     zbuffWalls();
-    zbuffWalls2();
 
     
     /* 

@@ -80,6 +80,8 @@ signed char             rayCamRotZ = 0;
 
 
 
+#ifdef USE_C_RAYCAST
+
 void rayInitCasting(){
     unsigned char ii;
     for (ii=0; ii< NUMBER_OF_SLICE; ii++) {
@@ -87,6 +89,8 @@ void rayInitCasting(){
         raywall[ii]         = 255;
     }
 }
+
+#endif // USE_C_RAYCAST
 
 #ifdef USE_C_TOTO
 void toto() {
@@ -268,14 +272,13 @@ void drawRightCuttingWall1Visible(){
 }
 #endif // USE_C_RAYCAST
 
-void rayProcessWalls() {
-    int v0, v2;
-    int v1;
-    int deltaX, deltaY;
-    signed char angle;
+void zbuffWalls() {
     
+    RayCurrentWall = rayNbWalls;
+    do {
+        RayCurrentWall --;
 
-    for (RayCurrentWall = 0; RayCurrentWall < rayNbWalls; RayCurrentWall ++){
+
         RayIdXPoint1        = lWallsPt1[RayCurrentWall];
         RayIdXPoint2        = lWallsPt2[RayCurrentWall];
 
@@ -460,7 +463,20 @@ void rayProcessWalls() {
                 }
             }
         }
-    }
+    } while (RayCurrentWall != 0);
+}
+
+
+void rayProcessWalls() {
+    int v0, v2;
+    int v1;
+    int deltaX, deltaY;
+    signed char angle;
+    
+    zbuffWalls();
+    zbuffWalls2();
+
+    
     /* 
      * Change output from logarithmic scale to linear scale 
      */

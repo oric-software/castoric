@@ -470,7 +470,8 @@ void zbuffWalls() {
 #endif // USE_C_ZBUFFWALLS
 
 void rayProcessWalls() {
-    int v0, v2;
+
+    int v2;
     int v1;
     int deltaX, deltaY;
     signed char angle;
@@ -499,63 +500,48 @@ void rayProcessWalls() {
 
     // Compute texture column informations
     for (RaySliceIdx=0; RaySliceIdx<NUMBER_OF_SLICE; RaySliceIdx++){
-        RayCurrentWall = raywall[RaySliceIdx];
+        RayCurrentWall                  = raywall[RaySliceIdx];
+        tabTexCol [RaySliceIdx]         = 0;
         if (RayCurrentWall != 255) {
             angle       = rayCamRotZ + tabRayAngles[RaySliceIdx];
             if (lWallsCosBeta[RayCurrentWall] == 0){    // Wall is O,y aligned   
-                deltaY      = lPointsY[lWallsPt1[RayCurrentWall]]-rayCamPosY;
                  
                 if (angle == 0){
-                    v0 = 0;
-                    v1 = 0;
                     v2 = 0;
-                } else if (angle > 0) {
-                    v0 = log2sin(angle); // round(32*math.log2(math.sin(angle*FIX2RAD)*COEFF))
-                    v1 = raylogdist[RaySliceIdx] + v0;
-                    if (v1<0) v1=0;
-                    v2 = longexp(v1); // (2**(v1/32))
-
-                } else if (angle < 0) {
-                    v0 = log2sin(angle); // round(32*math.log2(-math.sin(angle*FIX2RAD)*COEFF))
-                    v1 = raylogdist[RaySliceIdx] + v0;
-                    if (v1<0) v1=0;
-                    v2 = -longexp(v1); // -(2**(v1/32)) # 
-                }
-                if (deltaY < 0) {
-                    tabTexCol [RaySliceIdx]        = abs(v2+multiCoeff[abs(deltaY)]);
                 } else {
-                    tabTexCol [RaySliceIdx]        = abs(v2-multiCoeff[abs(deltaY)]);
+                    v1 = raylogdist[RaySliceIdx] + tabLog2Sin[(unsigned char)angle];
+                    if (v1<0) v1=0;
+                    v2 = longexp(v1);
+                    if (angle <= 0) v2 = -v2;
+                }
+                deltaY      = lPointsY[lWallsPt1[RayCurrentWall]]-rayCamPosY;
+                if (deltaY < 0) {
+                    v2      +=  multiCoeff[-deltaY];
+                } else {
+                    v2      -=  multiCoeff[deltaY];
                 }
             } else {                       // Wall is O,x aligned 
-                deltaX      = lPointsX[lWallsPt1[RayCurrentWall]]-rayCamPosX;
                 if (tabRayAngles[RaySliceIdx] == 0){
-                    v0 = 0;
-                    v1 = 0;
                     v2 = 0;
-                } else if (abs (angle) < 64) {
-                    v0 = log2cos(angle); // round(32*math.log2(math.sin(angle*FIX2RAD)*COEFF))
-                    v1 = raylogdist[RaySliceIdx] + v0;
-                    if (v1<0) v1=0;
-                    v2 = longexp(v1); // (2**(v1/32))
-
-                } else if (abs (angle) >= 64) {
-                    v0 = log2cos(angle); // round(32*math.log2(-math.sin(angle*FIX2RAD)*COEFF))
-                    v1 = raylogdist[RaySliceIdx] + v0;
-                    if (v1<0) v1=0;
-                    v2 = -longexp(v1); // -(2**(v1/32)) # 
-                }
-                if (deltaX < 0){
-                    tabTexCol [RaySliceIdx]        = abs(v2+multiCoeff[abs(deltaX)]);
                 } else {
-                    tabTexCol [RaySliceIdx]        = abs(v2-multiCoeff[deltaX]);
+                    v1 = raylogdist[RaySliceIdx] + tabLog2Cos[(unsigned char)angle]; // v0; //tabLog2Cos[angle];
+                    if (v1<0) v1=0;
+                    v2 = longexp(v1);
+                    if (abs (angle) >= 64) {
+                        v2 = -v2; // -(2**(v1/32)) # 
+                    }
+                }
+                deltaX      = lPointsX[lWallsPt1[RayCurrentWall]]-rayCamPosX;
+                if (deltaX < 0){
+                    v2      += multiCoeff[-deltaX];
+                } else {
+                    v2      -= multiCoeff[deltaX];
                 }
             }
-        } else {
-            tabTexCol [RaySliceIdx]        = 0;
+            if (v2 < 0) v2 = -v2;
+            tabTexCol [RaySliceIdx]        = v2;
         }
-
     }
-
 }
 
 #ifdef USE_C_PROCESS_POINT

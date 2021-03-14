@@ -15,6 +15,7 @@
 #define     USE_C_VIEWPORT
 #define     USE_C_PROCESS_POINT
 #define     USE_C_ZBUFFWALLS
+#define     USE_C_EXP
 #else
 
 #undef     USE_C_DDA
@@ -25,6 +26,7 @@
 #undef     USE_C_VIEWPORT
 #undef     USE_C_PROCESS_POINT
 #undef     USE_C_ZBUFFWALLS
+#undef     USE_C_EXP
 #endif
 
 #endif // CONFIG_H

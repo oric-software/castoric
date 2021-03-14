@@ -129,6 +129,78 @@ unsigned char dist2hh(unsigned int x){
     } else return 100;
 }
 
+#ifndef USE_C_EXP
+unsigned int LogNumerator;
+unsigned int ExpResult;
+unsigned int LONGEXP(unsigned int x){
+    LogNumerator = x;
+    asm (
+        "lda #0;"
+        // "sta _ExpResult;"
+        "sta _ExpResult+1;"
+        "lda _LogNumerator+1;"
+        "beq LogNumeratorUnder256;"
+        "lda _LogNumerator;"
+        "cmp #$21;"
+        "bmi LogNumeratorUnder289;"
+        "cmp #$33;"
+        "bmi LogNumeratorUnder307;"
+        "cmp #$40;"
+        "bmi LogNumeratorUnder320;"
+    );asm(
+            "lda #$FF;"
+            "sta _ExpResult;"
+            "lda #$7F;"
+            "sta _ExpResult+1;"
+        "jmp exponentiateRatio_done;"
+        "LogNumeratorUnder320;"
+// ExpResult= ((unsigned int)tab_exp_extended3[(unsigned char)(RayLogNumerator-307)]) + 756; // 00000010 11110100
+            "sec;"
+            "sbc #$33;" // LOBYT(307) = 00110011
+            "tay;"
+            "lda _tab_exp_extended3, y;"
+            "clc;"
+            "adc #$f4;"
+            "sta _ExpResult;"
+            "lda #$02;"
+            "adc #0;"
+            "sta _ExpResult+1;"
+        "jmp exponentiateRatio_done;"
+    );asm(
+        "LogNumeratorUnder307;"
+//ExpResult= ((unsigned int)tab_exp_extended2[(unsigned char)(RayLogNumerator-289)]) + 512; // 00000010 00000000
+            "sec;"
+            "sbc #$21;" // LOBYT(289) = 00100001
+            "tay;"
+            "lda _tab_exp_extended2, y;"
+            "sta _ExpResult;"
+            "lda #2;"  // HIBYT(512) = 00000010
+            "sta _ExpResult+1;"
+
+        "jmp exponentiateRatio_done;"
+    );asm(
+        "LogNumeratorUnder289;"
+//ExpResult= ((unsigned int)tab_exp_extended[(unsigned char)(RayLogNumerator-256)]) + 256; // 00000001 00000000
+            "sec;"
+            "sbc #$00;" // LOBYT(256) = 00000000
+            "tay;"
+            "lda _tab_exp_extended, y;"
+            "sta _ExpResult;"
+            "lda #1;"
+            "sta _ExpResult+1;"
+        "jmp exponentiateRatio_done;"
+    );asm(
+        "LogNumeratorUnder256;"
+            "ldy _LogNumerator;"
+            "lda _tab_exp, y;"
+            "sta _ExpResult;"
+        "exponentiateRatio_done;"
+    );    
+    return (ExpResult);
+}
+#define longexp(x) LONGEXP((unsigned int)(x))
+#else // USE_C_EXP
+
 unsigned int longexp(unsigned int x){
     if (x < 256) {
         return ((unsigned int)tab_exp[(unsigned char)(x)]);
@@ -142,7 +214,9 @@ unsigned int longexp(unsigned int x){
         return 0xFFFF;
     }
 }
+#endif // USE_C_EXP
 
+#ifdef USE_C_PROCESS_POINT
 signed char ATAN2 (signed int ty, signed int tx){
     signed char     x, y;
     unsigned char   ix, iy;
@@ -187,3 +261,4 @@ signed char ATAN2 (signed int ty, signed int tx){
 
     return (signed char)v;
 }
+#endif // USE_C_PROCESS_POINT

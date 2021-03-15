@@ -8,7 +8,7 @@
 #define abs(x)          (((x)<0)?-(x):(x))
 // #define max(x,y)          (((x)<(y))?(y):(x))
 
-
+// Ray hit distance computation
 signed char      RayAlpha  = 0;
 signed char      RayLeftAlpha;
 signed char      InterpAngleLeft;
@@ -17,6 +17,15 @@ unsigned char    InterpIdxLeft;
 unsigned char    RayNbSlice;
 unsigned int     RayDistance;
 unsigned int     RayWallLog;
+
+// Texture offset computation
+int rayTmp2;
+int rayTmp1;
+int rayDeltaX, rayDeltaY;
+signed char rayCurrentAngle;
+
+
+
 unsigned char    rayzbuffer[NUMBER_OF_SLICE]; // FIXME .. should be int
 unsigned int     raylogdist[NUMBER_OF_SLICE];
 unsigned char    raywall[NUMBER_OF_SLICE];
@@ -469,18 +478,9 @@ void zbuffWalls() {
 
 #endif // USE_C_ZBUFFWALLS
 
-void rayProcessWalls() {
-
-    int rayTmp2;
-    int rayTmp1;
-    int rayDeltaX, rayDeltaY;
-    signed char rayCurrentAngle;
-    
-    zbuffWalls();
+void    distOffsetSlices() {
 
     
-
-    // Compute texture column informations
     RaySliceIdx = NUMBER_OF_SLICE;
     do {
          
@@ -503,10 +503,14 @@ void rayProcessWalls() {
             */
             // rayzbuffer[RaySliceIdx] = longexp(rayzbuffer[RaySliceIdx]);        
 
-
+            /*
+             * Compute texture column informations
+             */
             rayCurrentAngle       = rayCamRotZ + tabRayAngles[RaySliceIdx];
+
             if (lWallsCosBeta[RayCurrentWall] == 0){    // Wall is O,y aligned   
-                 
+ 
+#ifdef USE_C_RAYCAST                 
                 if (rayCurrentAngle == 0){
                     rayTmp2 = 0;
                 } else {
@@ -515,13 +519,105 @@ void rayProcessWalls() {
                     rayTmp2 = longexp(rayTmp1);
                     if (rayCurrentAngle <= 0) rayTmp2 = -rayTmp2;
                 }
+#else
+                asm (
+                    // ".(:"
+                    "lda _rayCurrentAngle;"
+                    "bne rayAngleNotNull_405;"
+                        "sta _rayTmp2;"
+                        "sta _rayTmp2+1;"
+                    "jmp endIfAngleNull_405;"
+                    "rayAngleNotNull_405:;"
+                    "tay;" // "ldy _rayCurrentAngle;"
+                    "lda _tabLog2Sin, Y;"
+                    "tax;"
+
+                    "lda _RaySliceIdx;"
+                    "asl;"
+                    "tay;"
+                    "lda _raylogdist,Y;"
+                    "sta _rayTmp1;"
+                    "iny;"
+                    "lda _raylogdist,Y;"
+                    "sta _rayTmp1+1;"
+
+                    "txa;"
+                        "bpl notneg_405;"
+                        "dec _rayTmp1+1;"
+                    "notneg_405;"
+                        "clc;"
+                        "adc _rayTmp1;"
+                        "sta _rayTmp1;"
+                        "lda #0;"
+                        "adc _rayTmp1+1;"
+                        "sta _rayTmp1+1;"
+                    "beq skipnullifneg_405;"
+                    "bpl skipnullifneg_405;"
+                        "lda #0;"
+                        "sta _rayTmp1;"
+                        "sta _rayTmp1+1;"
+                    "skipnullifneg_405:;"
+
+                    "ldy _rayTmp1;"     // FIXME we Loose 8 MSB
+                    "lda _tab_exp, y;"
+                    "sta _rayTmp2;"
+                );asm(
+                    "lda #0;"
+                    "sta _rayTmp2+1;"
+                    "lda _rayCurrentAngle;"
+                    "bpl skipinvert_405;"
+                    "lda #0 : sec : sbc _rayTmp2 : sta _rayTmp2 : lda #0 : sbc _rayTmp2+1 : sta _rayTmp2+1 :"
+                    "skipinvert_405:"
+                    "endIfAngleNull_405:"
+                    // ".);"
+                );
+#endif
+
+#ifdef USE_C_RAYCAST
                 rayDeltaY      = lPointsY[lWallsPt1[RayCurrentWall]]-rayCamPosY;
                 if (rayDeltaY < 0) {
                     rayTmp2      +=  multiCoeff[-rayDeltaY];
                 } else {
                     rayTmp2      -=  multiCoeff[rayDeltaY];
                 }
+#else
+                asm (
+                    ".(;"
+                    "ldy _RayCurrentWall;"
+                    "lda _lWallsPt1, Y;"
+                    "tay;"
+                    "lda _lPointsY, Y;"
+                    "sec;"
+                    "sbc _rayCamPosY;"
+                    "sta _rayDeltaY;"
+                    "bpl DeltaYPositivOrNull;"
+                        "eor #$FF:sec: adc#0:"
+                        "tay;"
+                        "lda _rayTmp2;"
+                        "clc;"
+                        "adc _multiCoeff,Y;"
+                        "sta _rayTmp2;"
+                        "lda _rayTmp2+1;"
+                        "adc #0;"
+                        "sta _rayTmp2+1;"
+                    "jmp EndifDeltaYNegativ;"
+                    "DeltaYPositivOrNull:"
+                        "tay;"
+                        "lda _rayTmp2;"
+                        "sec;"
+                        "sbc _multiCoeff,Y;"
+                        "sta _rayTmp2;"
+                        "lda _rayTmp2+1;"
+                        "sbc #0;"
+                        "sta _rayTmp2+1;"
+                    "EndifDeltaYNegativ:"
+                    ".);"
+                );
+#endif
+
             } else {                       // Wall is O,x aligned 
+         
+#ifdef USE_C_RAYCAST
                 if (tabRayAngles[RaySliceIdx] == 0){
                     rayTmp2 = 0;
                 } else {
@@ -532,17 +628,132 @@ void rayProcessWalls() {
                         rayTmp2 = -rayTmp2; // -(2**(v1/32)) # 
                     }
                 }
+#else
+                asm (
+                    // ".(;"
+                    // "stx reg7;"
+                    // "ldy _RaySliceIdx;"
+                    // "lda _tabRayAngles,Y;"
+                    "lda _rayCurrentAngle;"
+                    "bne AngleNotNull_411;"
+                        "sta _rayTmp2;"
+                        "sta _rayTmp2+1;"
+                    "jmp EndifAngleNull_411;"
+                    "AngleNotNull_411;"
+                        "ldy _rayCurrentAngle;"
+                        "lda _tabLog2Cos, Y;"
+                        "tax;"
+                        
+                        "lda _RaySliceIdx;"
+                        "asl;"
+                        "tay;"
+
+                        "lda _raylogdist,Y;"
+                        "sta _rayTmp1;"
+                        "iny;"
+                        "lda _raylogdist,Y;"
+                        "sta _rayTmp1+1;"
+                        
+                        "txa;"
+                            "bpl notneg_411;"
+                            "dec _rayTmp1+1;"
+                        "notneg_411;"
+                        "clc;"
+                        "adc _rayTmp1;"
+                        "sta _rayTmp1;"
+                        "lda #0;"
+                        "adc _rayTmp1+1:"
+                        "sta _rayTmp1+1;"
+                        "beq skipnullifneg_411;"
+                        "bpl skipnullifneg_411;"
+                            "lda #0;"
+                            "sta _rayTmp1;"
+                            "sta _rayTmp1+1;"
+                        "skipnullifneg_411:;"
+                    ); asm(
+                        "ldy _rayTmp1;"     // FIXME we Loose 8 MSB
+                        "lda _tab_exp, y;"
+                        "sta _rayTmp2;"
+                        "lda #0;"
+                        "sta _rayTmp2+1;"
+                        "lda _rayCurrentAngle;"
+                        "bpl skipinvert_411;"
+                            "eor #$FF;"
+                            "sec;"
+                            "adc #0;"
+                        "skipinvert_411;"
+                        "cmp #64;"
+                        "bcc skipInvertTmp2_411;"
+
+                    "lda #0 : sec : sbc _rayTmp2 : sta _rayTmp2 : lda #0 : sbc _rayTmp2+1 : sta _rayTmp2+1 :"
+
+                        "skipInvertTmp2_411;"
+                    "EndifAngleNull_411;"
+                    // "ldx reg7;"
+                    // ".);"
+                );
+#endif
+
+
+#ifdef USE_C_RAYCAST
                 rayDeltaX      = lPointsX[lWallsPt1[RayCurrentWall]]-rayCamPosX;
                 if (rayDeltaX < 0){
                     rayTmp2      += multiCoeff[-rayDeltaX];
                 } else {
                     rayTmp2      -= multiCoeff[rayDeltaX];
                 }
+#else
+                asm (
+                    "ldy _RayCurrentWall;"
+                    "lda _lWallsPt1, Y;"
+                    "tay;"
+                    "lda _lPointsX, Y;"
+                    "sec;"
+                    "sbc _rayCamPosX;"
+                    "sta _rayDeltaX;"
+
+                    "bpl DeltaXPositivOrNull;"
+                        "eor #$FF:sec: adc#0:"
+                        "tay;"
+                        "lda _rayTmp2;"
+                        "clc;"
+                        "adc _multiCoeff,Y;"
+                        "sta _rayTmp2;"
+                        "lda _rayTmp2+1;"
+                        "adc #0;"
+                        "sta _rayTmp2+1;"
+                    "jmp EndifDeltaXNegativ;"
+                    "DeltaXPositivOrNull:"
+                        "tay;"
+                        "lda _rayTmp2;"
+                        "sec;"
+                        "sbc _multiCoeff,Y;"
+                        "sta _rayTmp2;"
+                        "lda _rayTmp2+1;"
+                        "sbc #0;"
+                        "sta _rayTmp2+1;"
+                    "EndifDeltaXNegativ:"
+
+                );
+#endif
+
             }
             if (rayTmp2 < 0) rayTmp2 = -rayTmp2;
             tabTexCol [RaySliceIdx]        = rayTmp2;
         }
     } while (RaySliceIdx !=0);
+
+}
+
+
+void rayProcessWalls() {
+
+    
+    zbuffWalls();
+
+    distOffsetSlices();
+
+
 }
 
 #ifdef USE_C_PROCESS_POINT

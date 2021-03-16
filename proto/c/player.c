@@ -57,14 +57,47 @@ void player () {
  *                            
  */
 // Collision Detection 
-unsigned char isAllowedPosition(signed char X, signed char Y) {
-    if ((abs(X) >= 11) && (abs(Y) >= 11)) return 0;
-    if (X < -7)  return 1;
-    if (X < -1) return (Y>1) || (Y < -7);
-    if (X <= 1) return (Y>7) || (Y < -7);
-    if (X <= 7) return (Y>7) || (Y < -1);
+unsigned char isAllowedPosition(signed char vX, signed char vY) {
+    signed char X, Y;
+    X = vX + 12;
+    Y = vY + 12;
+	if (X%6 == 0) {
+		if (Y%6 == 0) {
+			// X and Y on 6 *6 grid
+			return ((X == -6) && (Y == 6)) || ((X == 6) && ( Y == -6));
+		} else {
+			if (X == 0) {
+				return 0;
+			} else if (X == 6) {
+				return (Y < 6) || (Y > 12);
+			} else if (X == 12) {
+				return (
+					(Y < 6) || (Y > 18)
+				);
+			} else if (X == 18) {
+				return ( (Y < 12) || (Y > 18) );
+			} else if (X == 24) {
+				return 0;
+			} else    {
+				return 1;
+			}        
+        }
+    } else if (Y%6 == 0) {
+		if (Y == 0) {
+			return 0;
+		} else if (Y == 6) {
+			return (X < 6) || (X > 12);
+		} else if (Y == 12) {
+			return (X < 6) || (X > 18);
+		} else if (Y == 18) {
+			return (X < 12) || (X > 18);
+		} else if (Y == 24) {
+			return 0;
+		} else{
+			return 1;
+		}
+    }
     return 1;
-
 }
 void forward() {
     signed int X, Y;

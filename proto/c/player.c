@@ -53,8 +53,8 @@ void player () {
 // Collision Detection 
 unsigned char isAllowedPosition(signed char X, signed char Y) {
 
-    // return (abs(X) <= 4) && (abs(Y) <= 4);
-    return 1;
+    return (abs(X) <= 5) && (abs(Y) <= 5);
+    //return 1;
 
 }
 void forward() {

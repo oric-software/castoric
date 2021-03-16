@@ -1,5 +1,32 @@
 
 import config 
+import struct
+
+def buffer2asmCode(theName, theType, theBuffer):
+    theCode = ""
+    first = True
+    nline = False
+    for ii in range(len(theBuffer)):
+        if nline == True:
+            theCode += f"\n\t.byt "
+            nline = False
+        elif first:
+            theCode += f"_{theName}\n\t.byt "
+            first = False
+        else:
+            theCode += ", "
+        if (theBuffer[ii] < 0):
+            intv = struct.unpack('B',struct.pack("b", theBuffer[ii]))[0]
+        else:
+            intv = theBuffer[ii]
+        theCode += f"{intv}"
+        if ((ii+1) %16 == 0) and (ii != 0):
+            # theCode += "\n\t.byt "
+            nline = True
+
+    return theCode
+
+
 
 def buffer2cCode(theName, theType, theBuffer):
     theCode = ""

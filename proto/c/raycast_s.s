@@ -300,6 +300,301 @@ wallsendloop
 
 #endif // USE_C_ZBUFFWALLS
 
+#ifndef USE_C_DISTOFFSETSLICES
+_distOffsetSlices:
+.(
+
+;;     RaySliceIdx = NUMBER_OF_SLICE;
+;;     do {
+;;          
+;;         RaySliceIdx--;
+
+
+    lda         #NUMBER_OF_SLICE-1
+    sta         _RaySliceIdx
+
+loopOnSlices
+
+;;        RayCurrentWall                  = raywall[RaySliceIdx];
+;;        tabTexCol [RaySliceIdx]         = 0;
+        ldy         _RaySliceIdx
+        lda         #0
+        sta         _tabTexCol, Y
+        lda         _raywall, Y
+        sta         _RayCurrentWall
+
+;;        if (RayCurrentWall != 255) {
+        eor         #$FF
+        bne         AWallOnThisSlice
+        jmp         NoWallOnThisSlice
+AWallOnThisSlice
+;;            raylogdist[RaySliceIdx] = rayzbuffer[RaySliceIdx];
+;;            if (unfish[RaySliceIdx] < rayzbuffer[RaySliceIdx])
+;;                rayzbuffer[RaySliceIdx] -= unfish[RaySliceIdx];
+            ldy         _RaySliceIdx
+            lda         _rayzbuffer,Y
+            tax
+            tya
+            asl
+            tay
+            txa
+            sta         _raylogdist,Y
+            iny
+            lda         #0
+            sta        _raylogdist,Y
+
+
+            ldy         _RaySliceIdx            
+            lda         _rayzbuffer,Y
+            sec       
+            sbc         _unfish,Y
+            beq         WallTooClosed
+            bmi         WallTooClosed
+            sta         _rayzbuffer,Y
+
+WallTooClosed
+        
+;;            TableVerticalPos[RaySliceIdx] =dist2hh(rayzbuffer[RaySliceIdx]);
+        ldy         _RaySliceIdx        
+        lda         _rayzbuffer,Y
+        tay
+        lda         _unlogd2hh, Y
+        ldy         _RaySliceIdx
+        sta         _TableVerticalPos, Y
+
+;;             rayCurrentAngle       = rayCamRotZ + tabRayAngles[RaySliceIdx];
+        ldy         _RaySliceIdx
+        lda         _tabRayAngles, Y
+        clc
+        adc         _rayCamRotZ
+        sta         _rayCurrentAngle
+
+;;              if (lWallsCosBeta[RayCurrentWall] == 0)
+        ldy         _RayCurrentWall
+        lda         _lWallsCosBeta, Y
+        beq         WallIsOyAligned
+        jmp         WallIsOxAligned
+WallIsOyAligned
+;;                  if (rayCurrentAngle == 0){
+;;                      rayTmp2 = 0;
+;;                  } else {
+;;                      rayTmp1 = raylogdist[RaySliceIdx] + tabLog2Sin[(unsigned char)rayCurrentAngle];
+;;                      if (rayTmp1<0) rayTmp1=0;
+;;                      rayTmp2 = longexp(rayTmp1);
+;;                      if (rayCurrentAngle <= 0) rayTmp2 = -rayTmp2;
+;;                  }
+
+                lda _rayCurrentAngle
+                bne rayAngleNotNull_405
+                    sta _rayTmp2
+                    sta _rayTmp2+1
+                jmp endIfAngleNull_405
+rayAngleNotNull_405:
+                tay
+                lda _tabLog2Sin, Y
+                tax
+                lda _RaySliceIdx
+                asl
+                tay
+                lda _raylogdist,Y
+                sta _rayTmp1
+                iny
+                lda _raylogdist,Y
+                sta _rayTmp1+1
+                txa
+                    bpl notneg_405
+                    dec _rayTmp1+1
+notneg_405
+                    clc
+                    adc _rayTmp1
+                    sta _rayTmp1
+                    lda #0
+                    adc _rayTmp1+1
+                    sta _rayTmp1+1
+                beq skipnullifneg_405
+                bpl skipnullifneg_405
+                    lda #0
+                    sta _rayTmp1
+                    sta _rayTmp1+1
+skipnullifneg_405:
+                ldy _rayTmp1;"   
+                lda _tab_exp, y
+                sta _rayTmp2
+                lda #0
+                sta _rayTmp2+1
+                lda _rayCurrentAngle
+                bpl skipinvert_405
+                lda #0 : sec : sbc _rayTmp2 : sta _rayTmp2 : lda #0 : sbc _rayTmp2+1 : sta _rayTmp2+1 
+skipinvert_405
+endIfAngleNull_405
+
+;;                  rayDeltaY      = lPointsY[lWallsPt1[RayCurrentWall]]-rayCamPosY;
+;;                  if (rayDeltaY < 0) {
+;;                      rayTmp2      +=  multiCoeff[-rayDeltaY];
+;;                  } else {
+;;                      rayTmp2      -=  multiCoeff[rayDeltaY];
+;;                  }
+
+.(
+                ldy _RayCurrentWall
+                lda _lWallsPt1, Y
+                tay
+                lda _lPointsY, Y
+                sec
+                sbc _rayCamPosY
+                sta _rayDeltaY
+                bpl DeltaYPositivOrNull
+                    eor #$FF:sec: adc#0
+                    tay
+                    lda _rayTmp2
+                    clc
+                    adc _multiCoeff,Y
+                    sta _rayTmp2
+                    lda _rayTmp2+1
+                    adc #0
+                    sta _rayTmp2+1
+                jmp EndifDeltaYNegativ
+DeltaYPositivOrNull
+                    tay
+                    lda _rayTmp2
+                    sec
+                    sbc _multiCoeff,Y
+                    sta _rayTmp2
+                    lda _rayTmp2+1
+                    sbc #0
+                    sta _rayTmp2+1
+EndifDeltaYNegativ
+.)
+
+        jmp         EndIfWallIsOyAligned
+;;              } else {                       // Wall is O,x aligned 
+WallIsOxAligned
+
+;;                  if (tabRayAngles[RaySliceIdx] == 0){
+;;                      rayTmp2 = 0;
+;;                  } else {
+;;                      rayTmp1 = raylogdist[RaySliceIdx] + tabLog2Cos[(unsigned char)rayCurrentAngle]; // v0; //tabLog2Cos[rayCurrentAngle];
+;;                      if (rayTmp1<0) rayTmp1=0;
+;;                      rayTmp2 = longexp(rayTmp1);
+;;                      if (abs (rayCurrentAngle) >= 64) {
+;;                          rayTmp2 = -rayTmp2; // -(2**(v1/32)) # 
+;;                      }
+;;                  }
+                ;; ldy _RaySliceIdx
+                ;; lda _tabRayAngles,Y          
+                lda _rayCurrentAngle
+                bne AngleNotNull_411
+                    sta _rayTmp2
+                    sta _rayTmp2+1
+                jmp EndifAngleNull_411
+AngleNotNull_411
+                    ldy _rayCurrentAngle
+                    lda _tabLog2Cos, Y
+                    tax
+                    lda _RaySliceIdx
+                    asl
+                    tay
+                    lda _raylogdist,Y
+                    sta _rayTmp1
+                    iny
+                    lda _raylogdist,Y
+                    sta _rayTmp1+1
+                    txa
+                        bpl notneg_411
+                        dec _rayTmp1+1
+notneg_411
+                    clc
+                    adc _rayTmp1
+                    sta _rayTmp1
+                    lda #0
+                    adc _rayTmp1+1
+                    sta _rayTmp1+1
+                    ;;beq skipnullifneg_411
+                    bpl skipnullifneg_411
+                        lda #0
+                        sta _rayTmp1
+                        sta _rayTmp1+1
+skipnullifneg_411:
+                    ldy _rayTmp1
+                    lda _tab_exp, y
+                    sta _rayTmp2
+                    lda #0
+                    sta _rayTmp2+1
+                    lda _rayCurrentAngle
+                    bpl skipinvert_411
+                        eor #$FF
+                        sec
+                        adc #0
+skipinvert_411
+                    cmp #64
+                    bcc skipInvertTmp2_411
+                lda #0 : sec : sbc _rayTmp2 : sta _rayTmp2 : lda #0 : sbc _rayTmp2+1 : sta _rayTmp2+1 
+skipInvertTmp2_411
+EndifAngleNull_411
+
+;;                  rayDeltaX      = lPointsX[lWallsPt1[RayCurrentWall]]-rayCamPosX;
+;;                  if (rayDeltaX < 0){
+;;                      rayTmp2      += multiCoeff[-rayDeltaX];
+;;                  } else {
+;;                      rayTmp2      -= multiCoeff[rayDeltaX];
+;;                  }
+
+
+                ldy _RayCurrentWall
+                lda _lWallsPt1, Y
+                tay
+                lda _lPointsX, Y
+                sec
+                sbc _rayCamPosX
+                sta _rayDeltaX
+                bpl DeltaXPositivOrNull
+                    eor #$FF:sec: adc#0
+                    tay
+                    lda _rayTmp2
+                    clc
+                    adc _multiCoeff,Y
+                    sta _rayTmp2
+                    lda _rayTmp2+1
+                    adc #0
+                    sta _rayTmp2+1
+                jmp EndifDeltaXNegativ
+DeltaXPositivOrNull
+                    tay
+                    lda _rayTmp2
+                    sec
+                    sbc _multiCoeff,Y
+                    sta _rayTmp2
+                    lda _rayTmp2+1
+                    sbc #0
+                    sta _rayTmp2+1
+EndifDeltaXNegativ
+
+
+
+EndIfWallIsOyAligned
+
+            ;; if (rayTmp2 < 0) rayTmp2 = -rayTmp2;
+            lda         _rayTmp2+1
+            bpl         skipInvertRayTmp2_354
+                lda #0 : sec : sbc _rayTmp2 : sta _rayTmp2 : lda #0 : sbc _rayTmp2+1 : sta _rayTmp2+1 :
+
+skipInvertRayTmp2_354            
+            ;; tabTexCol [RaySliceIdx]        = rayTmp2;
+            ldy         _RaySliceIdx
+            lda         _rayTmp2
+            sta         _tabTexCol, Y
+
+NoWallOnThisSlice
+
+    dec         _RaySliceIdx
+    bmi         endLoopOnSlices
+    jmp         loopOnSlices
+endLoopOnSlices
+
+.)
+    rts
+
+#endif // USE_C_DISTOFFSETSLICES
 
 
 #ifndef USE_C_RAYCAST

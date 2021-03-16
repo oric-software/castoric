@@ -613,7 +613,7 @@ _rayInitCasting:
     rts
 #endif
 
-#undef USE_C_PREDRAW
+#ifndef USE_C_PREDRAW
 ; void preDraw()
 _preDraw:
 .(
@@ -663,7 +663,7 @@ PositivOxDeltaWithWall
 predrawDone:
     rts
 .)
-#endif // USE_ASM_PREDRAW
+#endif // USE_C_PREDRAW
 
 #ifndef USE_C_TOTO
 ;; void toto() {

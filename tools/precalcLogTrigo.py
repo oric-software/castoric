@@ -44,5 +44,11 @@ def main():
     print (codegen.buffer2cCode("tab_1oversin", "unsigned char", log1oversin()))
     print (codegen.buffer2cCode("tab_1overcos", "unsigned char", log1overcos()))
 
+    #print (codegen.buffer2asmCode("tabLog2Sin", "signed char", tls))
+    #print (codegen.buffer2asmCode("tabLog2Cos", "signed char", tlc))
+    #print (codegen.buffer2asmCode("tab_1oversin", "unsigned char", log1oversin()))
+    #print (codegen.buffer2asmCode("tab_1overcos", "unsigned char", log1overcos()))
+
+
 if __name__ == "__main__":
     main()

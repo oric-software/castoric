@@ -28,7 +28,8 @@
 #undef     USE_C_PROCESS_POINT
 #undef     USE_C_ZBUFFWALLS
 #undef     USE_C_EXP
-#define     USE_C_DISTOFFSETSLICES
+#undef     USE_C_DISTOFFSETSLICES
+#define   USE_ASM_LOGTRIGO
 #endif
 
 #endif // CONFIG_H

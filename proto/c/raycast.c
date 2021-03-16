@@ -8,7 +8,7 @@
 #define abs(x)          (((x)<0)?-(x):(x))
 // #define max(x,y)          (((x)<(y))?(y):(x))
 
-
+// Ray hit distance computation
 signed char      RayAlpha  = 0;
 signed char      RayLeftAlpha;
 signed char      InterpAngleLeft;
@@ -17,6 +17,15 @@ unsigned char    InterpIdxLeft;
 unsigned char    RayNbSlice;
 unsigned int     RayDistance;
 unsigned int     RayWallLog;
+
+// Texture offset computation
+int rayTmp2;
+int rayTmp1;
+int rayDeltaX, rayDeltaY;
+signed char rayCurrentAngle;
+
+
+
 unsigned char    rayzbuffer[NUMBER_OF_SLICE]; // FIXME .. should be int
 unsigned int     raylogdist[NUMBER_OF_SLICE];
 unsigned char    raywall[NUMBER_OF_SLICE];
@@ -80,6 +89,8 @@ signed char             rayCamRotZ = 0;
 
 
 
+#ifdef USE_C_RAYCAST
+
 void rayInitCasting(){
     unsigned char ii;
     for (ii=0; ii< NUMBER_OF_SLICE; ii++) {
@@ -87,6 +98,8 @@ void rayInitCasting(){
         raywall[ii]         = 255;
     }
 }
+
+#endif // USE_C_RAYCAST
 
 #ifdef USE_C_TOTO
 void toto() {
@@ -268,14 +281,14 @@ void drawRightCuttingWall1Visible(){
 }
 #endif // USE_C_RAYCAST
 
-void rayProcessWalls() {
-    int v0, v2;
-    int v1;
-    int deltaX, deltaY;
-    signed char angle;
+#ifdef USE_C_ZBUFFWALLS
+void zbuffWalls() {
     
+    RayCurrentWall = rayNbWalls;
+    do {
+        RayCurrentWall --;
 
-    for (RayCurrentWall = 0; RayCurrentWall < rayNbWalls; RayCurrentWall ++){
+
         RayIdXPoint1        = lWallsPt1[RayCurrentWall];
         RayIdXPoint2        = lWallsPt2[RayCurrentWall];
 
@@ -460,84 +473,108 @@ void rayProcessWalls() {
                 }
             }
         }
-    }
-    /* 
-     * Change output from logarithmic scale to linear scale 
-     */
-    for (RaySliceIdx=0; RaySliceIdx<NUMBER_OF_SLICE; RaySliceIdx++){
-        RayCurrentWall = raywall[RaySliceIdx];
-        if (RayCurrentWall != 255) {
-            raylogdist[RaySliceIdx] = rayzbuffer[RaySliceIdx];
+    } while (RayCurrentWall != 0);
+}
 
+#endif // USE_C_ZBUFFWALLS
+
+
+#ifdef USE_C_DISTOFFSETSLICES
+void    distOffsetSlices() {
+
+    
+    RaySliceIdx = NUMBER_OF_SLICE;
+    do {
+         
+        RaySliceIdx--;
+
+
+        RayCurrentWall                  = raywall[RaySliceIdx];
+        tabTexCol [RaySliceIdx]         = 0;
+
+
+        if (RayCurrentWall != 255) {
+
+               
+
+            raylogdist[RaySliceIdx] = rayzbuffer[RaySliceIdx];
             if (unfish[RaySliceIdx] < rayzbuffer[RaySliceIdx])
                 rayzbuffer[RaySliceIdx] -= unfish[RaySliceIdx];
 
 
+
             TableVerticalPos[RaySliceIdx] =dist2hh(rayzbuffer[RaySliceIdx]);
-            rayzbuffer[RaySliceIdx] = longexp(rayzbuffer[RaySliceIdx]);        
-        } else {
-            
-        }
-    }
 
-    // Compute texture column informations
-    for (RaySliceIdx=0; RaySliceIdx<NUMBER_OF_SLICE; RaySliceIdx++){
-        RayCurrentWall = raywall[RaySliceIdx];
-        if (RayCurrentWall != 255) {
-            angle       = rayCamRotZ + tabRayAngles[RaySliceIdx];
+            /* 
+            * Change output from logarithmic scale to linear scale 
+            */
+            // rayzbuffer[RaySliceIdx] = longexp(rayzbuffer[RaySliceIdx]);        
+
+            /*
+             * Compute texture column informations
+             */
+ 
+            rayCurrentAngle       = rayCamRotZ + tabRayAngles[RaySliceIdx];
+
             if (lWallsCosBeta[RayCurrentWall] == 0){    // Wall is O,y aligned   
-                deltaY      = lPointsY[lWallsPt1[RayCurrentWall]]-rayCamPosY;
-                 
-                if (angle == 0){
-                    v0 = 0;
-                    v1 = 0;
-                    v2 = 0;
-                } else if (angle > 0) {
-                    v0 = log2sin(angle); // round(32*math.log2(math.sin(angle*FIX2RAD)*COEFF))
-                    v1 = raylogdist[RaySliceIdx] + v0;
-                    if (v1<0) v1=0;
-                    v2 = longexp(v1); // (2**(v1/32))
-
-                } else if (angle < 0) {
-                    v0 = log2sin(angle); // round(32*math.log2(-math.sin(angle*FIX2RAD)*COEFF))
-                    v1 = raylogdist[RaySliceIdx] + v0;
-                    if (v1<0) v1=0;
-                    v2 = -longexp(v1); // -(2**(v1/32)) # 
-                }
-                if (deltaY < 0) {
-                    tabTexCol [RaySliceIdx]        = abs(v2+multiCoeff[abs(deltaY)]);
+ 
+             
+                if (rayCurrentAngle == 0){
+                    rayTmp2 = 0;
                 } else {
-                    tabTexCol [RaySliceIdx]        = abs(v2-multiCoeff[abs(deltaY)]);
+                    rayTmp1 = raylogdist[RaySliceIdx] + tabLog2Sin[(unsigned char)rayCurrentAngle];
+                    if (rayTmp1<0) rayTmp1=0;
+                    rayTmp2 = longexp(rayTmp1);
+                    if (rayCurrentAngle <= 0) rayTmp2 = -rayTmp2;
                 }
+
+                rayDeltaY      = lPointsY[lWallsPt1[RayCurrentWall]]-rayCamPosY;
+                if (rayDeltaY < 0) {
+                    rayTmp2      +=  multiCoeff[-rayDeltaY];
+                } else {
+                    rayTmp2      -=  multiCoeff[rayDeltaY];
+                }
+
+
             } else {                       // Wall is O,x aligned 
-                deltaX      = lPointsX[lWallsPt1[RayCurrentWall]]-rayCamPosX;
+         
+
                 if (tabRayAngles[RaySliceIdx] == 0){
-                    v0 = 0;
-                    v1 = 0;
-                    v2 = 0;
-                } else if (abs (angle) < 64) {
-                    v0 = log2cos(angle); // round(32*math.log2(math.sin(angle*FIX2RAD)*COEFF))
-                    v1 = raylogdist[RaySliceIdx] + v0;
-                    if (v1<0) v1=0;
-                    v2 = longexp(v1); // (2**(v1/32))
-
-                } else if (abs (angle) >= 64) {
-                    v0 = log2cos(angle); // round(32*math.log2(-math.sin(angle*FIX2RAD)*COEFF))
-                    v1 = raylogdist[RaySliceIdx] + v0;
-                    if (v1<0) v1=0;
-                    v2 = -longexp(v1); // -(2**(v1/32)) # 
-                }
-                if (deltaX < 0){
-                    tabTexCol [RaySliceIdx]        = abs(v2+multiCoeff[abs(deltaX)]);
+                    rayTmp2 = 0;
                 } else {
-                    tabTexCol [RaySliceIdx]        = abs(v2-multiCoeff[deltaX]);
+                    rayTmp1 = raylogdist[RaySliceIdx] + tabLog2Cos[(unsigned char)rayCurrentAngle]; // v0; //tabLog2Cos[rayCurrentAngle];
+                    if (rayTmp1<0) rayTmp1=0;
+                    rayTmp2 = longexp(rayTmp1);
+                    if (abs (rayCurrentAngle) >= 64) {
+                        rayTmp2 = -rayTmp2; // -(2**(v1/32)) # 
+                    }
                 }
-            }
-        } else {
-            tabTexCol [RaySliceIdx]        = 0;
-        }
 
-    }
+
+
+
+                rayDeltaX      = lPointsX[lWallsPt1[RayCurrentWall]]-rayCamPosX;
+                if (rayDeltaX < 0){
+                    rayTmp2      += multiCoeff[-rayDeltaX];
+                } else {
+                    rayTmp2      -= multiCoeff[rayDeltaX];
+                }
+
+            }
+            if (rayTmp2 < 0) rayTmp2 = -rayTmp2;
+            tabTexCol [RaySliceIdx]        = rayTmp2;
+        }
+    } while (RaySliceIdx !=0);
+
+}
+#endif // USE_C_DISTOFFSETSLICES
+
+void rayProcessWalls() {
+
+    
+    zbuffWalls();
+
+    distOffsetSlices();
 
 }
 

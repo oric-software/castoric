@@ -14,6 +14,9 @@
 #define     USE_C_RAYCAST
 #define     USE_C_VIEWPORT
 #define     USE_C_PROCESS_POINT
+#define     USE_C_ZBUFFWALLS
+#define     USE_C_EXP
+#define     USE_C_DISTOFFSETSLICES
 #else
 
 #undef     USE_C_DDA
@@ -23,6 +26,9 @@
 #undef     USE_C_RAYCAST
 #undef     USE_C_VIEWPORT
 #undef     USE_C_PROCESS_POINT
+#undef     USE_C_ZBUFFWALLS
+#undef     USE_C_EXP
+#define     USE_C_DISTOFFSETSLICES
 #endif
 
 #endif // CONFIG_H

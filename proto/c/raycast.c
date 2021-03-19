@@ -287,6 +287,43 @@ void drawRightCuttingWall1Visible(){
 }
 #endif // USE_C_RAYCAST
 
+
+
+#ifdef USE_C_GENERIC_COLLISION
+
+unsigned char collideWall() {
+    
+    RayCurrentWall = rayNbWalls;
+    do {
+        RayCurrentWall --;
+        RayIdXPoint1        = lWallsPt1[RayCurrentWall];
+        RayIdXPoint2        = lWallsPt2[RayCurrentWall];
+
+        if (lWallsCosBeta[RayCurrentWall] == 0){    // Wall is O,y aligned   
+            if (rayCamPosX == lPointsX[RayIdXPoint1]) {
+                if (
+                    ((rayCamPosY >= lPointsY[RayIdXPoint1]) && (rayCamPosY <= lPointsY[RayIdXPoint2]))
+                    || ((rayCamPosY >= lPointsY[RayIdXPoint2]) && (rayCamPosY <= lPointsY[RayIdXPoint1]))
+                ) {
+                    return 1;
+                }
+            }
+        } else {                                    // Wall is O,x aligned
+            if (rayCamPosY == lPointsY[RayIdXPoint1]) {
+                if (
+                    ((rayCamPosX >= lPointsX[RayIdXPoint1]) && (rayCamPosX <= lPointsX[RayIdXPoint2]))
+                    || ((rayCamPosX >= lPointsX[RayIdXPoint2]) && (rayCamPosX <= lPointsX[RayIdXPoint1]))
+                ) {
+                    return 1;
+                }
+            }
+        }
+    } while (RayCurrentWall != 0);
+
+    return 0;
+}
+#endif // USE_C_GENERIC_COLLISION
+
 #ifdef USE_C_ZBUFFWALLS
 void zbuffWalls() {
     

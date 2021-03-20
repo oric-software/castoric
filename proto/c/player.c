@@ -37,9 +37,9 @@ void player () {
         running = 0; break;
     // case 65:  // A
     //     glCamRotX -= 2; break;
-    case 90:  // Z
-        shiftLeft(); refreshNeeded           = 1;break;
     case 88:  // X
+        shiftLeft(); refreshNeeded           = 1;break;
+    case 0x43:  // C
         shiftRight(); refreshNeeded           = 1;break;
     default:
         break;
@@ -130,7 +130,7 @@ void shiftLeft() {
     } else if ((-112 < rayCamRotZ) && (-80 >= rayCamRotZ)) {
         rayCamPosX++; rayCamPosY--;
     } else if ((-80 < rayCamRotZ) && (-48 >= rayCamRotZ)) {
-        rayCamPosX--;
+        rayCamPosX++;
     } else if ((-48 < rayCamRotZ) && (-16 >= rayCamRotZ)) {
         rayCamPosX++; rayCamPosY++;
     } else if ((-16 < rayCamRotZ) && (16 >= rayCamRotZ)) {
@@ -161,7 +161,7 @@ void shiftRight() {
     } else if ((-112 < rayCamRotZ) && (-80 >= rayCamRotZ)) {
         rayCamPosX--; rayCamPosY++;
     } else if ((-80 < rayCamRotZ) && (-48 >= rayCamRotZ)) {
-        rayCamPosX++;
+        rayCamPosX--;
     } else if ((-48 < rayCamRotZ) && (-16 >= rayCamRotZ)) {
         rayCamPosX--; rayCamPosY--;
     } else if ((-16 < rayCamRotZ) && (16 >= rayCamRotZ)) {

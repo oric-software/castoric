@@ -30,7 +30,7 @@ unsigned char refreshNeeded;
 #define CHANGE_INK_TO_RED	            1		
 #define CHANGE_INK_TO_GREEN	            2		
 #define CHANGE_INK_TO_BLUE	            4		
-
+int mode0;
 
 void prepareRGB(){
     int ii;
@@ -65,6 +65,7 @@ void initCamera(){
 void gameLoop() {
 
     refreshNeeded           = 1;
+    poke(0x26A, (mode0 | 0x08) & 0xFE);
 
     while (running) {
         doke(630,0);
@@ -81,7 +82,7 @@ void gameLoop() {
 #ifdef USE_SPRITE        
             drawSprite (3, 3, texture_pillar);
 #endif
-            printf("\nColor Textured Raycasting on Oric\n      Jean-Baptiste PERIN 2021\n(X=%d Y=%d) [a=%d] [t=%d]", rayCamPosX, rayCamPosY, rayCamRotZ, 65535-deek(630));
+            //printf("\nColor Textured Raycasting on Oric\n      Jean-Baptiste PERIN 2021\n(X=%d Y=%d) [a=%d] [t=%d]", rayCamPosX, rayCamPosY, rayCamRotZ, 65535-deek(630));
             refreshNeeded = 0;
         }
         // for (ii = 0; ii <= VIEWPORT_HEIGHT; ii++) {
@@ -92,12 +93,17 @@ void gameLoop() {
         //     drawTexelOnScreen (VIEWPORT_HEIGHT, 40+ii, 63);
         //     drawTexelOnScreen (VIEWPORT_HEIGHT, 40-ii, 63);
         // }
+
     }
 }
-
+    
 void main(){
 
     printf ("DEBUT\n");
+
+    // Deactivate cursor and keyclick
+    mode0 = peek(0x26A);
+    poke(0x26A, (mode0 | 0x08) & 0xFE);
 
     // [res camera_situation]]
     initCamera();
@@ -127,7 +133,12 @@ void main(){
     // drawSprite (6, 6, texture_pillar);
 #endif
     running = 1;
+    refreshNeeded           = 1;
     gameLoop();
+
+    // Reactivate cursor and keyclick
+    poke(0x26A, mode0);
+
 	
 }
 

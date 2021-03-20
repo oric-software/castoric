@@ -2,6 +2,8 @@
 // texture buffer generated from file : img\christmas.bmp
 // by script : texture2buf.py
 // [ref texture_file2buffer]
+#ifndef TEXTURE_CHRISTMAS
+#define TEXTURE_CHRISTMAS
 unsigned char texture_christmas[] = {
 	60, 60, 60, 60, 60, 51, 0, 12, 12, 12, 12, 12, 51, 63, 60, 60
 	, 60, 60, 60, 60, 60, 60, 60, 60, 15, 51, 51, 51, 51, 51, 51, 15
@@ -68,4 +70,6 @@ unsigned char texture_christmas[] = {
 	, 51, 51, 51, 51, 51, 12, 12, 51, 60, 60, 60, 63, 48, 48, 48, 48
 	, 48, 0, 0, 60, 60, 48, 48, 60, 0, 51, 51, 15, 15, 15, 15, 15
 	};
+
+#endif
 

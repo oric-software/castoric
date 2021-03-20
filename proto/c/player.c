@@ -56,6 +56,7 @@ void player () {
  * \/    \/ \___/   \_/   \___|
  *                            
  */
+#ifndef USE_C_GENERIC_COLLISION
 // Collision Detection 
 unsigned char isAllowedPosition(signed char vX, signed char vY) {
     signed char X, Y;
@@ -99,6 +100,7 @@ unsigned char isAllowedPosition(signed char vX, signed char vY) {
     }
     return 1;
 }
+#endif
 void forward() {
     signed int X, Y;
     X = rayCamPosX; Y = rayCamPosY;
@@ -121,7 +123,13 @@ void forward() {
     } else {
         rayCamPosX--;
     }
+
+#ifdef USE_C_GENERIC_COLLISION
+    if (collideWall()){
+#else
     if (!isAllowedPosition(rayCamPosX, rayCamPosY)) {
+#endif
+
         rayCamPosX = X; rayCamPosY = Y;
     }
 }
@@ -147,7 +155,12 @@ void backward() {
     } else {
         rayCamPosX++;
     }
+#ifdef USE_C_GENERIC_COLLISION
+    if (collideWall()){
+#else
     if (!isAllowedPosition(rayCamPosX, rayCamPosY)) {
+#endif
+
         rayCamPosX = X; rayCamPosY = Y;
     }
 }
@@ -173,7 +186,11 @@ void shiftLeft() {
     } else {
         rayCamPosY--;
     }
+#ifdef USE_C_GENERIC_COLLISION
+    if (collideWall()){
+#else
     if (!isAllowedPosition(rayCamPosX, rayCamPosY)) {
+#endif
         rayCamPosX = X; rayCamPosY = Y;
     }
 }
@@ -200,7 +217,11 @@ void shiftRight() {
     } else {
         rayCamPosX++;
     }
+#ifdef USE_C_GENERIC_COLLISION
+    if (collideWall()){
+#else
     if (!isAllowedPosition(rayCamPosX, rayCamPosY)) {
+#endif
         rayCamPosX = X; rayCamPosY = Y;
     }
 }

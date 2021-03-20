@@ -5,6 +5,8 @@
 
 #undef USE_SPRITE
 
+#define USE_C_GENERIC_COLLISION
+
 #ifdef __GNUC__
 
 #define     USE_C_DDA
@@ -28,7 +30,8 @@
 #undef     USE_C_PROCESS_POINT
 #undef     USE_C_ZBUFFWALLS
 #undef     USE_C_EXP
-#define     USE_C_DISTOFFSETSLICES
+#undef     USE_C_DISTOFFSETSLICES
+#define   USE_ASM_LOGTRIGO
 #endif
 
 #endif // CONFIG_H

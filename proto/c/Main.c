@@ -76,6 +76,7 @@ void gameLoop() {
             drawSprite (3, 3, texture_pillar);
 #endif
             refreshNeeded = 0;
+            printf("\n(X=%d Y=%d) [a=%d] [t=%d]\n\n", rayCamPosX, rayCamPosY, rayCamRotZ, 65535-deek(630));
         }
         // for (ii = 0; ii <= VIEWPORT_HEIGHT; ii++) {
         //     drawTexelOnScreen (ii, 40-VIEWPORT_WIDTH/2, 63);
@@ -85,7 +86,7 @@ void gameLoop() {
         //     drawTexelOnScreen (VIEWPORT_HEIGHT, 40+ii, 63);
         //     drawTexelOnScreen (VIEWPORT_HEIGHT, 40-ii, 63);
         // }
-        //printf("\nColor Textured Raycasting on Oric\n      Jean-Baptiste PERIN 2021\n(X=%d Y=%d) [a=%d] [t=%d]", rayCamPosX, rayCamPosY, rayCamRotZ, 65535-deek(630));
+        
     }
 }
 

@@ -256,8 +256,6 @@ The following C code shows hos it may be implemented in a typical gameloop.
         rayProcessPoints();
         rayProcessWalls();
 
-        // TODO: Clean the Viewport Here ..
-
         // Render the result of ray casting
         drawWalls();
 
@@ -331,7 +329,7 @@ As shown in the following python code extracted from the script that convert tex
 
     ## compute texel value of pixel at position (ii, jj) in image
     r, g, b = rgb_im.getpixel((ii, jj))
-    texel_value = (r//85)*16 + (g//85)*4 + (b//85)
+    texel_value = (r//64)*16 + (g//64)*4 + (b//64)
 ```
 
 A typical way to draw the previously computed `texel_value` at position (`line`, `column`) on screen is to use a code similar to the following one:

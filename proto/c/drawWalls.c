@@ -1,11 +1,19 @@
 #include "config.h"
-
+#include "tabidxrdtexture.h"
 #include "dda.c"
 
-extern unsigned int offTexture;
-#ifdef USE_C_DRAWWALLS
-unsigned char *     ptrTexture;             // Address of the texture 
+extern unsigned int         offTexture;
+extern unsigned char *      ptrTexture;             // Address of the texture 
 
+#ifdef __GNUC__
+unsigned char *             ptrOffsetIndex;
+unsigned char *             ptrTexture;             // Address of the texture 
+#else 
+extern unsigned char *      ptrOffsetIndex;
+#endif
+unsigned char               nxtOffsetIndex;
+
+#ifdef USE_C_DRAWWALLS
 
 unsigned char *     ptrReadTexture;             // Address of the texture 
 unsigned char       idxCurrentSlice;
@@ -13,300 +21,161 @@ unsigned char *     baseAdr;
 signed char         idxScreenLine, idxScreenCol;
 unsigned char       columnHeight, columnTextureCoord;
 unsigned char       wallId;
+unsigned char       ddaNbIter;
 
+
+
+#define PREPARE    columnTextureCoord  = tabTexCol[idxCurrentSlice]&(TEXTURE_SIZE-1);\
+    offTexture          = (multi32_high[columnTextureCoord] << 8) | multi32_low[columnTextureCoord];\
+    ptrTexture          = (unsigned char *)((wallTexture_high[wallId] << 8) | wallTexture_low[wallId]);\
+    ptrReadTexture      = &(ptrTexture[offTexture]);\
+    columnHeight        = TableVerticalPos[idxCurrentSlice];\
+    ddaNbStep           = columnHeight<<1;\
+    idxScreenLine       = VIEWPORT_HEIGHT/2 - columnHeight + VIEWPORT_START_LINE;\
+    ddaCurrentValue     = 0;
+
+#ifdef __GNUC__
+#define COLOR_LEFT_TEXEL  theAdr += NEXT_SCANLINE_INCREMENT;\
+    theAdr += NEXT_SCANLINE_INCREMENT;\
+    theAdr += NEXT_SCANLINE_INCREMENT;
+#else
+// #define COLOR_LEFT_TEXEL colorLeftTexel()
+#define COLOR_LEFT_TEXEL  *theAdr = tabLeftRed[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;\
+    *theAdr = tabLeftGreen[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;\
+    *theAdr = tabLeftBlue[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;
+#endif
+
+// #define COLOR_RIGHT_TEXEL colorRightTexel()
+#ifdef __GNUC__
+#define COLOR_RIGHT_TEXEL theAdr += NEXT_SCANLINE_INCREMENT;\
+    theAdr += NEXT_SCANLINE_INCREMENT;\
+    theAdr += NEXT_SCANLINE_INCREMENT;
+#else
+#define COLOR_RIGHT_TEXEL *theAdr |= tabRightRed[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;\
+    *theAdr |= tabRightGreen[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;\
+    *theAdr |= tabRightBlue[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;
+#endif
+
+#define DDA_STEP ddaCurrentValue = ptrOffsetIndex[nxtOffsetIndex++];\
+
+
+#define DDA_STEP_2  ddaCurrentError         -= TEXTURE_SIZE;\
+            if ((ddaCurrentError<<1) < ddaNbStep) {\
+                ddaCurrentError     += ddaNbStep;\
+                ddaCurrentValue     += 1;\
+            }
+
+#define OVER_SAMPLE(prim) ddaCurrentError     = ddaNbStep;\
+        while (idxScreenLine < VIEWPORT_START_LINE){\
+            DDA_STEP_2;\
+            ddaNbIter       -= 1;\
+            idxScreenLine   += 1;\
+        } \
+        theAdr              = (unsigned char *)(baseAdr + (int)((multi120_high[idxScreenLine]<<8) | multi120_low[idxScreenLine]));\
+        do {\
+            DDA_STEP_2;\
+            ddaNbIter       -= 1;\
+            renCurrentColor = ptrReadTexture [ddaCurrentValue];\
+            prim;\
+            idxScreenLine   += 1;\
+        } while ((ddaNbIter > 0) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
+
+
+#define UNROLL_SAMPLE(prim)         ddaCurrentError     = TEXTURE_SIZE;\
+        while (idxScreenLine < VIEWPORT_START_LINE){\
+            DDA_STEP\
+            ddaNbIter       -= 1;\
+            idxScreenLine   += 1;\
+        } \
+        theAdr              = (unsigned char *)(baseAdr + (int)((multi120_high[idxScreenLine]<<8) | multi120_low[idxScreenLine]));\
+        do {\
+            DDA_STEP\
+            ddaNbIter       -= 1;\
+            renCurrentColor = ptrReadTexture [ddaCurrentValue];\
+            prim;\
+            idxScreenLine   += 1;\
+            DDA_STEP\
+            ddaNbIter       -= 1;\
+            renCurrentColor = ptrReadTexture [ddaCurrentValue];\
+            prim;\
+            idxScreenLine   += 1;\
+        } while ((ddaNbIter > 0) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
+
+
+// =====================================
+// ============ LEFT TEXEL
+// =====================================
+
+void drawLeftColumn(){
+
+    PREPARE;
+
+    if (ddaNbStep >= 64) {
+        OVER_SAMPLE(COLOR_LEFT_TEXEL)
+    } else {
+        ddaNbIter           = ddaNbStep;
+        ptrOffsetIndex = &(tabIdxRdTexture[((ddaNbStep+1)*ddaNbStep)/2]);
+        nxtOffsetIndex = 0;
+        DDA_STEP
+        UNROLL_SAMPLE(COLOR_LEFT_TEXEL)
+    }
+}
+
+// =====================================
+// ============ RIGHT TEXEL
+// =====================================
+
+
+void drawRightColumn(){
+
+
+    PREPARE;
+
+    if (ddaNbStep >= 64){
+        OVER_SAMPLE(COLOR_RIGHT_TEXEL)
+    } else {
+        ddaNbIter           = ddaNbStep;
+        ptrOffsetIndex = &(tabIdxRdTexture[((ddaNbStep+1)*ddaNbStep)/2]);
+        nxtOffsetIndex = 0;
+        DDA_STEP
+        UNROLL_SAMPLE(COLOR_RIGHT_TEXEL)
+
+    }
+}
+#ifdef __GNUC__
+void clearColumn(){
+
+}
+#endif
 void drawWalls(){
 
-
-    ddaNbVal            = TEXTURE_SIZE;
     idxScreenCol        = VIEWPORT_START_COLUMN-1;
     baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (idxScreenCol>>1));
-    ddaStartValue       = 0;
+
     idxCurrentSlice     = 0;
-
-    // asm (
-    //     "lda #TEXTURE_SIZE;"
-    //     "sta _ddaNbVal;"
-
-    //     "lda #VIEWPORT_START_COLUMN-1;"
-    //     "sta    _idxScreenCol;"
-    //     "lsr;"
-
-    //     "adc #<(HIRES_SCREEN_ADDRESS);"
-    //     "sta _baseAdr;"
-    //     "lda #>(HIRES_SCREEN_ADDRESS);"
-    //     "adc #0;"
-    //     "sta _baseAdr+1;"
-
-    //     "lda #0;"
-    //     "sta _ddaStartValue;"
-    //     "sta _idxCurrentSlice;"
-    // );
-
-
 
     do {
         baseAdr             += 1;
         idxScreenCol        += 1;
+
+        clearColumn();
+
         wallId              = raywall[idxCurrentSlice];
 
-        // asm (
-        //     "inc _baseAdr: .( : bne skip : inc _baseAdr+1: skip:.);"
-        //     "inc _idxScreenCol;"
-        //     "ldy _idxCurrentSlice;"
-        //     "lda _raywall,Y"
-        //     "sta _wallId"
-        // );
-
         if (wallId !=255) {
-
-    // =====================================
-    // ============ LEFT TEXEL
-    // =====================================
-
-
-            columnTextureCoord  = tabTexCol[idxCurrentSlice]&(TEXTURE_SIZE-1); // modulo 32
-            offTexture          = multi32[columnTextureCoord];
-            // asm (
-            //     "ldy _idxCurrentSlice: lda _tabTexCol,Y: and #TEXTURE_SIZE-1: sta _columnTextureCoord;"
-            //     "lda _columnTextureCoord: asl : tay : lda _multi32,Y: sta _offTexture : iny : lda _multi32,Y : sta _offTexture+1"
-            // );
-
-            ptrTexture          = wallTexture[wallId];
-            // asm (
-            //     "lda _wallId: asl: tay: lda _wallTexture,Y: sta _ptrTexture: iny: lda _wallTexture,Y: sta _ptrTexture+1"
-            // );
-
-            ptrReadTexture      = &(ptrTexture[offTexture]);
-            // asm (
-            //     "clc;"
-            //     "lda _ptrTexture;"
-            //     "adc _offTexture;"
-            //     "sta _ptrReadTexture;"
-            //     "lda _ptrTexture+1;"
-            //     "adc _offTexture+1;"
-            //     "sta _ptrReadTexture+1;"
-            // );
-            
-            columnHeight        = TableVerticalPos[idxCurrentSlice]; 
-            // asm (
-            //     "ldy _idxCurrentSlice;"
-            //     "lda _TableVerticalPos,Y;"
-            //     "sta _columnHeight;"
-            // );
-
-            ddaNbStep           = columnHeight<<1;
-            // asm ("lda _columnHeight : asl : sta _ddaNbStep;");
-
-            ddaInit();
-            // asm ("jsr _ddaInit");
-
-            idxScreenLine       = VIEWPORT_HEIGHT/2 - columnHeight + VIEWPORT_START_LINE;
-            // asm ("sec : lda #VIEWPORT_HEIGHT/2+VIEWPORT_START_LINE : sbc _columnHeight : sta _idxScreenLine;");
-
-            while (idxScreenLine < VIEWPORT_START_LINE){
-                (*ddaStepFunction)();
-                idxScreenLine   += 1;
-            } 
-            // asm (
-            //     ".( : loop : lda _idxScreenLine : "
-            //     "cmp #VIEWPORT_START_LINE : "
-            //     "bpl end_loop : "
-            //         // "jsr (_ddaStepFunction) : "
-	        //         "lda _ddaStepFunction : sta tmp0 : lda _ddaStepFunction+1 : sta tmp0+1 :"
-	        //         ".( : lda tmp0 : sta call+1: lda tmp0+1 : sta call+2 : ldy #0 :call : jsr 0000 : .) :"
-            //         "inc _idxScreenLine : "
-            //         "jmp loop : "
-            //     "end_loop : .) : "
-            // );
-
-            // theAdr = (unsigned char *)(HIRES_SCREEN_ADDRESS + multi120[idxScreenLine] + (idxScreenCol>>1));
-            theAdr              = (unsigned char *)(baseAdr + multi120[idxScreenLine]); 
-
-            // asm (
-            //     "lda _idxScreenLine;"
-            //     "asl;"
-            //     "tay;"
-            //     "lda _multi120,Y;"
-            //     "iny;"
-            //     "clc;"
-            //     "adc _baseAdr;"
-            //     "sta _theAdr;"
-            //     "lda _multi120,Y;"
-            //     "adc _baseAdr+1;"
-            //     "sta _theAdr+1;"
-            // );
-
-
-
-            do {
-                (*ddaStepFunction)();
-                renCurrentColor = ptrReadTexture[ddaCurrentValue];
-                colorLeftTexel(); // theAdr          += 120;
-                idxScreenLine   += 1;
-            } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
-
-            // asm (
-            //     ".( : LeftCol_loop : "
-            //         "lda _ddaStepFunction : sta tmp0 : lda _ddaStepFunction+1 : sta tmp0+1 :"
-            //         ".( : lda tmp0 : sta call+1: lda tmp0+1 : sta call+2 : ldy #0 :call : jsr 0000 : .) :"
-            //     );
-            // asm (
-            // //         "ldy _ddaCurrentValue : lda _ptrReadTexture,Y : sta _renCurrentColor : "
-            //     	"lda _ddaCurrentValue : sta tmp0 :"
-            //     	"lda tmp0 : sta tmp0 : lda #0 : sta tmp0+1 :"
-            //     	"lda _ptrReadTexture : sta tmp1 : lda _ptrReadTexture+1 : sta tmp1+1 :"
-            //     	"clc : lda tmp0 : adc tmp1 : sta tmp0 : lda tmp0+1 : adc tmp1+1 : sta tmp0+1 :"
-            //     	"ldy #0 : lda (tmp0),y : sta tmp0 :"
-            //     	"lda tmp0 : sta _renCurrentColor :                "
-            // );
-            // asm (
-            //         "jsr _colorLeftTexel : "
-            //         "inc _idxScreenLine : "
-            //         "lda _idxScreenLine : "
-            //         "cmp #VIEWPORT_HEIGHT + VIEWPORT_START_LINE : "
-            //         "bcs LeftCol_endloop : "
-            //         "lda _ddaCurrentValue : "
-            //         "cmp _ddaEndValue : "
-            //         "bcs LeftCol_endloop : "
-            //         "jmp LeftCol_loop : "
-            //         "LeftCol_endloop : .) : " 
-
-            // );
-
-
+            drawLeftColumn ();
         }
 
         idxScreenCol        += 1;
         idxCurrentSlice     += 1;
+
         wallId              = raywall[idxCurrentSlice];
-        // asm (
-        //     "inc _idxScreenCol : inc _idxCurrentSlice : ldy _idxCurrentSlice : lda _raywall,Y : sta _wallId"
-        // );
 
         if (wallId !=255) {
-
-            ptrTexture          = wallTexture[wallId];
-            // asm ("lda _wallId: asl : tay: lda _wallTexture,Y: sta _ptrTexture: iny: lda _wallTexture,Y: sta _ptrTexture+1");
-
-    // =====================================
-    // ============ RIGHT TEXEL
-    // =====================================
-            columnHeight        = TableVerticalPos[idxCurrentSlice];
-            // asm (
-            //     "ldy _idxCurrentSlice;"
-            //     "lda _TableVerticalPos,Y;"
-            //     "sta _columnHeight;"
-            // );
-
-            columnTextureCoord  = tabTexCol[idxCurrentSlice]&(TEXTURE_SIZE-1);  // modulo 32
-            offTexture          = multi32[columnTextureCoord];
-            // asm (
-            //     "ldy _idxCurrentSlice: lda _tabTexCol,Y: and #TEXTURE_SIZE-1: sta _columnTextureCoord;"
-            //     "lda _columnTextureCoord: asl : tay : lda _multi32,Y: sta _offTexture : iny : lda _multi32,Y : sta _offTexture+1"
-            // );
-           
-            ptrTexture          = wallTexture[wallId];
-            // asm (
-            //     "lda _wallId: asl: tay: lda _wallTexture,Y: sta _ptrTexture: iny: lda _wallTexture,Y: sta _ptrTexture+1"
-            // );
-
-            ptrReadTexture      = &(ptrTexture[offTexture]);
-            // asm (
-            //     "clc;"
-            //     "lda _ptrTexture;"
-            //     "adc _offTexture;"
-            //     "sta _ptrReadTexture;"
-            //     "lda _ptrTexture+1;"
-            //     "adc _offTexture+1;"
-            //     "sta _ptrReadTexture+1;"
-            // );
-            
-            idxScreenLine       = VIEWPORT_HEIGHT/2 - columnHeight + VIEWPORT_START_LINE;
-            // asm ("sec : lda #VIEWPORT_HEIGHT/2+VIEWPORT_START_LINE : sbc _columnHeight : sta _idxScreenLine;");
-
-            ddaNbStep           = columnHeight<<1;
-            // asm ("lda _columnHeight : asl : sta _ddaNbStep;");
-
-            ddaInit();
-            // asm ("jsr _ddaInit");
-
-
-            while (idxScreenLine < VIEWPORT_START_LINE){
-                (*ddaStepFunction)();
-                idxScreenLine   += 1;
-            } 
-
-            // asm (
-            //     ".( : loop : lda _idxScreenLine : "
-            //     "cmp #VIEWPORT_START_LINE : "
-            //     "bpl end_loop : "
-            //         // "jsr (_ddaStepFunction) : "
-	        //         "lda _ddaStepFunction : sta tmp0 : lda _ddaStepFunction+1 : sta tmp0+1 :"
-	        //         ".( : lda tmp0 : sta call+1: lda tmp0+1 : sta call+2 : ldy #0 :call : jsr 0000 : .) :"
-            //         "inc _idxScreenLine : "
-            //         "jmp loop : "
-            //     "end_loop : .) : "
-            // );
-
-
-
-            // theAdr = (unsigned char *)(HIRES_SCREEN_ADDRESS + multi120[idxScreenLine] + (idxScreenCol>>1));
-            theAdr              = (unsigned char *)(baseAdr + multi120[idxScreenLine]);
-            // asm (
-            //     "lda _idxScreenLine;"
-            //     "asl;"
-            //     "tay;"
-            //     "lda _multi120,Y;"
-            //     "iny;"
-            //     "clc;"
-            //     "adc _baseAdr;"
-            //     "sta _theAdr;"
-            //     "lda _multi120,Y;"
-            //     "adc _baseAdr+1;"
-            //     "sta _theAdr+1;"
-            // );
-            
-            do {
-                (*ddaStepFunction)();
-                renCurrentColor = ptrReadTexture [ddaCurrentValue];
-                colorRightTexel(); // theAdr          += 120;
-                idxScreenLine   += 1;
-            } while ((ddaCurrentValue < ddaEndValue) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
-
-
-            // asm (
-            //     ".( : RightCol_loop : "
-            //         "lda _ddaStepFunction : sta tmp0 : lda _ddaStepFunction+1 : sta tmp0+1 :"
-            //         ".( : lda tmp0 : sta call+1: lda tmp0+1 : sta call+2 : ldy #0 :call : jsr 0000 : .) :"
-            //     );
-            // asm (
-            // //         "ldy _ddaCurrentValue : lda _ptrReadTexture,Y : sta _renCurrentColor : "
-            //     	"lda _ddaCurrentValue : sta tmp0 :"
-            //     	"lda tmp0 : sta tmp0 : lda #0 : sta tmp0+1 :"
-            //     	"lda _ptrReadTexture : sta tmp1 : lda _ptrReadTexture+1 : sta tmp1+1 :"
-            //     	"clc : lda tmp0 : adc tmp1 : sta tmp0 : lda tmp0+1 : adc tmp1+1 : sta tmp0+1 :"
-            //     	"ldy #0 : lda (tmp0),y : sta tmp0 :"
-            //     	"lda tmp0 : sta _renCurrentColor :                "
-            // );
-            // asm (
-            //         "jsr _colorRightTexel : "
-            //         "inc _idxScreenLine : "
-            //         "lda _idxScreenLine : "
-            //         "cmp #VIEWPORT_HEIGHT + VIEWPORT_START_LINE : "
-            //         "bcs RightCol_endloop : "
-            //         "lda _ddaCurrentValue : "
-            //         "cmp _ddaEndValue : "
-            //         "bcs RightCol_endloop : "
-            //         "jmp RightCol_loop : "
-            //         "RightCol_endloop : .) : " 
-
-            // );
-
-
+            drawRightColumn();
         }
 
         idxCurrentSlice++;
-        // asm ("inc _idxCurrentSlice");
 
     } while (idxCurrentSlice < NUMBER_OF_SLICE-2);
 }

@@ -17,7 +17,7 @@ def unfish ():
 def main ():
 
     tabUnfish               = unfish ()
-    stTabUnfish             = codegen.buffer2cCode("unfish", "unsigned int", tabUnfish)
+    stTabUnfish             = codegen.buffer2cCode("unfish", "unsigned char", tabUnfish)
     print (stTabUnfish)
 
 if __name__ == "__main__":

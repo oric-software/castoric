@@ -11,18 +11,18 @@ _ddaStepFunction    .dsb 2
 
 
 ;; unsigned char   ddaNbVal;
-_ddaNbVal       .dsb 1
+_ddaNbVal       .dsb 1 ;; TODO : remove me cause I'm allways #TEXTURE_SIZE
 ;; unsigned char   ddaNbStep;
 _ddaNbStep      .dsb 1
 
 ;; unsigned char   ddaStartValue;
-_ddaStartValue  .dsb 1
+_ddaStartValue  .dsb 1 ;; TODO : remove me cause I'm allways 0
 
 
 ;; unsigned char   ddaCurrentValue;
 _ddaCurrentValue    .dsb 1
 ;; unsigned char   ddaEndValue;
-_ddaEndValue        .dsb 1
+_ddaEndValue        .dsb 1 ;; TODO : remove me cause I'm allways #TEXTURE_SIZE
 
 
 ;; signed char     ddaCurrentError;
@@ -67,7 +67,7 @@ loop
 end_loop
     lda         _ddaCurrentError
     clc
-    adc         _ddaNbVal
+    adc         #TEXTURE_SIZE
     sta         _ddaCurrentError
 .)
     rts
@@ -85,7 +85,7 @@ _ddaStep2
 ;     ddaCurrentError         -= ddaNbVal;
     lda         _ddaCurrentError
     sec
-    sbc         _ddaNbVal
+    sbc         #TEXTURE_SIZE
     sta         _ddaCurrentError
 ;     if ((ddaCurrentError<<1) < ddaNbStep) {
     bmi         updateError

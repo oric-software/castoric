@@ -59,7 +59,7 @@ void main(){
     printf ("DEBUT\n");
     initCamera();
 
-    initScene (scene_00);
+    initScene (scene_00, texture_00);
 
     rayInitCasting();
     rayProcessPoints();

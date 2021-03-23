@@ -37,7 +37,7 @@ def main ():
 
 
     tabIdxRdTexture = []
-    for u in range (1,config.VIEWPORT_HEIGHT):
+    for u in range (1,64): # FIXME change 64 to configurable value
         for v in iea(config.TEXTURE_SIZE, u):
             tabIdxRdTexture.append(v)
     strTabIdxRdTexture = codegen.buffer2cCode("tabIdxRdTexture", "unsigned char", tabIdxRdTexture)

@@ -57,8 +57,9 @@ _ddaNbIter              .dsb 1
     lda _multi32_low,Y: sta _offTexture : lda _multi32_high,Y : sta _offTexture+1:\
     ldy _idxCurrentSlice:\
     lda _TableVerticalPos,Y:\
+    .(:cmp #48:bcc skip: lda #47: skip:.):\
     sta _columnHeight:\
-    asl : sta _ddaNbStep:\
+    asl : sta _ddaNbStep: sta _ddaNbIter :\
     sec : lda #VIEWPORT_HEIGHT/2+VIEWPORT_START_LINE : sbc _columnHeight : sta _idxScreenLine:\
     lda #0 : sta _ddaCurrentValue:\
     ldy _wallId: lda _wallTexture_low,Y: :\

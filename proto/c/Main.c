@@ -45,9 +45,9 @@ void prepareRGB(){
 
 // [ref camera_situation]
 void initCamera(){
-    rayCamPosX               = 3;
-    rayCamPosY               = 3; 
-    rayCamRotZ               = 32;
+    rayCamPosX               = 0;
+    rayCamPosY               = 0; 
+    rayCamRotZ               = 64;
     RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
 }
 

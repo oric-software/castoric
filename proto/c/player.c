@@ -1,3 +1,6 @@
+
+#include "collision.c"
+
 #define ROT_ANGLE_STEP 16
 /*    ___  _                           
  *   / _ \| |  __ _  _   _   ___  _ __ 
@@ -52,11 +55,11 @@ void player () {
  * \/    \/ \___/   \_/   \___|
  *                            
  */
-#ifndef USE_C_GENERIC_COLLISION
+#ifndef USE_GENERIC_COLLISION
 // Collision Detection 
 unsigned char isAllowedPosition(signed char X, signed char Y) {
-    return (abs(X) <= 5) && (abs(Y) <= 5);
-    //return 1;
+    // return (abs(X) <= 5) && (abs(Y) <= 5);
+    return 0;
 }
 #endif
 void forward() {
@@ -82,8 +85,8 @@ void forward() {
         rayCamPosX--;
     }
 
-#ifdef USE_C_GENERIC_COLLISION
-    if (collideWall()){
+#ifdef USE_GENERIC_COLLISION
+    if (isInWall(rayCamPosX, rayCamPosY)){
 #else
     if (!isAllowedPosition(rayCamPosX, rayCamPosY)) {
 #endif
@@ -113,8 +116,8 @@ void backward() {
     } else {
         rayCamPosX++;
     }
-#ifdef USE_C_GENERIC_COLLISION
-    if (collideWall()){
+#ifdef USE_GENERIC_COLLISION
+    if (isInWall(rayCamPosX, rayCamPosY)){
 #else
     if (!isAllowedPosition(rayCamPosX, rayCamPosY)) {
 #endif
@@ -144,8 +147,8 @@ void shiftLeft() {
     } else {
         rayCamPosY--;
     }
-#ifdef USE_C_GENERIC_COLLISION
-    if (collideWall()){
+#ifdef USE_GENERIC_COLLISION
+    if (isInWall(rayCamPosX, rayCamPosY)){
 #else
     if (!isAllowedPosition(rayCamPosX, rayCamPosY)) {
 #endif
@@ -175,8 +178,8 @@ void shiftRight() {
     } else {
         rayCamPosX++;
     }
-#ifdef USE_C_GENERIC_COLLISION
-    if (collideWall()){
+#ifdef USE_GENERIC_COLLISION
+    if (isInWall(rayCamPosX, rayCamPosY)){
 #else
     if (!isAllowedPosition(rayCamPosX, rayCamPosY)) {
 #endif

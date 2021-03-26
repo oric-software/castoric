@@ -4,8 +4,7 @@
 #include "constants.h"
 
 #undef USE_SPRITE
-
-#define USE_C_GENERIC_COLLISION
+#define USE_GENERIC_COLLISION
 
 #ifdef __GNUC__
 
@@ -19,6 +18,7 @@
 #define     USE_C_ZBUFFWALLS
 #define     USE_C_EXP
 #define     USE_C_DISTOFFSETSLICES
+#define     USE_C_GENERIC_COLLISION
 #else
 
 #undef     USE_C_DDA
@@ -32,6 +32,7 @@
 #undef     USE_C_EXP
 #undef     USE_C_DISTOFFSETSLICES
 #define   USE_ASM_LOGTRIGO
+#undef USE_C_GENERIC_COLLISION
 #endif
 
 #endif // CONFIG_H

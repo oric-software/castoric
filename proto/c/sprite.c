@@ -90,7 +90,7 @@ void displaySprite02(unsigned char column, unsigned char height){
 #endif
                 idxLinTexture ++;
             }
-            theAdr              = (unsigned char *)(baseAdr + (multi120_high[viewportLinIdx]<<8) | multi120_low[viewportLinIdx] ); // multi120[viewportLinIdx]); // 
+            theAdr              = (unsigned char *)((int)baseAdr + ((int)(multi120_high[viewportLinIdx]<<8) | (int)(multi120_low[viewportLinIdx])) ); // multi120[viewportLinIdx]); // 
             // Parcours ligne
             do {
 

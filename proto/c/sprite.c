@@ -168,8 +168,8 @@ void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
             
             log2dist = log2Delta + (unsigned int)tab_1overcos[(unsigned char)alpha];
 
-            if (unfish[column] < log2dist)
-                log2dist -= unfish[column];
+            // if (unfish[column] < log2dist)
+            //     log2dist -= unfish[column];
 
             height = dist2hh(log2dist); // (100-dist2hh(log2dist))/4;
         } else {
@@ -178,8 +178,8 @@ void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
             
 
 
-            if (unfish[column] < log2dist)
-                log2dist -= unfish[column];
+            // if (unfish[column] < log2dist)
+            //     log2dist -= unfish[column];
 
 
             height = dist2hh(log2dist);

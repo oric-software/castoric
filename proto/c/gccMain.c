@@ -7,16 +7,16 @@
 #include "config.h"
 
 
-
-
 #include "raycast.c"
 
 #include "scene.c"
 
+// #include "iea2d.c"
 
-#include "iea2d.c"
+
 #define max(x,y)          (((x)<(y))?(y):(x))
 #define min(x,y)          (((x)<(y))?(x):(y))
+
 
 
 
@@ -32,10 +32,15 @@ unsigned char           *baseAdr;
 
 #include "drawWalls.c"
 
+#ifdef USE_SPRITE
+#include "sprite.c"
+#include "texture_pillar.h"
+#endif
+
 void initCamera(){
-    rayCamPosX               = 3; // 0; // -62; // 39;  //
-    rayCamPosY               = 3; // 0; //- 62; // -25; //
-    rayCamRotZ               = 32; // 32; // 64; //
+    rayCamPosX               = 0; // 0; // -62; // 39;  //
+    rayCamPosY               = 0; // 0; //- 62; // -25; //
+    rayCamRotZ               = 64; // 32; // 64; //
     RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
 }
 
@@ -67,9 +72,9 @@ void main(){
 
     textCol ();
 
-    drawWalls();
+    // drawWalls();
 #ifdef USE_SPRITE    
-    drawSprite (6, 6, texture_pillar);
+    drawSprite (3, 3, texture_pillar);
 #endif // USE_SPRITE
     printf ("FIN\n");
 }

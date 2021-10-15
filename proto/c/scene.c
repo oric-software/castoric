@@ -33,10 +33,10 @@ signed char scene_00[] = {
 
 // [ref texture_file2buffer]
 unsigned char *texture_00[]= {
-	texture_bigbricks		// W0
-	, texture_bigleaves		// W1
-	, texture_bigsquares		// W2
-	, texture_dentwall			// W3
+	texture_christmas // texture_bigbricks		// W0
+	, texture_bluestone // , texture_bigleaves		// W1
+	, texture_redbrick //, texture_bigsquares		// W2
+	, texture_logo // , texture_dentwall			// W3
 };
 
 

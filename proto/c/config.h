@@ -3,7 +3,7 @@
 
 #include "constants.h"
 
-#undef USE_SPRITE
+#define USE_SPRITE
 #define USE_GENERIC_COLLISION
 
 #ifdef __GNUC__
@@ -27,7 +27,7 @@
 #undef     USE_C_DRAWWALLS
 #undef     USE_C_RAYCAST
 #undef     USE_C_VIEWPORT
-#undef     USE_C_PROCESS_POINT
+#define     USE_C_PROCESS_POINT
 #undef     USE_C_ZBUFFWALLS
 #undef     USE_C_EXP
 #undef     USE_C_DISTOFFSETSLICES

@@ -136,9 +136,6 @@ void displaySprite02(unsigned char column, unsigned char height){
 
 
 
-
-void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
-
     signed char     deltaX, deltaY;
     signed char     alpha;
     unsigned char   log2Delta;
@@ -146,6 +143,7 @@ void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
     unsigned char   height;
     signed char     column;
 
+void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
     deltaX          = posX-rayCamPosX;
     deltaY          = posY-rayCamPosY;
     if ((deltaX == 0) && (deltaY == 0)) return;
@@ -171,7 +169,6 @@ void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
             // if (unfish[column] < log2dist)
             //     log2dist -= unfish[column];
 
-            height = dist2hh(log2dist); // (100-dist2hh(log2dist))/4;
         } else {
             log2Delta = log2_tab[(unsigned char)(abs(deltaY))];
             log2dist = log2Delta + (unsigned int)tab_1oversin[(unsigned char)alpha];
@@ -182,8 +179,8 @@ void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
             //     log2dist -= unfish[column];
 
 
-            height = dist2hh(log2dist);
         }
+        height = dist2hh(log2dist); // (100-dist2hh(log2dist))/4;
 
 
         //alpha glCamRotZ

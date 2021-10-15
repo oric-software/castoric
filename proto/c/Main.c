@@ -58,11 +58,21 @@ void initCamera(){
 
 #include "viewport.c"
 
+
 void gameLoop() {
 
     while (running) {
         doke(630,0);
-        player ();
+
+        if ((doorState==1) && (scene_00[2+4*2] != 6)) {
+            scene_00[2+4*2] ++;
+            scene_00[2+5*2] ++;
+            if (scene_00[2+4*2] == 6) doorState = 0;
+            initScene (scene_00, texture_00);
+            refreshNeeded = 1;
+        } else {
+            player ();
+        }
 
         if (refreshNeeded) {
             rayInitCasting();
@@ -72,11 +82,19 @@ void gameLoop() {
 
             // clearViewport();
             drawWalls();
-#ifdef USE_SPRITE        
-            drawSprite (3, 3, texture_pillar);
+#ifdef USE_SPRITE
+            // logdist(signed char posX, signed char posY) 
+            if ((rayCamPosX == 3) && (rayCamPosY == 3)){
+                if (hasKey == 0) {
+                    zap();
+                }
+                hasKey = 1;
+            }
+            if (! hasKey) drawSprite (3, 3, texture_pillar);
 #endif
             refreshNeeded = 0;
             printf("\n(X=%d Y=%d) [a=%d] [t=%d]\n\n", rayCamPosX, rayCamPosY, rayCamRotZ, 65535-deek(630));
+            if (hasKey) printf ("Key");
         }
         // for (ii = 0; ii <= VIEWPORT_HEIGHT; ii++) {
         //     drawTexelOnScreen (ii, 40-VIEWPORT_WIDTH/2, 63);
@@ -99,7 +117,8 @@ void main(){
     
     // [ref scene_load]
     initScene (scene_00, texture_00);
-
+    hasKey = 0;
+    doorState == 2;
 #ifdef DEBUG
 
     rayInitCasting();

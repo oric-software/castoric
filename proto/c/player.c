@@ -38,8 +38,11 @@ void player () {
     //     glCamPosZ -= 1; break;
     case 81:  // Q
         running = 0; break;
-    // case 65:  // A
-    //     glCamRotX -= 2; break;
+    case 65:  // A
+        if ((rayCamPosY <= -4) && (doorState == 2)){
+            doorState = 1;
+        }
+        break;
     case 88:  // X
         shiftLeft(); refreshNeeded           = 1;break;
     case 0x43:  // C

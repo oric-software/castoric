@@ -38,7 +38,7 @@ void player () {
     //     glCamPosZ -= 1; break;
     case 81:  // Q
         running = 0; break;
-    case 65:  // A
+    case 0x20:  // Space
         if ((rayCamPosY <= -4) && (doorState == 2)){
             doorState = 1;
         }

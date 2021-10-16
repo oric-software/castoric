@@ -23,7 +23,7 @@
 
 #ifdef USE_SPRITE
 #include "sprite.c"
-#include "texture_pillar.h"
+#include "texture_key.h"
 #endif
 
 #define CHANGE_INK_TO_RED	            1		
@@ -90,7 +90,7 @@ void gameLoop() {
                 }
                 hasKey = 1;
             }
-            if (! hasKey) drawSprite (3, 3, texture_pillar);
+            if (! hasKey) drawSprite (3, 3, texture_aKey);
 #endif
             refreshNeeded = 0;
             printf("\n(X=%d Y=%d) [a=%d] [t=%d]\n\n", rayCamPosX, rayCamPosY, rayCamRotZ, 65535-deek(630));

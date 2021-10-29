@@ -54,7 +54,7 @@ void displaySprite02(unsigned char column, unsigned char height){
     nbLine                  = height; // number of line on Screen of the Sprite
 
     // Rejoindre la bordure gauche
-    while ((viewportColIdx < VIEWPORT_START_COLUMN) && (nbColumn != 0)) {
+    while ((viewportColIdx <= VIEWPORT_START_COLUMN) && (nbColumn != 0)) {
         nbColumn            --;
         viewportColIdx      ++;
         idxColTexture       ++;

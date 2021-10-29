@@ -8,47 +8,47 @@ extern unsigned char *theAdr;
 
 unsigned char renCurrentColor;
 
-#ifdef USE_C_COLORRIGHTTEXEL
+#ifdef USE_C_COLORTEXEL
 // [ref texel_codec]
 void colorRightTexel(){
 
 #ifndef __GNUC__
-    *theAdr |= tabRightRed[renCurrentColor];
+    *theAdr = ((*theAdr)&0xF8) | tabRightRed[renCurrentColor];
 #endif // __GNUC__
     theAdr += NEXT_SCANLINE_INCREMENT;
 
 #ifndef __GNUC__
-    *theAdr |= tabRightGreen[renCurrentColor];
+    *theAdr = ((*theAdr)&0xF8) | tabRightGreen[renCurrentColor];
 #endif // __GNUC__
     theAdr += NEXT_SCANLINE_INCREMENT;
 
 #ifndef __GNUC__
-    *theAdr |= tabRightBlue[renCurrentColor];
+    *theAdr = ((*theAdr)&0xF8) | tabRightBlue[renCurrentColor];
 #endif // __GNUC__
     theAdr += NEXT_SCANLINE_INCREMENT;
 }
-#endif // USE_C_COLORRIGHTTEXEL
+#endif // USE_C_COLORTEXEL
 
-#ifdef USE_C_COLORLEFTTEXEL
+#ifdef USE_C_COLORTEXEL
 void colorLeftTexel(){
 
 #ifndef __GNUC__
-    *theAdr = tabLeftRed[renCurrentColor];
+    *theAdr = tabLeftRed[renCurrentColor]|((*theAdr)&0x07);
 #endif // __GNUC__
     theAdr += NEXT_SCANLINE_INCREMENT;
 
 #ifndef __GNUC__
-    *theAdr = tabLeftGreen[renCurrentColor];
+    *theAdr = tabLeftGreen[renCurrentColor]|((*theAdr)&0x07);
 #endif // __GNUC__
     theAdr += NEXT_SCANLINE_INCREMENT;
 
 #ifndef __GNUC__
-    *theAdr = tabLeftBlue[renCurrentColor];
+    *theAdr = tabLeftBlue[renCurrentColor]|((*theAdr)&0x07);
 #endif
     theAdr += NEXT_SCANLINE_INCREMENT;
 
 }
-#endif // USE_C_COLORLEFTTEXEL
+#endif // USE_C_COLORTEXEL
 
 
 #ifdef USE_SLOW_TEXEL
@@ -78,18 +78,18 @@ void drawTexelOnScreen (signed char line, signed char column, unsigned char theC
 
         adr = (unsigned char *)(HIRES_SCREEN_ADDRESS + multi40[(line<<1) + line] + (column>>1));
 
-        if ((column&0x01) == 0){
-            *adr = tabLeftRed[theColor];
+        if ((column&0x01) == 1){
+            *adr = tabLeftRed[theColor]|((*adr)&0x07);
             adr += NEXT_SCANLINE_INCREMENT;
-            *adr = tabLeftGreen[theColor];
+            *adr = tabLeftGreen[theColor]|((*adr)&0x07);
             adr += NEXT_SCANLINE_INCREMENT;
-            *adr = tabLeftBlue[theColor];
+            *adr = tabLeftBlue[theColor]|((*adr)&0x07);
         } else {
-            *adr |= tabLeftRed[theColor];
+            *adr = ((*adr)&0xF8) | tabRightRed[theColor];
             adr += NEXT_SCANLINE_INCREMENT;
-            *adr |= tabLeftGreen[theColor];
+            *adr = ((*adr)&0xF8) | tabRightGreen[theColor];
             adr += NEXT_SCANLINE_INCREMENT;
-            *adr |= tabLeftBlue[theColor];
+            *adr = ((*adr)&0xF8) | tabRightBlue[theColor];
         }
 
     }

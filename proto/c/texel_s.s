@@ -1,5 +1,5 @@
 
-
+#include "config.h"
 
 .zero
 
@@ -7,29 +7,36 @@ _theAdr .dsb  2
 
 .text
 
+#ifndef USE_C_COLORTEXEL
+
 _colorLeftTexel 
 .(
     ldx         _renCurrentColor
 
-    ;; *theAdr = tabLeftGreen[renCurrentColor];
+    ;; *theAdr = tabLeftRed[renCurrentColor]|((*theAdr)&0x07);
     ;; theAdr += NEXT_SCANLINE_INCREMENT;
-
-    lda         _tabLeftRed,x
     ldy         #0
+    lda         (_theAdr),y
+    and         #$07 
+    ora         _tabLeftRed,x
     sta         (_theAdr),y
 
-    ;; *theAdr = tabLeftGreen[renCurrentColor];
+    ;; *theAdr = tabLeftGreen[renCurrentColor]|((*theAdr)&0x07);
     ;; theAdr += NEXT_SCANLINE_INCREMENT;
 
-    lda         _tabLeftGreen,x
     ldy         #40
+    lda         (_theAdr),y
+    and         #$07 
+    ora         _tabLeftGreen,x
     sta         (_theAdr),y
 
-    ;; *theAdr = tabLeftBlue[renCurrentColor];
+    ;; *theAdr = tabLeftBlue[renCurrentColor]|((*theAdr)&0x07);
     ;; theAdr += NEXT_SCANLINE_INCREMENT;
 
-    lda         _tabLeftBlue,x
     ldy         #80
+    lda         (_theAdr),y
+    and         #$07
+    ora         _tabLeftBlue,x
     sta         (_theAdr),y
 
     clc     
@@ -38,21 +45,23 @@ _colorLeftTexel
     sta         _theAdr
 .(  
     bcc skip:    inc _theAdr+1: skip .)
-
-
 .)
     rts
 
 _colorRightTexel 
 .(
 
-    ldy         #0
     ldx         _renCurrentColor
 
-    lda         _tabRightRed,x
-    ora         (_theAdr),y
-    ;; ldy         #0
+    ;; *theAdr = ((*theAdr)&0xF8) | tabRightRed[renCurrentColor];
+    ;; theAdr += NEXT_SCANLINE_INCREMENT;
+
+    ldy         #0
+    lda         (_theAdr),y
+    and         #$F8
+    ora         _tabRightRed,x
     sta         (_theAdr),y
+
 ;;     clc     
 ;;     lda         _theAdr
 ;;     adc         #40
@@ -61,20 +70,22 @@ _colorRightTexel
 ;;     bcc skip:    inc _theAdr+1: skip .)
 
 
-    ;; *theAdr |= tabRightGreen[renCurrentColor];
+    ;; *theAdr = ((*theAdr)&0xF8) | tabRightGreen[renCurrentColor];
     ;; theAdr += NEXT_SCANLINE_INCREMENT;
 
-    lda         _tabRightGreen,x
     ldy         #40
-    ora         (_theAdr),y
+    lda         (_theAdr),y
+    and         #$F8
+    ora         _tabRightGreen,x
     sta         (_theAdr),y
 
-    ;; *theAdr |= tabRightBlue[renCurrentColor];
+    ;; *theAdr = ((*theAdr)&0xF8) | tabRightBlue[renCurrentColor];
     ;; theAdr += NEXT_SCANLINE_INCREMENT;
 
-    lda         _tabRightBlue,x
     ldy         #80
-    ora         (_theAdr),y
+    lda         (_theAdr),y
+    and         #$F8
+    ora         _tabRightBlue,x
     sta         (_theAdr),y
 
     clc     
@@ -86,3 +97,5 @@ _colorRightTexel
 
 .)
     rts
+
+#endif // USE_C_COLORTEXEL    

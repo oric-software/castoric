@@ -19,6 +19,10 @@
 #define     USE_C_EXP
 #define     USE_C_DISTOFFSETSLICES
 #define     USE_C_GENERIC_COLLISION
+#define     USE_C_COLORTEXEL
+
+
+
 #else
 
 #undef     USE_C_DDA
@@ -31,8 +35,10 @@
 #undef     USE_C_ZBUFFWALLS
 #undef     USE_C_EXP
 #undef     USE_C_DISTOFFSETSLICES
-#define   USE_ASM_LOGTRIGO
-#undef USE_C_GENERIC_COLLISION
+#define    USE_ASM_LOGTRIGO
+#undef     USE_C_GENERIC_COLLISION
+#undef     USE_C_COLORTEXEL
+
 #endif
 
 #endif // CONFIG_H

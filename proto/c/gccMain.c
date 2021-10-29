@@ -38,9 +38,9 @@ unsigned char           *baseAdr;
 #endif
 
 void initCamera(){
-    rayCamPosX               = 0; // 0; // -62; // 39;  //
-    rayCamPosY               = 0; // 0; //- 62; // -25; //
-    rayCamRotZ               = 64; // 32; // 64; //
+    rayCamPosX               = 2; // 0; // -62; // 39;  //
+    rayCamPosY               = 1; // 0; //- 62; // -25; //
+    rayCamRotZ               = 48; // 32; // 64; //
     RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
 }
 

@@ -5,10 +5,10 @@ CAMERA_PLANE_HEIGHT     = 8
 
 HFOV_IN_DEGREES         = 112
 
-VIEWPORT_WIDTH          = 78
-VIEWPORT_HEIGHT         = 64
-VIEWPORT_START_COLUMN   = 2
-VIEWPORT_START_LINE     = 0
+VIEWPORT_WIDTH          = 74 # Max : 78
+VIEWPORT_HEIGHT         = 60 # Max : 64
+VIEWPORT_START_COLUMN   = 3  # Min : 2
+VIEWPORT_START_LINE     = 2  # Min : 0
 
 NB_MAX_WALL             = 32
 NB_MAX_POINT            = 64

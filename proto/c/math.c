@@ -224,7 +224,8 @@ signed char ATAN2 (signed int ty, signed int tx){
     unsigned char   idx;
     unsigned char   noct;       // Octant number
     unsigned char   v;
-
+    if (tx == 0) return (ty > 0) ? 64: -64;
+    if (ty == 0) return (tx > 0) ? 0: -128;
     if ((abs(tx)>127) || (abs(ty)>127)) {
         x=tx/2;
         y=ty/2;

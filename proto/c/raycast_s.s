@@ -750,7 +750,30 @@ _res .dsb 1
 _atan2_8:
 .(
 
+    lda _ty
+    bne YNotNull
     lda _tx
+    bpl YNullXPositiv
+    lda #$80 ;; -128
+    sta _res
+    jmp _atan2_8_done
+YNullXPositiv
+    lda #0
+    sta _res
+    jmp _atan2_8_done
+YNotNull:
+    lda _tx
+    bne XNotNull
+    lda _ty
+    bpl XNullYPositiv
+    lda #$C0 ;; -64
+    sta _res
+    jmp _atan2_8_done
+XNullYPositiv
+    lda #64
+    sta _res
+    jmp _atan2_8_done
+XNotNull:
     clc
     bpl Xpositiv
     eor #$ff
@@ -785,6 +808,7 @@ Ypositiv:
     lda _atan_tab, x
     eor _octant_adjust,y
     sta _res
+_atan2_8_done    
 .)
     rts
 

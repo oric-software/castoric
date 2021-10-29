@@ -58,9 +58,6 @@ void displaySprite02(unsigned char column, unsigned char height){
         nbColumn            --;
         viewportColIdx      ++;
         idxColTexture       ++;
-#ifdef DEBUG
-        printf ("skipped column %d (nbColumn = %d)\n", viewportColIdx, nbColumn);
-#endif
     }
     if (nbColumn == 0) return ;
 
@@ -78,12 +75,12 @@ void displaySprite02(unsigned char column, unsigned char height){
         // si l'objet du sprite est plus grand ou plus petit que le mur affiche sur cette colonne
         //          if (rayzbuffer[RaySliceIdx] < DistanceObject) {
         //          if (raylogdist[RaySliceIdx] < 32*log2(DistanceObject) ){
-        wallheight = TableVerticalPos[viewportColIdx]; // (100-TableVerticalPos[viewportColIdx])/4;
+        wallheight = TableVerticalPos[viewportColIdx-VIEWPORT_START_COLUMN]; // (100-TableVerticalPos[viewportColIdx])/4;
         if (height > wallheight) {
             // Rejoindre la bordure haute de l'ecran
             idxLinTexture           = 0;
-            viewportLinIdx          = VIEWPORT_HEIGHT/ 2 - height/2 + VIEWPORT_START_LINE;
-            nbLine                  = height;
+            viewportLinIdx          = VIEWPORT_HEIGHT/ 2 - height/2 + VIEWPORT_START_LINE; // TODO : remove
+            nbLine                  = height;  // TODO : remove
             while ((viewportLinIdx++) < VIEWPORT_START_LINE) {
 #ifdef DEBUG                
                 printf ("skipped lin %d \n", viewportLinIdx, nbColumn);
@@ -128,7 +125,8 @@ void displaySprite02(unsigned char column, unsigned char height){
         if ((viewportColIdx&0x01) == 0){
             baseAdr             += 1;
         }
-    } while (((++viewportColIdx) < VIEWPORT_START_COLUMN + VIEWPORT_WIDTH) && ((--nbColumn) > 0));
+        viewportColIdx++;
+    } while ((viewportColIdx < VIEWPORT_START_COLUMN + VIEWPORT_WIDTH - 2) && ((--nbColumn) > 0));
     // Jusqu'à idxColonne = VIEWPORT_RIGHT_COLUMN ou  nbColumn = 0
 
 

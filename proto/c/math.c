@@ -261,4 +261,15 @@ signed char ATAN2 (signed int ty, signed int tx){
 
     return (signed char)v;
 }
+#else
+extern signed char tx;
+extern signed char ty;
+extern signed char res;
+signed char ATAN2 (signed int Dy, signed int Dx){
+    ty = Dy;
+    tx = Dx;
+    atan2_8();
+    
+    return (signed char)res;
+}
 #endif // USE_C_PROCESS_POINT

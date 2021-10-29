@@ -27,7 +27,7 @@
 #undef     USE_C_DRAWWALLS
 #undef     USE_C_RAYCAST
 #undef     USE_C_VIEWPORT
-#define     USE_C_PROCESS_POINT
+#undef     USE_C_PROCESS_POINT
 #undef     USE_C_ZBUFFWALLS
 #undef     USE_C_EXP
 #undef     USE_C_DISTOFFSETSLICES

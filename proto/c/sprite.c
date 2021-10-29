@@ -134,19 +134,23 @@ void displaySprite02(unsigned char column, unsigned char height){
 
 
 
+void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
+
     signed char     deltaX, deltaY;
     signed char     alpha;
     unsigned char   log2Delta;
     unsigned int    log2dist;
     unsigned char   height;
     signed char     column;
+    signed char angle;
 
-void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
+
     deltaX          = posX-rayCamPosX;
     deltaY          = posY-rayCamPosY;
     if ((deltaX == 0) && (deltaY == 0)) return;
     alpha           = ATAN2(deltaY, deltaX);
-    if (abs(alpha-rayCamRotZ) < HALF_FOV_FIX_ANGLE) {
+    angle       = alpha-rayCamRotZ;
+    if (abs(angle) < HALF_FOV_FIX_ANGLE) {
         // if (lWallsCosBeta[RayCurrentWall] == 0){    // Wall is O,y aligned   
         //     RayWallLog      = log2_tab[(unsigned char)(abs(lPointsX[RayIdXPoint1]-glCamPosX))];
         //     tab_denom       = tab_1overcos;
@@ -154,7 +158,7 @@ void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
         //     RayWallLog      = log2_tab[(unsigned char)(abs(lPointsY[RayIdXPoint1]-glCamPosY))];
         //     tab_denom       = tab_1oversin;
         // }
-        column = tabAngle2Col[HALF_FOV_FIX_ANGLE-alpha+rayCamRotZ];
+        column = tabAngle2Col[HALF_FOV_FIX_ANGLE-angle];
         if (abs(deltaX) > abs(deltaY)) {
             log2Delta = log2_tab[(unsigned char)(abs(deltaX))];
             // unsigned char dist2hh(unsigned int x)

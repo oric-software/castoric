@@ -25,8 +25,6 @@ unsigned char           *theAdr;
 unsigned char           *baseAdr;
 
 
-#define USE_C_COLORLEFTTEXEL
-#define USE_C_COLORRIGHTTEXEL
 #include "texel.c"
 
 
@@ -34,13 +32,13 @@ unsigned char           *baseAdr;
 
 #ifdef USE_SPRITE
 #include "sprite.c"
-#include "texture_pillar.h"
+#include "texture_key.h"
 #endif
 
 void initCamera(){
     rayCamPosX               = 2; // 0; // -62; // 39;  //
-    rayCamPosY               = 1; // 0; //- 62; // -25; //
-    rayCamRotZ               = 48; // 32; // 64; //
+    rayCamPosY               = -1; // 0; //- 62; // -25; //
+    rayCamRotZ               = -128; // 32; // 64; //
     RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
 }
 
@@ -61,6 +59,8 @@ void textCol () {
 
 void main(){
 
+    signed char alpha;
+ 
     printf ("DEBUT\n");
     initCamera();
 
@@ -72,9 +72,27 @@ void main(){
 
     textCol ();
 
+    printf ("DEBUT\n");
+    
+    alpha           = ATAN2(1, 0);
+    printf ("result = %d\n", alpha);
+    alpha           = ATAN2(2, 0);
+    printf ("result = %d\n", alpha);
+    alpha           = ATAN2(-1, 0);
+    printf ("result = %d\n", alpha);
+    alpha           = ATAN2(-2, 0);
+    printf ("result = %d\n", alpha);
+    alpha           = ATAN2(0, 1);
+    printf ("result = %d\n", alpha);
+    alpha           = ATAN2(0, 2);
+    printf ("result = %d\n", alpha);
+    alpha           = ATAN2(0, -1);
+    printf ("result = %d\n", alpha);
+    alpha           = ATAN2(0, -2);
+    printf ("result = %d\n", alpha);
     // drawWalls();
 #ifdef USE_SPRITE    
-    drawSprite (3, 3, texture_pillar);
+    drawSprite (0, 0, texture_aKey);
 #endif // USE_SPRITE
     printf ("FIN\n");
 }

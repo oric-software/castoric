@@ -45,9 +45,9 @@ void prepareRGB(){
 
 // [ref camera_situation]
 void initCamera(){
-    rayCamPosX               = 0;
-    rayCamPosY               = 0; 
-    rayCamRotZ               = 64;
+    rayCamPosX               = 2;
+    rayCamPosY               = -1; 
+    rayCamRotZ               = -128;
     RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
 }
 
@@ -84,13 +84,13 @@ void gameLoop() {
             drawWalls();
 #ifdef USE_SPRITE
             // logdist(signed char posX, signed char posY) 
-            if ((rayCamPosX == 3) && (rayCamPosY == 3)){
+            if ((rayCamPosX == 0) && (rayCamPosY == 0)){
                 if (hasKey == 0) {
                     zap();
                 }
-                hasKey = 1;
+                // hasKey = 1;
             }
-            if (! hasKey) drawSprite (3, 3, texture_aKey);
+            if (! hasKey) drawSprite (0, 0, texture_aKey);
 #endif
             refreshNeeded = 0;
             printf("\n(X=%d Y=%d) [a=%d] [t=%d]\n\n", rayCamPosX, rayCamPosY, rayCamRotZ, 65535-deek(630));

@@ -35,9 +35,11 @@ unsigned char           *baseAdr;
 #include "texture_key.h"
 #endif
 
+
+
 void initCamera(){
-    rayCamPosX               = 2; // 0; // -62; // 39;  //
-    rayCamPosY               = -1; // 0; //- 62; // -25; //
+    rayCamPosX               = 0; // 0; // -62; // 39;  //
+    rayCamPosY               = 4; // 0; //- 62; // -25; //
     rayCamRotZ               = -128; // 32; // 64; //
     RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
 }
@@ -60,6 +62,7 @@ void textCol () {
 void main(){
 
     signed char alpha;
+    unsigned char res;    
  
     printf ("DEBUT\n");
     initCamera();
@@ -70,30 +73,49 @@ void main(){
     rayProcessPoints();
     rayProcessWalls();
 
-    textCol ();
+//     textCol ();
 
-    printf ("DEBUT\n");
+//     printf ("DEBUT\n");
     
-    alpha           = ATAN2(1, 0);
-    printf ("result = %d\n", alpha);
-    alpha           = ATAN2(2, 0);
-    printf ("result = %d\n", alpha);
-    alpha           = ATAN2(-1, 0);
-    printf ("result = %d\n", alpha);
-    alpha           = ATAN2(-2, 0);
-    printf ("result = %d\n", alpha);
-    alpha           = ATAN2(0, 1);
-    printf ("result = %d\n", alpha);
-    alpha           = ATAN2(0, 2);
-    printf ("result = %d\n", alpha);
-    alpha           = ATAN2(0, -1);
-    printf ("result = %d\n", alpha);
-    alpha           = ATAN2(0, -2);
-    printf ("result = %d\n", alpha);
-    // drawWalls();
-#ifdef USE_SPRITE    
+//     alpha           = ATAN2(1, 0);
+//     printf ("result = %d\n", alpha);
+//     alpha           = ATAN2(2, 0);
+//     printf ("result = %d\n", alpha);
+//     alpha           = ATAN2(-1, 0);
+//     printf ("result = %d\n", alpha);
+//     alpha           = ATAN2(-2, 0);
+//     printf ("result = %d\n", alpha);
+//     alpha           = ATAN2(0, 1);
+//     printf ("result = %d\n", alpha);
+//     alpha           = ATAN2(0, 2);
+//     printf ("result = %d\n", alpha);
+//     alpha           = ATAN2(0, -1);
+//     printf ("result = %d\n", alpha);
+//     alpha           = ATAN2(0, -2);
+//     printf ("result = %d\n", alpha);
+//     // drawWalls();
+// #ifdef USE_SPRITE    
+//     drawSprite (0, 0, texture_aKey);
+// #endif // USE_SPRITE
+
+// Input : objPosX/Y, rayCamPosX/Y
+// Ouptut : True False
+
+
+    objPosX = 0;
+    objPosY = 0;
+
+//     if (res = isVisibleSprite ()){
+// #ifdef __GNUC__ 
+//         printf ("sprite is visible\n");
+// #endif   
+//     }
+//     printf ("%d \n", res);
+
     drawSprite (0, 0, texture_aKey);
-#endif // USE_SPRITE
+    
+
+    
     printf ("FIN\n");
 }
 

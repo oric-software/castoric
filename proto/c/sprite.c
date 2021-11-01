@@ -1,7 +1,7 @@
 
 
 #include "iea2d.c"
-
+#include "dist.c"
 
 unsigned char           texcolumn, texline;
 
@@ -132,9 +132,7 @@ void displaySprite02(unsigned char column, unsigned char height){
 
 }
 
-
-
-void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
+void drawSprite01 (signed char posX, signed char posY, unsigned char texture[]){
 
     signed char     deltaX, deltaY;
     signed char     alpha;
@@ -193,4 +191,258 @@ void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
         // displaySprite02(column, height);
     }
     
+}
+
+
+
+
+
+// ============================================ //
+
+
+
+void displaySprite03(unsigned char column, unsigned char height, unsigned char texture[]){
+// assert height <> 0 
+    signed char         viewportColIdx, viewportLinIdx;
+
+    unsigned char       idxLinTexture, idxColTexture;
+    unsigned char       nbColumn, nbLine;
+    unsigned char       wallheight;
+
+    int adrScreenCol        = 0;
+    int adrScreenWrt        = 0;
+
+    precalcTexPixelRunthrough(height);
+
+    viewportColIdx          = column - height/2 + VIEWPORT_START_COLUMN;
+    viewportLinIdx          = VIEWPORT_HEIGHT/ 2 - height/2 + VIEWPORT_START_LINE;
+    idxLinTexture           = 0;
+    idxColTexture           = 0;
+    adrScreenCol            = 0;
+    adrScreenWrt            = 0;
+    nbColumn                = height; // number of column on Screen of the Sprite
+    nbLine                  = height; // number of line on Screen of the Sprite
+
+
+
+    // Rejoindre la bordure gauche
+    while ((viewportColIdx <= VIEWPORT_START_COLUMN) && (nbColumn != 0)) {
+        nbColumn            --;
+        viewportColIdx      ++;
+        idxColTexture       ++;
+    }
+    if (nbColumn == 0) return ;
+
+
+
+
+    baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (viewportColIdx>>1));
+
+    // Parcours colonne
+    do {
+#ifdef DEBUG        
+        printf ("--== drawing column %d (nbColumn = %d) ==-- \n", viewportColIdx, nbColumn);
+#endif
+        // Si Profondeur [colonne] < DistanceObject
+        // On determine ici la colonne du sprite est visible en comparant la hauteur à l'ecran du sprite à celle du 
+        // Cela évite d'utiliser la 
+        // si l'objet du sprite est plus grand ou plus petit que le mur affiche sur cette colonne
+        //          if (rayzbuffer[RaySliceIdx] < DistanceObject) {
+        //          if (raylogdist[RaySliceIdx] < 32*log2(DistanceObject) ){
+        wallheight = TableVerticalPos[viewportColIdx-VIEWPORT_START_COLUMN]; // (100-TableVerticalPos[viewportColIdx])/4;
+        if (height > wallheight) {
+            // Rejoindre la bordure haute de l'ecran
+
+
+            idxLinTexture           = 0;
+            viewportLinIdx          = VIEWPORT_HEIGHT/ 2 - height/2 + VIEWPORT_START_LINE; // TODO : remove
+            nbLine                  = height;  // TODO : remove
+            while ((viewportLinIdx++) < VIEWPORT_START_LINE) {
+#ifdef DEBUG                
+                printf ("skipped lin %d \n", viewportLinIdx, nbColumn);
+#endif
+                idxLinTexture ++;
+            }
+
+
+
+
+            
+            theAdr              = (unsigned char *)((int)baseAdr + ((int)(multi120_high[viewportLinIdx]<<8) | (int)(multi120_low[viewportLinIdx])) ); // multi120[viewportLinIdx]); // 
+            // Parcours ligne
+            texcolumn           = precalTexPixelOffset [idxColTexture];
+            offTexture          = (multi32_high[texcolumn] << 8) | multi32_low[texcolumn];
+            do {
+
+                // baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (idxScreenCol>>1));                
+                // theAdr              = (unsigned char *)(baseAdr + multi120[idxLinTexture]); 
+                // Si couleur [ligneTGexture][colonneTexture] != EMPTY
+                texline             = precalTexPixelOffset [idxLinTexture];
+                renCurrentColor     = texture[offTexture + texline];
+                if (renCurrentColor != EMPTY_ALPHA) {
+                    // afficher texel [couleur] a ligneViewport, colonneViewpport
+#ifdef DEBUG                    
+                    printf ("display color %d (= texture [%d, %d]) at position(%d, %d)\n", renCurrentColor, texline, texcolumn, viewportLinIdx, viewportColIdx);
+#endif 
+                    // colorSquare(unsigned char line, unsigned char column, unsigned char theColor);
+                    // printf ("%d %d\n", viewportLinIdx, viewportColIdx);get();
+                    // colorSquare(viewportLinIdx, viewportColIdx, renCurrentColor);
+                    if ((viewportColIdx&0x01) != 0){
+                        colorLeftTexel();
+                    } else {
+                        colorRightTexel();
+                    }
+                }else{
+                   theAdr              += 120; 
+                }
+                idxLinTexture       ++;
+                
+                // theAdr              += 120;
+                
+            // Jusqu'à indice ligne > 64 
+            } while (((++viewportLinIdx) < VIEWPORT_START_LINE+VIEWPORT_HEIGHT) && ((--nbLine) != 0));
+        }
+        idxColTexture       ++;
+        if ((viewportColIdx&0x01) == 0){
+            baseAdr             += 1;
+        }
+        viewportColIdx++;
+    } while ((viewportColIdx < VIEWPORT_START_COLUMN + VIEWPORT_WIDTH - 2) && ((--nbColumn) > 0));
+    // Jusqu'à idxColonne = VIEWPORT_RIGHT_COLUMN ou  nbColumn = 0
+
+
+}
+
+
+void displaySpriteRightVisible(unsigned char column, unsigned char height, unsigned char texture[]){
+    signed char         viewportColIdx, viewportLinIdx;
+
+    unsigned char       idxLinTexture, idxColTexture;
+    unsigned char       nbColumn, nbLine;
+    unsigned char       wallheight;
+
+    int adrScreenCol        = 0;
+    int adrScreenWrt        = 0;
+
+    precalcTexPixelRunthrough(height);
+
+    viewportColIdx          = column;
+    viewportLinIdx          = VIEWPORT_HEIGHT/ 2 - height/2 + VIEWPORT_START_LINE;
+    idxLinTexture           = 0;
+    idxColTexture           = 31;
+    adrScreenCol            = 0;
+    adrScreenWrt            = 0;
+    nbColumn                = height; // number of column on Screen of the Sprite
+    nbLine                  = height; // number of line on Screen of the Sprite
+
+    baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (viewportColIdx>>1));
+
+    // Parcours colonne
+    do {
+
+        wallheight = TableVerticalPos[viewportColIdx-VIEWPORT_START_COLUMN]; // (100-TableVerticalPos[viewportColIdx])/4;
+        if (height > wallheight) {
+
+            // Rejoindre la bordure haute de l'ecran
+            idxLinTexture           = 0;
+            viewportLinIdx          = VIEWPORT_HEIGHT/ 2 - height/2 + VIEWPORT_START_LINE; // TODO : remove
+            nbLine                  = height;  // TODO : remove
+            while ((viewportLinIdx++) < VIEWPORT_START_LINE) {
+#ifdef DEBUG                
+                printf ("skipped lin %d \n", viewportLinIdx, nbColumn);
+#endif
+                idxLinTexture ++;
+            }
+
+
+
+
+            
+            theAdr              = (unsigned char *)((int)baseAdr + ((int)(multi120_high[viewportLinIdx]<<8) | (int)(multi120_low[viewportLinIdx])) ); // multi120[viewportLinIdx]); // 
+
+            // Parcours ligne
+            texcolumn           = precalTexPixelOffset [idxColTexture];
+            offTexture          = (multi32_high[texcolumn] << 8) | multi32_low[texcolumn];
+            do {
+
+                // baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (idxScreenCol>>1));                
+                // theAdr              = (unsigned char *)(baseAdr + multi120[idxLinTexture]); 
+                // Si couleur [ligneTGexture][colonneTexture] != EMPTY
+                texline             = precalTexPixelOffset [idxLinTexture];
+                renCurrentColor     = texture[offTexture + texline];
+                if (renCurrentColor != EMPTY_ALPHA) {
+                    // afficher texel [couleur] a ligneViewport, colonneViewpport
+#ifdef DEBUG                    
+                    printf ("display color %d (= texture [%d, %d]) at position(%d, %d)\n", renCurrentColor, texline, texcolumn, viewportLinIdx, viewportColIdx);
+#endif 
+                    // colorSquare(unsigned char line, unsigned char column, unsigned char theColor);
+                    // printf ("%d %d\n", viewportLinIdx, viewportColIdx);get();
+                    // colorSquare(viewportLinIdx, viewportColIdx, renCurrentColor);
+                    if ((viewportColIdx&0x01) != 0){
+                        colorLeftTexel();
+                    } else {
+                        colorRightTexel();
+                    }
+                }else{
+                   theAdr              += 120; 
+                }
+                idxLinTexture       ++;
+                
+                // theAdr              += 120;
+                
+            // Jusqu'à indice ligne > 64 
+            } while (((++viewportLinIdx) < VIEWPORT_START_LINE+VIEWPORT_HEIGHT) && ((--nbLine) != 0));
+        }
+        idxColTexture       --;
+        if ((viewportColIdx&0x01) == 0){
+            baseAdr             -= 1;
+        }
+        viewportColIdx--;
+    } while (viewportColIdx >= VIEWPORT_START_COLUMN );
+    // Jusqu'à idxColonne = VIEWPORT_RIGHT_COLUMN ou  nbColumn = 0
+
+}
+
+void displaySpriteLeftVisible(unsigned char column, unsigned char height, unsigned char texture[]){
+}
+
+
+
+#define min(x,y)          (((x)<(y))?(x):(y))
+void drawSprite (signed char posX, signed char posY, unsigned char texture[]){
+
+    signed char     column;
+    unsigned char visibility;  
+
+    // compute objAngle, objLogDist, objHeight
+    objPosX = posX;
+    objPosY = posY;
+    visibility = isVisibleSprite();
+
+    if (visibility == 1){
+        computeLogDist (); 
+        if (objHeight == 0) return;
+        column = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngle];
+        displaySprite03(column, objHeight*2,texture);
+
+    } else if (visibility == 2) {
+        computeLogDist (); 
+        if (objHeight == 0) return;
+        column = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngleRight];
+        displaySpriteRightVisible(column, objHeight*2,texture);
+
+    } else if (visibility == 3) {
+        computeLogDist (); 
+        if (objHeight == 0) return;
+        column = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngleRight];
+        displaySpriteLeftVisible(column, objHeight*2,texture);
+    }
+// Assert 0 < HALF_FOV_FIX_ANGLE-ATAN2(deltaY, deltaX) -rayCamRotZ < 81 
+    // column = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngle];
+
+    // if (abs(objAngle) < HALF_FOV_FIX_ANGLE) {
+    //     column = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngle];
+    //     // height = dist2hh(objLogDist); 
+    //     displaySprite03(column, objHeight*2,texture);
+    // }
 }

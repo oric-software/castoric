@@ -73,7 +73,7 @@ signed char tab3Cos[] = {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3};
 
 // Input : objPosX/Y, rayCamPosX/Y
-// Ouptut : 
+// Ouptut : objAngle, objAngleRight, objAngleLeft
 // 0 not visible, 1 center visible, 2 only right side visible, 3 only left side visible
 unsigned char isVisibleSprite (){
 

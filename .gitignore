@@ -54,3 +54,5 @@ dkms.conf
 proto/c/BUILD/*
 .vscode/
 study/.ipynb_checkpoints
+img/textures/*
+proto/c/textures/*

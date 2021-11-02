@@ -37,7 +37,7 @@
 #undef     USE_C_DISTOFFSETSLICES
 #define    USE_ASM_LOGTRIGO
 #undef     USE_C_GENERIC_COLLISION
-#undef     USE_C_COLORTEXEL
+#define     USE_C_COLORTEXEL
 
 #endif
 

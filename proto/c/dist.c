@@ -102,11 +102,11 @@ unsigned char isVisibleSprite (){
     incX            = tab3Cos[(unsigned char)beta];
     incY            = tab3Sin[(unsigned char)beta];
 
-    RightX              = objPosX+incX;
-    RightY              = objPosY+incY;
+    RightX          = objPosX+incX;
+    RightY          = objPosY+incY;
 
-    LeftX              = objPosX-incX;
-    LeftY              = objPosY-incY;
+    LeftX           = objPosX-incX;
+    LeftY           = objPosY-incY;
 
     deltaX          = RightX - rayCamPosX;
     deltaY          = RightY - rayCamPosY;

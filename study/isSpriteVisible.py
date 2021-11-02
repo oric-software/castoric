@@ -29,8 +29,8 @@ def genTab3Trigo():
     tab3Sin, tab3Cos = [] , []
     for angle in range (256):
         v= int.from_bytes(bytes([angle]), byteorder='big', signed=True)
-        tab3Sin.append(round(3*math.sin(v*math.pi/128)))
-        tab3Cos.append(round(3*math.cos(v*math.pi/128)))
+        tab3Sin.append(round(1.5*math.sin(v*math.pi/128)))
+        tab3Cos.append(round(1.5*math.cos(v*math.pi/128)))
     return tab3Sin, tab3Cos
      
 

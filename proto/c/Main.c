@@ -22,8 +22,11 @@
 #include "drawWalls.c"
 
 #ifdef USE_SPRITE
+#include "dichobuf.c"
+#include "engine.c"
 #include "sprite.c"
 #include "texture_key.h"
+#include "texture_pillar.h"
 #endif
 
 #define CHANGE_INK_TO_RED	            1		
@@ -61,6 +64,13 @@ void initCamera(){
 
 void gameLoop() {
 
+
+    engInitObjects();
+    engAddObject(OBJ_KEY, 3, 3, 0);
+    objTexture[0] = texture_aKey;
+    engAddObject(OBJ_PILLAR, -3, 3, 0);
+    objTexture[1] = texture_pillar;
+
     while (running) {
         doke(630,0);
 
@@ -74,6 +84,10 @@ void gameLoop() {
             player ();
         }
 
+        dichoInit();
+        engPulse();
+
+
         if (refreshNeeded) {
             rayInitCasting();
 
@@ -82,20 +96,23 @@ void gameLoop() {
 
             // clearViewport();
             drawWalls();
-#ifdef USE_SPRITE
-            // logdist(signed char posX, signed char posY) 
-            if ((rayCamPosX == 0) && (rayCamPosY == 0)){
-                if (hasKey == 0) {
-                    zap();
-                }
-                // hasKey = 1;
-            }
-            if (! hasKey) drawSprite (0, 0, texture_aKey);
-#endif
+// #ifdef USE_SPRITE
+//             // logdist(signed char posX, signed char posY) 
+//             if ((rayCamPosX == 0) && (rayCamPosY == 0)){
+//                 if (hasKey == 0) {
+//                     zap();
+//                 }
+//                 // hasKey = 1;
+//             }
+//             if (! hasKey) drawSprite (0, 0, texture_aKey);
+// #endif
+            drawSprites ();
             refreshNeeded = 0;
             printf("\n(X=%d Y=%d) [a=%d] [t=%d]\n\n", rayCamPosX, rayCamPosY, rayCamRotZ, 65535-deek(630));
             if (hasKey) printf ("Key");
         }
+
+
         // for (ii = 0; ii <= VIEWPORT_HEIGHT; ii++) {
         //     drawTexelOnScreen (ii, 40-VIEWPORT_WIDTH/2, 63);
         //     drawTexelOnScreen (ii, 40+VIEWPORT_WIDTH/2, 63);

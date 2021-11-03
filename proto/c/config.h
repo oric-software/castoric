@@ -20,7 +20,7 @@
 #define     USE_C_DISTOFFSETSLICES
 #define     USE_C_GENERIC_COLLISION
 #define     USE_C_COLORTEXEL
-
+#define     USE_C_DICHOBUF
 
 
 #else
@@ -38,7 +38,7 @@
 #define    USE_ASM_LOGTRIGO
 #undef     USE_C_GENERIC_COLLISION
 #define     USE_C_COLORTEXEL
-
+#undef     USE_C_DICHOBUF
 #endif
 
 #endif // CONFIG_H

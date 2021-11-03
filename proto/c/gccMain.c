@@ -31,8 +31,11 @@ unsigned char           *baseAdr;
 #include "drawWalls.c"
 
 #ifdef USE_SPRITE
+#include "dichobuf.c"
+#include "engine.c"
 #include "sprite.c"
 #include "texture_key.h"
+#include "texture_pillar.h"
 #endif
 
 
@@ -40,7 +43,7 @@ unsigned char           *baseAdr;
 void initCamera(){
     rayCamPosX               = 0; // 0; // -62; // 39;  //
     rayCamPosY               = 4; // 0; //- 62; // -25; //
-    rayCamRotZ               = -128; // 32; // 64; //
+    rayCamRotZ               = -64; // 32; // 64; //
     RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
 }
 
@@ -62,7 +65,8 @@ void textCol () {
 void main(){
 
     signed char alpha;
-    unsigned char res;    
+    unsigned char res;   
+    int ii; 
  
     printf ("DEBUT\n");
     initCamera();
@@ -102,9 +106,6 @@ void main(){
 // Ouptut : True False
 
 
-    objPosX = 0;
-    objPosY = 0;
-
 //     if (res = isVisibleSprite ()){
 // #ifdef __GNUC__ 
 //         printf ("sprite is visible\n");
@@ -112,8 +113,24 @@ void main(){
 //     }
 //     printf ("%d \n", res);
 
-    drawSprite (0, 0, texture_aKey);
-    
+    // drawSprite (0, 0, texture_aKey);
+
+    engInitObjects();
+    engAddObject(OBJ_KEY, 3, 3, 0);
+    objTexture[0] = texture_aKey;
+    engAddObject(OBJ_PILLAR, -3, 3, 0);
+    objTexture[1] = texture_pillar;
+
+    dichoInit();
+    engPulse();
+
+    ii= dichoNbVal;
+    while (ii >0) {
+        ii -= 1;
+        // printf("%d\t", tabDichoIdxs[ii]);
+        engCurrentObjectIdx = tabDichoIdxs[ii];
+        drawSprite (); //objPosX[engCurrentObjectIdx], objPosY[engCurrentObjectIdx], objTexture[engCurrentObjectIdx]);
+    }
 
     
     printf ("FIN\n");

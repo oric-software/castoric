@@ -9,7 +9,7 @@ signed char         spriteViewportColIdx, spriteViewportLinIdx;
 unsigned char       spriteTextureLinIdx, spriteTextureColIdx;
 unsigned char       spriteNbColumn, spriteNbLine;
 unsigned char       wallheight; // TODO: remove
-void(*spriteColorFunction)(void);
+void(*spriteColorFunction)(void);// TODO: optim 
 
 
 unsigned char           texcolumn, texline;
@@ -201,7 +201,8 @@ void precalcTexPixelRunthrough(unsigned char height){
 
 void displaySprite03(unsigned char column, unsigned char height, unsigned char texture[]){
 // assert height <> 0 
-
+    unsigned char tmp;
+    unsigned char *ptrReadTexture;
 
     spriteViewportColIdx          = column - height/2 + VIEWPORT_START_COLUMN;
     spriteViewportLinIdx          = VIEWPORT_HEIGHT/ 2 - height/2 + VIEWPORT_START_LINE;
@@ -214,12 +215,14 @@ void displaySprite03(unsigned char column, unsigned char height, unsigned char t
 
 
     // Rejoindre la bordure gauche
-    while ((spriteViewportColIdx <= VIEWPORT_START_COLUMN) && (spriteNbColumn != 0)) {
-        spriteNbColumn            --;
-        spriteViewportColIdx      ++;
-        spriteTextureColIdx       ++;
+    if (spriteViewportColIdx <= VIEWPORT_START_COLUMN) {
+        tmp = VIEWPORT_START_COLUMN - spriteViewportColIdx + 2; 
+        spriteViewportColIdx = VIEWPORT_START_COLUMN + 1;
+        spriteTextureColIdx += tmp;
+        spriteNbColumn -= tmp;
+        if (spriteNbColumn <= 0) return ;
     }
-    if (spriteNbColumn == 0) return ;
+    
 
 
     if ((spriteViewportColIdx&0x01) != 0){
@@ -241,11 +244,12 @@ void displaySprite03(unsigned char column, unsigned char height, unsigned char t
             spriteTextureLinIdx           = 0;
             spriteViewportLinIdx          = VIEWPORT_HEIGHT/ 2 - height/2 + VIEWPORT_START_LINE; // TODO : remove
             spriteNbLine                  = height;  // TODO : remove
-            while ((spriteViewportLinIdx++) < VIEWPORT_START_LINE) {
-                spriteTextureLinIdx ++;
+
+            if (spriteViewportLinIdx < VIEWPORT_START_LINE){
+                tmp = VIEWPORT_START_LINE - spriteViewportLinIdx + 1;
+                spriteViewportLinIdx    += tmp;
+                spriteTextureLinIdx     += tmp;
             }
-
-
 
 
             
@@ -253,10 +257,11 @@ void displaySprite03(unsigned char column, unsigned char height, unsigned char t
             // Parcours ligne
             texcolumn           = precalTexPixelOffset [spriteTextureColIdx];
             offTexture          = (multi32_high[texcolumn] << 8) | multi32_low[texcolumn];
+            ptrReadTexture      = &(texture[offTexture]);
             do {
 
                 texline             = precalTexPixelOffset [spriteTextureLinIdx];
-                renCurrentColor     = texture[offTexture + texline];
+                renCurrentColor     = ptrReadTexture[texline];
                 if (renCurrentColor != EMPTY_ALPHA) {
                     spriteColorFunction();
                 }else{

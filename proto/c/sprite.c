@@ -254,14 +254,15 @@ void displaySprite03(unsigned char column, unsigned char height, unsigned char t
 
             
             theAdr              = (unsigned char *)((int)baseAdr + ((int)(multi120_high[spriteViewportLinIdx]<<8) | (int)(multi120_low[spriteViewportLinIdx])) ); // multi120[spriteViewportLinIdx]); // 
+
             // Parcours ligne
             texcolumn           = precalTexPixelOffset [spriteTextureColIdx];
-            offTexture          = (multi32_high[texcolumn] << 8) | multi32_low[texcolumn];
-            ptrReadTexture      = &(texture[offTexture]);
+
+            ptrReadTexture      = texture + (unsigned int)((multi32_high[texcolumn] << 8) | multi32_low[texcolumn]);
             do {
 
-                texline             = precalTexPixelOffset [spriteTextureLinIdx];
-                renCurrentColor     = ptrReadTexture[texline];
+                // texline             = ;
+                renCurrentColor     = ptrReadTexture[precalTexPixelOffset [spriteTextureLinIdx]];
                 if (renCurrentColor != EMPTY_ALPHA) {
                     spriteColorFunction();
                 }else{

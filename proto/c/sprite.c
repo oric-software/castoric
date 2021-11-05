@@ -198,12 +198,17 @@ void precalcTexPixelRunthrough(unsigned char height){
 
 // ============================================ //
 
-
+#define min(x,y)          (((x)<(y))?(x):(y))
 void displaySprite03(unsigned char column, unsigned char height, unsigned char texture[]){
 // assert height <> 0 
     unsigned char tmp;
+    unsigned char nbLoopColumn, nbLoopLine;
 
-
+    if (column - height/2 <= 0) {
+        nbLoopColumn = min(VIEWPORT_WIDTH - 3,height/2+column-2);
+    } else {
+        nbLoopColumn = min(VIEWPORT_WIDTH-2-column+height/2,height);
+    }
     spriteViewportColIdx          = column - height/2 + VIEWPORT_START_COLUMN;
     spriteViewportLinIdx          = VIEWPORT_HEIGHT/ 2 - height/2 + VIEWPORT_START_LINE;
     spriteTextureLinIdx           = 0;
@@ -241,18 +246,18 @@ void displaySprite03(unsigned char column, unsigned char height, unsigned char t
 
 
             // Rejoindre la bordure haute de l'ecran
-            spriteTextureLinIdx           = 0;
-            spriteViewportLinIdx          = VIEWPORT_HEIGHT/ 2 - height/2 + VIEWPORT_START_LINE; // TODO : remove
-            spriteNbLine                  = height;  // TODO : remove
+            // spriteNbLine                  = height;  // TODO : remove
 
-            if (spriteViewportLinIdx < VIEWPORT_START_LINE){
-                tmp = VIEWPORT_START_LINE - spriteViewportLinIdx + 1;
-                spriteViewportLinIdx    += tmp;
-                spriteTextureLinIdx     += tmp;
+            // if (spriteViewportLinIdx < VIEWPORT_START_LINE){
+            if (height > VIEWPORT_HEIGHT){
+                spriteViewportLinIdx    = VIEWPORT_START_LINE + 1;// += tmp;
+                spriteTextureLinIdx     = height/2 - VIEWPORT_HEIGHT/ 2 + 1;
+                nbLoopLine = VIEWPORT_HEIGHT  - 1; // min (VIEWPORT_HEIGHT  - 1, height);
+            } else {
+                spriteViewportLinIdx          = VIEWPORT_HEIGHT/ 2 - height/2 + VIEWPORT_START_LINE; // TODO : remove
+                spriteTextureLinIdx           = 0;
+                nbLoopLine = height ; // min (VIEWPORT_HEIGHT/ 2 + height/2 , height);
             }
-
-
-            
             theAdr              = (unsigned char *)((int)baseAdr + ((int)(multi120_high[spriteViewportLinIdx]<<8) | (int)(multi120_low[spriteViewportLinIdx])) ); // multi120[spriteViewportLinIdx]); // 
 
             // Parcours ligne
@@ -270,7 +275,8 @@ void displaySprite03(unsigned char column, unsigned char height, unsigned char t
                 spriteTextureLinIdx       ++;
 
             // Jusqu'à indice ligne > 64 
-            } while (((++spriteViewportLinIdx) < VIEWPORT_START_LINE+VIEWPORT_HEIGHT) && ((--spriteNbLine) != 0));
+            // } while (((++spriteViewportLinIdx) < VIEWPORT_START_LINE+VIEWPORT_HEIGHT) && ((--spriteNbLine) != 0));
+            } while ((--nbLoopLine) != 0);
         }
         spriteTextureColIdx       ++;
         if ((spriteViewportColIdx&0x01) == 0){
@@ -283,7 +289,8 @@ void displaySprite03(unsigned char column, unsigned char height, unsigned char t
             spriteColorFunction = &colorRightTexel;
         }
 
-    } while ((spriteViewportColIdx < VIEWPORT_START_COLUMN + VIEWPORT_WIDTH - 2) && ((--spriteNbColumn) > 0));
+    // } while ((spriteViewportColIdx < VIEWPORT_START_COLUMN + VIEWPORT_WIDTH - 2) && ((--spriteNbColumn) > 0));
+    } while ((--nbLoopColumn) != 0);
     // Jusqu'à idxColonne = VIEWPORT_RIGHT_COLUMN ou  spriteNbColumn = 0
 
  

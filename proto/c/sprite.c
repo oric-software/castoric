@@ -211,9 +211,6 @@ void precalcTexPixelRunthrough(unsigned char height){
 void displaySprite03(unsigned char column, unsigned char height, unsigned char texture[]){
 // assert height <> 0 
 
-
-
-
     unsigned char idxCurrentCol;
 
     // Rejoindre la bordure gauche
@@ -358,44 +355,42 @@ void displaySpriteRightVisible(unsigned char column, unsigned char height, unsig
 
 void displaySpriteLeftVisible(unsigned char column, unsigned char height, unsigned char texture[]){
 
-    unsigned char tmp;
+    spriteViewportColIdx        = column;
+    spriteTextureColIdx         = 0;
 
-
-    spriteViewportColIdx          = column;
-    spriteViewportLinIdx          = VIEWPORT_HEIGHT/ 2 - height/2 + VIEWPORT_START_LINE;
-    spriteTextureLinIdx           = 0;
-    spriteTextureColIdx           = 0;
-
-    spriteNbColumn                = height; // number of column on Screen of the Sprite
-    spriteNbLine                  = height; // number of line on Screen of the Sprite
-
-    baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (spriteViewportColIdx>>1));
+    nbLoopColumn                = VIEWPORT_WIDTH-column;
 
     if ((spriteViewportColIdx&0x01) != 0){
-        spriteColorFunction = &colorLeftTexel;
+        spriteColorFunction         = &colorLeftTexel;
     } else {
-        spriteColorFunction = &colorRightTexel;
+        spriteColorFunction         = &colorRightTexel;
     }
 
+    if (height > VIEWPORT_HEIGHT){
+        spriteViewportLinIdx        = VIEWPORT_START_LINE + 1;
+        savSpriteTextureLinIdx      = height/2 - VIEWPORT_HEIGHT/ 2  + 1;
+        savNbLoopLine               = VIEWPORT_HEIGHT  - 1;
+    } else {
+        spriteViewportLinIdx        = VIEWPORT_HEIGHT/ 2 - height/2 + VIEWPORT_START_LINE;
+        savSpriteTextureLinIdx      = 0;
+        savNbLoopLine               = height ;
+    }
+
+    screenOffset = ((int)(multi120_high[spriteViewportLinIdx]<<8) | (int)(multi120_low[spriteViewportLinIdx]));
+
+    baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (spriteViewportColIdx>>1));
 
     // Parcours colonne
     do {
 
-        wallheight = TableVerticalPos[spriteViewportColIdx-VIEWPORT_START_COLUMN]; // (100-TableVerticalPos[spriteViewportColIdx])/4;
+        wallheight = TableVerticalPos[spriteViewportColIdx];
         if (height > wallheight) {
-            spriteTextureLinIdx           = 0;
-            spriteViewportLinIdx          = VIEWPORT_HEIGHT/ 2 - height/2 + VIEWPORT_START_LINE; // TODO : remove
-            spriteNbLine                  = height;  // TODO : remove
-            // while ((spriteViewportLinIdx++) < VIEWPORT_START_LINE) {
-            //     spriteTextureLinIdx ++;
-            // }
-            if (spriteViewportLinIdx < VIEWPORT_START_LINE){
-                tmp = VIEWPORT_START_LINE - spriteViewportLinIdx + 1;
-                spriteViewportLinIdx    += tmp;
-                spriteTextureLinIdx     += tmp;
-            }
 
-            theAdr              = (unsigned char *)((int)baseAdr + ((int)(multi120_high[spriteViewportLinIdx]<<8) | (int)(multi120_low[spriteViewportLinIdx])) ); // multi120[spriteViewportLinIdx]); // 
+            spriteTextureLinIdx     = savSpriteTextureLinIdx;
+            nbLoopLine              = savNbLoopLine;
+
+            theAdr              = (unsigned char *)((int)baseAdr + screenOffset );
+            
             // Parcours ligne
             texcolumn           = precalTexPixelOffset [spriteTextureColIdx];
             spritePtrReadTexture      = texture + (unsigned int)((multi32_high[texcolumn] << 8) | multi32_low[texcolumn]);
@@ -409,10 +404,9 @@ void displaySpriteLeftVisible(unsigned char column, unsigned char height, unsign
                 }
                 spriteTextureLinIdx       ++;
                 
-            // Jusqu'à indice ligne > 64 
-            } while (((++spriteViewportLinIdx) < VIEWPORT_START_LINE+VIEWPORT_HEIGHT) && ((--spriteNbLine) != 0));
-
+            } while ((--nbLoopLine) != 0);
         }
+
         spriteTextureColIdx       ++;
         if ((spriteViewportColIdx&0x01) == 0){
             baseAdr             += 1;
@@ -424,9 +418,7 @@ void displaySpriteLeftVisible(unsigned char column, unsigned char height, unsign
             spriteColorFunction = &colorRightTexel;
         }
 
-
-    } while ((spriteViewportColIdx < VIEWPORT_START_COLUMN + VIEWPORT_WIDTH - 2) && ((--spriteNbColumn) > 0));
-    // Jusqu'à idxColonne = VIEWPORT_RIGHT_COLUMN ou  spriteNbColumn = 0
+    } while ((--nbLoopColumn) != 0);
 
 }
 

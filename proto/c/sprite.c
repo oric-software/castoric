@@ -33,19 +33,24 @@ unsigned char           texcolumn, texline;
 unsigned char           precalTexPixelOffset[100];
 unsigned char           idxTexPixel;    // run through precalTexPixelOffset
 
-void precalcTexPixelRunthrough(unsigned char height){
+void precalcTexPixelRunthrough(){
 
-    idxTexPixel         = 0;
+    if (spriteHeight > 64) {
+        idxTexPixel         = 0;
 
-    iea2StartValue      = 0;
-    iea2NbVal           = TEXTURE_SIZE-1;
-    iea2NbStep          = height;
-    iea2Init();
-    do {
+        iea2StartValue      = 0;
+        iea2NbVal           = TEXTURE_SIZE-1;
+        iea2NbStep          = spriteHeight;
+        iea2Init();
+        do {
+            precalTexPixelOffset [idxTexPixel++] = iea2CurrentValue;
+            (*iea2StepFunction)();
+        } while (iea2CurrentValue < iea2EndValue);
         precalTexPixelOffset [idxTexPixel++] = iea2CurrentValue;
-        (*iea2StepFunction)();
-    } while (iea2CurrentValue < iea2EndValue);
-    precalTexPixelOffset [idxTexPixel++] = iea2CurrentValue;
+    } else {
+        memcpy(precalTexPixelOffset, &(tabIdxRdTexture[((spriteHeight+1)*spriteHeight)/2]), spriteHeight);
+    }
+
 }
 
 
@@ -142,6 +147,7 @@ void displaySpriteRightVisible(){
     spriteViewportColIdx          = spriteCenterColumn;
     spriteTextureColIdx           = spriteHeight-1;
     nbLoopColumn                = spriteCenterColumn-VIEWPORT_START_COLUMN;
+    if (nbLoopColumn == 0) return ;
     if ((spriteViewportColIdx&0x01) != 0){
         spriteColorFunction = &colorLeftTexel;
     } else {
@@ -240,9 +246,10 @@ void drawSprite (){
 
     spriteTexture = objTexture[engCurrentObjectIdx];
 
-    precalcTexPixelRunthrough(objHeight*2);
-
     spriteHeight            = objHeight*2;
+
+    precalcTexPixelRunthrough();
+
 
 
     if (visibility == 1){

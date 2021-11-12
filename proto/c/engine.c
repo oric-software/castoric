@@ -5,7 +5,7 @@
 // objects
 #define OBJ_KEY 1
 #define OBJ_TREE 2
-// #define OBJ_SOLDIER 3
+#define OBJ_SOLDIER 3
 
 unsigned char   objType     [OBJECTS_MAX];
 unsigned char   objActive   [OBJECTS_MAX];
@@ -90,9 +90,9 @@ void engObjectPulse()
             computeLogDistance();
             dichoInsert (engCurrentObjectIdx, objLogDistance[engCurrentObjectIdx]);
             break;
-        // case OBJ_SOLDIER:
-        //     soldierUpdate();
-        //     break;
+        case OBJ_SOLDIER:
+            soldierUpdate();
+            break;
     }
 }
 
@@ -133,66 +133,66 @@ void engPulse() {
 // }
 
 
-// void soldierUpdate()
-// {
-//     // unsigned char ldist;
-//     unsigned char displaystate;
-//     signed char direction;
-//     signed char sex, sey;
-// 	signed char ex = objPosX[engCurrentObjectIdx];
-//     signed char ey = objPosY[engCurrentObjectIdx];
-//     sex = ex;
-//     sey = ey;
-//     direction = *(objData[engCurrentObjectIdx]);
-//     if (-112 >= direction) {
-//         ex--;
-//     } else if ((-112 < direction) && (-80 >= direction)) {
-//         ex--; ey--;
-//     } else if ((-80 < direction) && (-48 >= direction)) {
-//         ey--;
-//     } else if ((-48 < direction) && (-16 >= direction)) {
-//         ex++; ey--;
-//     } else if ((-16 < direction) && (16 >= direction)) {
-//         ex++;
-//     } else if ((16 < direction) && (48 >= direction)) {
-//         ex++; ey++;
-//     } else if ((48 < direction) && (80 >= direction)) {
-//         ey++;
-//     } else if ((80 < direction) && (112 >= direction)) {
-//         ex--; ey++;
-//     } else {
-//         ex--;
-//     }
-//     if (isInWall(ex, ey)) {
-//          direction += 16;
-//          *(objData[engCurrentObjectIdx]) = direction;
-//          ex = sex;
-//          ey = sey;
-//     }
-//     objPosX[engCurrentObjectIdx] = ex;
-//     objPosY[engCurrentObjectIdx] = ey;
-//     // ldist = computeLogDist (ex, ey);
-//     computeLogDistance();
-//     dichoInsert (engCurrentObjectIdx, objLogDistance[engCurrentObjectIdx]);
+void soldierUpdate()
+{
+    // unsigned char ldist;
+    unsigned char displaystate;
+    signed char direction;
+    signed char sex, sey;
+	signed char ex = objPosX[engCurrentObjectIdx];
+    signed char ey = objPosY[engCurrentObjectIdx];
+    sex = ex;
+    sey = ey;
+    direction = *(objData[engCurrentObjectIdx]);
+    if (-112 >= direction) {
+        ex--;
+    } else if ((-112 < direction) && (-80 >= direction)) {
+        ex--; ey--;
+    } else if ((-80 < direction) && (-48 >= direction)) {
+        ey--;
+    } else if ((-48 < direction) && (-16 >= direction)) {
+        ex++; ey--;
+    } else if ((-16 < direction) && (16 >= direction)) {
+        ex++;
+    } else if ((16 < direction) && (48 >= direction)) {
+        ex++; ey++;
+    } else if ((48 < direction) && (80 >= direction)) {
+        ey++;
+    } else if ((80 < direction) && (112 >= direction)) {
+        ex--; ey++;
+    } else {
+        ex--;
+    }
+    if (isInWall(ex, ey)) {
+         direction += 16;
+         *(objData[engCurrentObjectIdx]) = direction;
+         ex = sex;
+         ey = sey;
+    }
+    objPosX[engCurrentObjectIdx] = ex;
+    objPosY[engCurrentObjectIdx] = ey;
+    // ldist = computeLogDist (ex, ey);
+    computeLogDistance();
+    dichoInsert (engCurrentObjectIdx, objLogDistance[engCurrentObjectIdx]);
 
-//     // computeRelativeOrientation (*(objData[engCurrentObjectIdx]));
-//     displaystate = computeRelativeOrientation (direction, rayCamRotZ);
-//     switch (displaystate) {
-//         case 0:
-//             objTexture[engCurrentObjectIdx] = texture_soldier_back_00; // ptrTextureSoldierBack;
-//             break;
-//         case 1:
-//             objTexture[engCurrentObjectIdx] = texture_soldier_left_00; // ptrTextureSoldierRight;
-//             break;
-//         case 2:
-//             objTexture[engCurrentObjectIdx] = texture_soldier_front_00; // ptrTextureSoldierFront;
-//             break;
-//         case 3:
-//             objTexture[engCurrentObjectIdx] = texture_soldier_right_00; // ptrTextureSoldierLeft;
-//             break;
-//     }
-//     refreshNeeded = 1;
-// }
+    // computeRelativeOrientation (*(objData[engCurrentObjectIdx]));
+    displaystate = computeRelativeOrientation (direction, rayCamRotZ);
+    switch (displaystate) {
+        case 0:
+            objTexture[engCurrentObjectIdx] = texture_smily_back; // ptrTextureSoldierBack;
+            break;
+        case 1:
+            objTexture[engCurrentObjectIdx] = texture_smily_left; // ptrTextureSoldierRight;
+            break;
+        case 2:
+            objTexture[engCurrentObjectIdx] = texture_smily_front; // ptrTextureSoldierFront;
+            break;
+        case 3:
+            objTexture[engCurrentObjectIdx] = texture_smily_right; // ptrTextureSoldierLeft;
+            break;
+    }
+    refreshNeeded = 1;
+}
 
 void engInitObjects()
 {

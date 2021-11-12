@@ -22,6 +22,10 @@
 #include "drawWalls.c"
 
 #ifdef USE_SPRITE
+#include "texture_sfront.h"
+#include "texture_sback.h"
+#include "texture_sleft.h"
+#include "texture_sright.h"
 #include "dichobuf.c"
 #include "engine.c"
 #include "sprite.c"
@@ -70,6 +74,8 @@ void gameLoop() {
     objTexture[0] = texture_aKey;
     engAddObject(OBJ_TREE, -3, 3, 0);
     objTexture[1] = texture_tree;
+    engAddObject(OBJ_SOLDIER, -1, 0, 0);
+    objTexture[2] = texture_smily_back;
 
     while (running) {
         doke(630,0);

@@ -18,7 +18,7 @@
 #include "player.c"
 
 #include "texel.c"
-
+#include "keyboard_c.c"
 #include "drawWalls.c"
 
 #ifdef USE_SPRITE
@@ -37,6 +37,13 @@
 #define CHANGE_INK_TO_GREEN	            2		
 #define CHANGE_INK_TO_BLUE	            4		
 
+extern unsigned char 	kernel_cs;
+extern unsigned char 	kernel_s;
+
+extern unsigned char 	kernel_fraction;
+extern unsigned char 	kernel_beat;
+extern unsigned char 	kernel_tempo;
+extern unsigned char 	nbE_keybuf;
 
 void prepareRGB(){
     int ii;
@@ -65,6 +72,52 @@ void initCamera(){
 
 #include "viewport.c"
 
+void keyPressed(unsigned char c){
+	// printf ("kp: %x, ", c);
+    if (c == keyForward) {
+            forward(); 
+            refreshNeeded   = 1;
+    } else if (c == keyBackward) {
+            backward();
+            refreshNeeded   = 1;
+    } else if (c == keyTurnLeft) {
+            rayCamRotZ      += ROT_ANGLE_STEP;
+            RayLeftAlpha    = rayCamRotZ + HALF_FOV_FIX_ANGLE;
+            refreshNeeded   = 1;
+    } else if (c == keyTurnRight) {
+            rayCamRotZ      -= ROT_ANGLE_STEP; 
+            RayLeftAlpha    = rayCamRotZ + HALF_FOV_FIX_ANGLE;
+            refreshNeeded   = 1;
+    } else if (c == keyStraffeRight) {
+            refreshNeeded           = 1;
+            shiftRight();
+    } else if (c == keyStraffeLeft) {
+            refreshNeeded           = 1;
+            shiftLeft();
+    } else if (c == keyQuit) {
+            running = 0;
+    } else if (c ==  0x20) {
+        if ((rayCamPosY <= -4) && (doorState == 2)){
+            doorState = 1;
+        }
+    }
+
+}
+
+void keyReleased(unsigned char c){
+	// printf ("kr: %x, ", c);
+}
+
+void lsys(){
+	unsigned char c;
+	while (nbE_keybuf != 0) {
+		if ((c=get_keyevent()) & 0x80){
+			keyReleased (c & 0x7F);
+		} else {
+			keyPressed (c);
+		}
+	}
+}
 
 void gameLoop() {
 
@@ -77,6 +130,10 @@ void gameLoop() {
     engAddObject(OBJ_SOLDIER, -1, 0, 0);
     objTexture[2] = texture_smily_back;
 
+	kernelInit();
+	osmeInit();
+
+
     while (running) {
         doke(630,0);
 
@@ -87,7 +144,8 @@ void gameLoop() {
             initScene (scene_00, texture_00);
             refreshNeeded = 1;
         } else {
-            player ();
+            // player ();
+            lsys();
         }
 
         dichoInit();
@@ -129,6 +187,7 @@ void gameLoop() {
         // }
         
     }
+    kernelEnd();
 }
 
 void main(){

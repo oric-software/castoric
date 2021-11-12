@@ -56,11 +56,10 @@ unsigned char computeRelativeOrientation (signed char dirP, signed char dirC) {
     unsigned char res;
     signed char reldiff;
     unsigned char absdiff;
-    // printf ("dirP = %d, dirC =%d \n",dirP, dirC);
+
     reldiff  = dirP - dirC + 32;
     absdiff = (unsigned char)(reldiff);
-    // printf ("rel ori %d %d\n",dirP - dirC, res);
-    // printf ("reldiff = %d, absdiff =  %d\n",reldiff, absdiff);
+
     res = absdiff >> 6;
     return res;
 }

@@ -7,26 +7,29 @@
 signed char         spriteViewportColIdx, spriteViewportLinIdx;
 
 unsigned char       spriteTextureLinIdx, spriteTextureColIdx;
-unsigned char       spriteNbColumn, spriteNbLine;
 
-signed char         savSpriteViewportLinIdx;
-unsigned char       savSpriteTextureLinIdx;
+unsigned char       spriteSavTextureLinIdx;
 
 // input of Sprite drawing
 unsigned char       spriteHeight;
 unsigned char       *spriteTexture;
-unsigned char       spriteCenterColumn;
+unsigned char       spriteRefColumn;
 
-int screenOffset;
-unsigned char savNbLoopLine;
-unsigned char nbLoopColumn, nbLoopLine;
+int                 spriteScreenOffset;
+unsigned char       spriteSavNbLoopLine;
+unsigned char       spriteNbLoopColumn, spriteNbLoopLine;
 
 
-unsigned char       wallheight; // TODO: remove
-void(*spriteColorFunction)(void);// TODO: optim 
-unsigned char *spritePtrReadTexture;
+unsigned char       spriteWallHeight; // TODO: remove
 
-unsigned char           texcolumn, texline;
+#ifdef __GNUC__
+unsigned char           *spritePtrReadTexture;
+#else
+extern unsigned char    *spritePtrReadTexture;
+#endif
+unsigned char           spriteTexColumn;
+
+
 
 
 //precalTexPixelOffset[N] =  Nth value of Incremental Error Algo (nbStep = Height on screen , nbVal = TEXTURE_DIMENSION)
@@ -54,77 +57,144 @@ void precalcTexPixelRunthrough(){
 }
 
 
+extern void colorLeftTexel ();
+extern void colorRightTexel ();
+
 
 
 // ============================================ //
 
+void unrollLeftColumn();
+void unrollRightColumn();
 
 void unrollColumn() {
 
-        wallheight = TableVerticalPos[spriteViewportColIdx];
-        if (spriteHeight > wallheight) {
+    spriteWallHeight = TableVerticalPos[spriteViewportColIdx];
+    if (spriteHeight > spriteWallHeight) {
 
-            spriteTextureLinIdx     = savSpriteTextureLinIdx;
-            nbLoopLine              = savNbLoopLine;
+        spriteTextureLinIdx     = spriteSavTextureLinIdx;
+        spriteNbLoopLine              = spriteSavNbLoopLine;
 
-            theAdr                  = (unsigned char *)((int)baseAdr + screenOffset ); // multi120[spriteViewportLinIdx]); // 
+        theAdr                  = (unsigned char *)((int)baseAdr + spriteScreenOffset ); // multi120[spriteViewportLinIdx]); // 
 
-            // Parcours ligne
-            texcolumn               = precalTexPixelOffset [spriteTextureColIdx];
-            spritePtrReadTexture    = spriteTexture + (unsigned int)((multi32_high[texcolumn] << 8) | multi32_low[texcolumn]);
+        // Parcours ligne
+        spriteTexColumn               = precalTexPixelOffset [spriteTextureColIdx];
+        spritePtrReadTexture    = spriteTexture + (unsigned int)((multi32_high[spriteTexColumn] << 8) | multi32_low[spriteTexColumn]);
 
-            do {
-
-                renCurrentColor     = spritePtrReadTexture[precalTexPixelOffset [spriteTextureLinIdx]];
-                if (renCurrentColor != EMPTY_ALPHA) {
-                    spriteColorFunction();
-                }else{
-                   theAdr              += 120; 
-                }
-                spriteTextureLinIdx       ++;
-
-            } while ((--nbLoopLine) != 0);
+        if ((spriteViewportColIdx&0x01) != 0){
+            unrollLeftColumn();
+        } else {
+            unrollRightColumn();
         }
+
+    }
+}
+
+
+void unrollRightColumn() {
+
+
+    do {
+        renCurrentColor     = spritePtrReadTexture[precalTexPixelOffset [spriteTextureLinIdx]];
+        // {asm (
+        //     // "pha:tya:pha:"
+        //     "ldy _spriteTextureLinIdx:"
+        //     "lda _precalTexPixelOffset,Y:"
+        //     "tay:"
+        //     "lda (_spritePtrReadTexture),Y:"
+        //     "sta _renCurrentColor:"
+        //     // "pla:tay:pla:"
+        // );}
+        if (renCurrentColor != EMPTY_ALPHA) {
+            colorRightTexel();
+        }else{
+            theAdr              += 120; 
+        //    {asm(
+        //        "clc:"     
+        //         "lda         _theAdr:"
+        //         "adc         #120:"
+        //         "sta         _theAdr:"
+        //         ".(:"  
+        //         "bcc skip:    inc _theAdr+1: skip:"
+        //         ".):"
+        //    );}
+        }
+        spriteTextureLinIdx       ++;
+        // {asm(
+        //     "inc _spriteTextureLinIdx:"
+        // );}
+
+    } while ((--spriteNbLoopLine) != 0);
+
+}
+
+void unrollLeftColumn() {
+
+    do {
+
+        renCurrentColor     = spritePtrReadTexture[precalTexPixelOffset [spriteTextureLinIdx]];
+        if (renCurrentColor != EMPTY_ALPHA) {
+            colorLeftTexel();
+        }else{
+            theAdr              += 120; 
+        }
+        spriteTextureLinIdx       ++;
+
+    } while ((--spriteNbLoopLine) != 0);
+
 }
 
 #define min(x,y)          (((x)<(y))?(x):(y))
 void displaySprite03(){
 
     // Rejoindre la bordure gauche
-    if (spriteCenterColumn <= spriteHeight/2) {
+    if (spriteRefColumn <= spriteHeight/2) {
         spriteViewportColIdx       = VIEWPORT_START_COLUMN + 1;
-        spriteTextureColIdx         = spriteHeight/2 - spriteCenterColumn + 2;
-        nbLoopColumn = min(VIEWPORT_WIDTH - 3,spriteHeight/2+spriteCenterColumn-2);
+        spriteTextureColIdx         = spriteHeight/2 - spriteRefColumn + 2;
+        spriteNbLoopColumn = min(VIEWPORT_WIDTH - 3,spriteHeight/2+spriteRefColumn-2);
     } else {
-        spriteViewportColIdx       = spriteCenterColumn - spriteHeight/2 + VIEWPORT_START_COLUMN;
+        spriteViewportColIdx       = spriteRefColumn - spriteHeight/2 + VIEWPORT_START_COLUMN;
         spriteTextureColIdx        = 0;
-        nbLoopColumn = min(VIEWPORT_WIDTH-2-spriteCenterColumn+spriteHeight/2,spriteHeight);
+        spriteNbLoopColumn = min(VIEWPORT_WIDTH-2-spriteRefColumn+spriteHeight/2,spriteHeight);
     }
     
 
 
-    if ((spriteViewportColIdx&0x01) != 0){
-        spriteColorFunction = &colorLeftTexel;
-    } else {
-        spriteColorFunction = &colorRightTexel;
-    }
-
     if (spriteHeight > VIEWPORT_HEIGHT){
         spriteViewportLinIdx    = VIEWPORT_START_LINE + 1;
-        savSpriteTextureLinIdx  = spriteHeight/2 - VIEWPORT_HEIGHT/ 2 + 1;
-        savNbLoopLine           = VIEWPORT_HEIGHT  - 1;
+        spriteSavTextureLinIdx  = spriteHeight/2 - VIEWPORT_HEIGHT/ 2 + 1;
+        spriteSavNbLoopLine           = VIEWPORT_HEIGHT  - 1;
     } else {
         spriteViewportLinIdx    = VIEWPORT_HEIGHT/ 2 - spriteHeight/2 + VIEWPORT_START_LINE;
-        savSpriteTextureLinIdx  = 0;
-        savNbLoopLine           = spriteHeight ;
+        spriteSavTextureLinIdx  = 0;
+        spriteSavNbLoopLine           = spriteHeight ;
     }
 
-    screenOffset = ((int)(multi120_high[spriteViewportLinIdx]<<8) | (int)(multi120_low[spriteViewportLinIdx]));
+    spriteScreenOffset = ((int)(multi120_high[spriteViewportLinIdx]<<8) | (int)(multi120_low[spriteViewportLinIdx]));
 
     baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (spriteViewportColIdx>>1));
 
     // Parcours colonne
     do {
+
+        // spriteWallHeight = TableVerticalPos[spriteViewportColIdx];
+        // if (spriteHeight > spriteWallHeight) {
+
+        //     spriteTextureLinIdx     = spriteSavTextureLinIdx;
+        //     spriteNbLoopLine              = spriteSavNbLoopLine;
+
+        //     theAdr                  = (unsigned char *)((int)baseAdr + spriteScreenOffset ); // multi120[spriteViewportLinIdx]); // 
+
+        //     // Parcours ligne
+        //     spriteTexColumn               = precalTexPixelOffset [spriteTextureColIdx];
+        //     spritePtrReadTexture    = spriteTexture + (unsigned int)((multi32_high[spriteTexColumn] << 8) | multi32_low[spriteTexColumn]);
+
+        //     if ((spriteViewportColIdx&0x01) != 0){
+        //         unrollLeftColumn();
+        //     } else {
+        //         unrollRightColumn();
+        //     }
+        // }
 
         unrollColumn();
 
@@ -133,85 +203,107 @@ void displaySprite03(){
 
         if ((spriteViewportColIdx&0x01) != 0){
             baseAdr             += 1;
-            spriteColorFunction = &colorLeftTexel;
-        } else {
-            spriteColorFunction = &colorRightTexel;
         }
-    } while ((--nbLoopColumn) != 0);
+    } while ((--spriteNbLoopColumn) != 0);
  
 }
 
 
 void displaySpriteRightVisible(){
 
-    spriteViewportColIdx          = spriteCenterColumn;
+    spriteViewportColIdx          = spriteRefColumn;
     spriteTextureColIdx           = spriteHeight-1;
-    nbLoopColumn                = spriteCenterColumn-VIEWPORT_START_COLUMN;
-    if (nbLoopColumn == 0) return ;
-    if ((spriteViewportColIdx&0x01) != 0){
-        spriteColorFunction = &colorLeftTexel;
-    } else {
-        spriteColorFunction = &colorRightTexel;
-    }
+    spriteNbLoopColumn                = spriteRefColumn-VIEWPORT_START_COLUMN;
+    // if (spriteNbLoopColumn == 0) return ;
+
     if (spriteHeight > VIEWPORT_HEIGHT){
         spriteViewportLinIdx        = VIEWPORT_START_LINE + 1;
-        savSpriteTextureLinIdx      = spriteHeight/2 - VIEWPORT_HEIGHT/ 2  + 1;
-        savNbLoopLine               = VIEWPORT_HEIGHT  - 1;
+        spriteSavTextureLinIdx      = spriteHeight/2 - VIEWPORT_HEIGHT/ 2  + 1;
+        spriteSavNbLoopLine               = VIEWPORT_HEIGHT  - 1;
     } else {
-        savSpriteTextureLinIdx      = 0;
+        spriteSavTextureLinIdx      = 0;
         spriteViewportLinIdx        = VIEWPORT_HEIGHT/ 2 - spriteHeight/2 + VIEWPORT_START_LINE;
-        savNbLoopLine               = spriteHeight ;
+        spriteSavNbLoopLine               = spriteHeight ;
     }
-    screenOffset = ((int)(multi120_high[spriteViewportLinIdx]<<8) | (int)(multi120_low[spriteViewportLinIdx]));
+    spriteScreenOffset = ((int)(multi120_high[spriteViewportLinIdx]<<8) | (int)(multi120_low[spriteViewportLinIdx]));
     baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (spriteViewportColIdx>>1));
 
     // Parcours colonne
     do {
 
+        // spriteWallHeight = TableVerticalPos[spriteViewportColIdx];
+        // if (spriteHeight > spriteWallHeight) {
+
+        //     spriteTextureLinIdx     = spriteSavTextureLinIdx;
+        //     spriteNbLoopLine              = spriteSavNbLoopLine;
+
+        //     theAdr                  = (unsigned char *)((int)baseAdr + spriteScreenOffset ); // multi120[spriteViewportLinIdx]); // 
+
+        //     // Parcours ligne
+        //     spriteTexColumn               = precalTexPixelOffset [spriteTextureColIdx];
+        //     spritePtrReadTexture    = spriteTexture + (unsigned int)((multi32_high[spriteTexColumn] << 8) | multi32_low[spriteTexColumn]);
+
+        //     if ((spriteViewportColIdx&0x01) != 0){
+        //         unrollLeftColumn();
+        //     } else {
+        //         unrollRightColumn();
+        //     }
+        // }
+
         unrollColumn();
-        
+
         spriteTextureColIdx         -= 1;
         spriteViewportColIdx        -= 1;
 
-        if ((spriteViewportColIdx&0x01) != 0){
-            spriteColorFunction     = &colorLeftTexel;
-        } else {
+        if ((spriteViewportColIdx&0x01) == 0){
             baseAdr                 -= 1;
-            spriteColorFunction     = &colorRightTexel;
         }
 
-    } while ((--nbLoopColumn) != 0);    
+    } while ((--spriteNbLoopColumn) != 0);    
 }
 
 void displaySpriteLeftVisible(){
 
-    spriteViewportColIdx        = spriteCenterColumn;
+    spriteViewportColIdx        = spriteRefColumn;
     spriteTextureColIdx         = 0;
 
-    nbLoopColumn                = VIEWPORT_WIDTH-spriteCenterColumn;
-
-    if ((spriteViewportColIdx&0x01) != 0){
-        spriteColorFunction         = &colorLeftTexel;
-    } else {
-        spriteColorFunction         = &colorRightTexel;
-    }
+    spriteNbLoopColumn                = VIEWPORT_WIDTH-spriteRefColumn;
 
     if (spriteHeight > VIEWPORT_HEIGHT){
         spriteViewportLinIdx        = VIEWPORT_START_LINE + 1;
-        savSpriteTextureLinIdx      = spriteHeight/2 - VIEWPORT_HEIGHT/ 2  + 1;
-        savNbLoopLine               = VIEWPORT_HEIGHT  - 1;
+        spriteSavTextureLinIdx      = spriteHeight/2 - VIEWPORT_HEIGHT/ 2  + 1;
+        spriteSavNbLoopLine               = VIEWPORT_HEIGHT  - 1;
     } else {
         spriteViewportLinIdx        = VIEWPORT_HEIGHT/ 2 - spriteHeight/2 + VIEWPORT_START_LINE;
-        savSpriteTextureLinIdx      = 0;
-        savNbLoopLine               = spriteHeight ;
+        spriteSavTextureLinIdx      = 0;
+        spriteSavNbLoopLine               = spriteHeight ;
     }
 
-    screenOffset = ((int)(multi120_high[spriteViewportLinIdx]<<8) | (int)(multi120_low[spriteViewportLinIdx]));
+    spriteScreenOffset = ((int)(multi120_high[spriteViewportLinIdx]<<8) | (int)(multi120_low[spriteViewportLinIdx]));
 
     baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (spriteViewportColIdx>>1));
 
     // Parcours colonne
     do {
+
+        // spriteWallHeight = TableVerticalPos[spriteViewportColIdx];
+        // if (spriteHeight > spriteWallHeight) {
+
+        //     spriteTextureLinIdx     = spriteSavTextureLinIdx;
+        //     spriteNbLoopLine              = spriteSavNbLoopLine;
+
+        //     theAdr                  = (unsigned char *)((int)baseAdr + spriteScreenOffset ); // multi120[spriteViewportLinIdx]); // 
+
+        //     // Parcours ligne
+        //     spriteTexColumn               = precalTexPixelOffset [spriteTextureColIdx];
+        //     spritePtrReadTexture    = spriteTexture + (unsigned int)((multi32_high[spriteTexColumn] << 8) | multi32_low[spriteTexColumn]);
+
+        //     if ((spriteViewportColIdx&0x01) != 0){
+        //         unrollLeftColumn();
+        //     } else {
+        //         unrollRightColumn();
+        //     }
+        // }
 
         unrollColumn();
 
@@ -220,12 +312,9 @@ void displaySpriteLeftVisible(){
         spriteViewportColIdx++;
         if ((spriteViewportColIdx&0x01) != 0){
             baseAdr             += 1;
-            spriteColorFunction = &colorLeftTexel;
-        } else {
-            spriteColorFunction = &colorRightTexel;
         }
 
-    } while ((--nbLoopColumn) != 0);
+    } while ((--spriteNbLoopColumn) != 0);
 
 }
 
@@ -253,14 +342,15 @@ void drawSprite (){
 
 
     if (visibility == 1){
-        spriteCenterColumn = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngle[engCurrentObjectIdx]];
+        spriteRefColumn = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngle[engCurrentObjectIdx]];
         displaySprite03();
     } else if (visibility == 2) {
-        spriteCenterColumn = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngleRight];
-        displaySpriteRightVisible();
-
+        spriteRefColumn = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngleRight];
+        if (spriteRefColumn > VIEWPORT_START_COLUMN) {
+            displaySpriteRightVisible();
+        }
     } else if (visibility == 3) {
-        spriteCenterColumn = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngleLeft];
+        spriteRefColumn = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngleLeft];
         displaySpriteLeftVisible();
     }
 }

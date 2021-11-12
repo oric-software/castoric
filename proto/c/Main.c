@@ -48,9 +48,9 @@ void prepareRGB(){
 
 // [ref camera_situation]
 void initCamera(){
-    rayCamPosX               = 0;
-    rayCamPosY               = 4; 
-    rayCamRotZ               = -128;
+    rayCamPosX               = 1;
+    rayCamPosY               = 0; 
+    rayCamRotZ               = -16;
     RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
 }
 
@@ -269,12 +269,12 @@ void main(){
 //     int ii, jj;
 
 //     signed char idxScreenLine, idxScreenCol;
-//     unsigned char height, texcolumn;
+//     unsigned char height, spriteTexColumn;
 
 //     PROFILE_ENTER(ROUTINE_DRAW01);
 //     for (ii = 0; ii < 40; ii++) {
 //         height          = tabHeight[ii];
-//         texcolumn       = tabTexCol[ii];
+//         spriteTexColumn       = tabTexCol[ii];
 //         idxScreenCol    = 10+ii;
 
 //         ddaStartValue       = 0;
@@ -285,13 +285,13 @@ void main(){
 //         idxScreenLine       = 32 - height;
 //         // printf ("%d %d\n", ddaCurrentValue, idxScreenLine);
 //         if ((idxScreenLine >=0) && (idxScreenLine < 64)) {
-//             colorSquare(idxScreenLine, idxScreenCol, bufimg[multi40[ddaCurrentValue] + texcolumn]);
+//             colorSquare(idxScreenLine, idxScreenCol, bufimg[multi40[ddaCurrentValue] + spriteTexColumn]);
 //         }
 //         while (ddaCurrentValue < ddaEndValue) {
 //             (*ddaStepFunction)(); 
 //             // printf ("%d\n", ddaCurrentValue, idxScreenLine);
 //             if ((idxScreenLine >=0) && (idxScreenLine < 64)) {
-//                 colorSquare(idxScreenLine, idxScreenCol, bufimg[multi40[ddaCurrentValue] + texcolumn]);
+//                 colorSquare(idxScreenLine, idxScreenCol, bufimg[multi40[ddaCurrentValue] + spriteTexColumn]);
 //             }
 //             idxScreenLine   += 1;
 //         }

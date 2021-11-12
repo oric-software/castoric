@@ -82,9 +82,9 @@ void unrollColumn() {
         spritePtrReadTexture    = spriteTexture + (unsigned int)((multi32_high[spriteTexColumn] << 8) | multi32_low[spriteTexColumn]);
 
         if ((spriteViewportColIdx&0x01) != 0){
-            unrollLeftColumn();
+            unrollLeftColumnASM();
         } else {
-            unrollRightColumn();
+            unrollRightColumnASM();
         }
 
     }
@@ -93,37 +93,14 @@ void unrollColumn() {
 
 void unrollRightColumn() {
 
-
     do {
         renCurrentColor     = spritePtrReadTexture[precalTexPixelOffset [spriteTextureLinIdx]];
-        // {asm (
-        //     // "pha:tya:pha:"
-        //     "ldy _spriteTextureLinIdx:"
-        //     "lda _precalTexPixelOffset,Y:"
-        //     "tay:"
-        //     "lda (_spritePtrReadTexture),Y:"
-        //     "sta _renCurrentColor:"
-        //     // "pla:tay:pla:"
-        // );}
         if (renCurrentColor != EMPTY_ALPHA) {
             colorRightTexel();
         }else{
             theAdr              += 120; 
-        //    {asm(
-        //        "clc:"     
-        //         "lda         _theAdr:"
-        //         "adc         #120:"
-        //         "sta         _theAdr:"
-        //         ".(:"  
-        //         "bcc skip:    inc _theAdr+1: skip:"
-        //         ".):"
-        //    );}
         }
         spriteTextureLinIdx       ++;
-        // {asm(
-        //     "inc _spriteTextureLinIdx:"
-        // );}
-
     } while ((--spriteNbLoopLine) != 0);
 
 }

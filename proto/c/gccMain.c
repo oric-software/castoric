@@ -35,7 +35,7 @@ unsigned char           *baseAdr;
 #include "engine.c"
 #include "sprite.c"
 #include "texture_key.h"
-#include "texture_pillar.h"
+#include "texture_tree.h"
 #endif
 
 
@@ -118,8 +118,8 @@ void main(){
     engInitObjects();
     engAddObject(OBJ_KEY, 3, 3, 0);
     objTexture[0] = texture_aKey;
-    engAddObject(OBJ_PILLAR, -3, 3, 0);
-    objTexture[1] = texture_pillar;
+    engAddObject(OBJ_TREE, -3, 3, 0);
+    objTexture[1] = texture_tree;
 
     dichoInit();
     engPulse();

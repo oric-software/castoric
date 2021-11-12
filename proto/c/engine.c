@@ -4,7 +4,7 @@
 
 // objects
 #define OBJ_KEY 1
-#define OBJ_PILLAR 2
+#define OBJ_TREE 2
 // #define OBJ_SOLDIER 3
 
 unsigned char   objType     [OBJECTS_MAX];
@@ -86,7 +86,7 @@ void engObjectPulse()
     switch (objType[engCurrentObjectIdx])
     {
         case OBJ_KEY:
-        case OBJ_PILLAR:
+        case OBJ_TREE:
             computeLogDistance();
             dichoInsert (engCurrentObjectIdx, objLogDistance[engCurrentObjectIdx]);
             break;

@@ -5,6 +5,7 @@ _spritePtrReadTexture .dsb 2
 
 .text
 
+#ifndef USE_C_SPRITE
 
 _unrollRightColumnASM
 .(
@@ -152,3 +153,72 @@ endIf
 
 .)
     rts    
+
+
+
+_spriteDrawColumn   
+.(
+    ;; FIXME : ugly hack because raylogdist is array of 16 bits
+    lda _spriteViewportColIdx
+    asl
+    sta tmp5
+
+    ;; if (objLogDistance[engCurrentObjectIdx] < raylogdist[spriteViewportColIdx])
+    ldy _engCurrentObjectIdx
+    lda _objLogDistance,Y
+    ldy tmp5
+    cmp _raylogdist,Y
+    bcs spriteDrawColumn_Done
+
+        ;; spriteTextureLinIdx     = spriteSavTextureLinIdx;
+        ;; spriteNbLoopLine              = spriteSavNbLoopLine;
+        lda _spriteSavTextureLinIdx
+        sta _spriteTextureLinIdx
+        lda _spriteSavNbLoopLine
+        sta _spriteNbLoopLine
+
+        ;; theAdr                  = (unsigned char *)((int)baseAdr + spriteScreenOffset ); // multi120[spriteViewportLinIdx]); // 
+        clc
+        lda _spriteScreenOffset
+        adc _baseAdr
+        sta _theAdr
+        lda _spriteScreenOffset+1
+        adc _baseAdr+1
+        sta _theAdr+1
+
+        ;; spriteTexColumn               = precalTexPixelOffset [spriteTextureColIdx];
+        ;; spritePtrReadTexture    = spriteTexture + (unsigned int)((multi32_high[spriteTexColumn] << 8) | multi32_low[spriteTexColumn]);
+
+        ldy _spriteTextureColIdx
+        lda _precalTexPixelOffset,Y
+        sta _spriteTexColumn
+        ldy _spriteTexColumn
+        lda _multi32_low,Y
+        clc
+        adc _spriteTexture
+        sta _spritePtrReadTexture
+        lda _multi32_high,Y
+        adc _spriteTexture+1
+        sta _spritePtrReadTexture+1
+
+        ;; if ((spriteViewportColIdx&0x01) != 0){
+        ;;     unrollLeftColumnASM();
+        ;; } else {
+        ;;     unrollRightColumnASM();
+        ;; }
+.(
+            lda _spriteViewportColIdx
+            and #$01
+            beq drawRight
+                jsr _unrollLeftColumnASM
+            jmp endIf
+drawRight
+                jsr _unrollRightColumnASM
+endIf
+.)
+
+spriteDrawColumn_Done
+.)
+    rts
+
+#endif ;;USE_C_SPRITE

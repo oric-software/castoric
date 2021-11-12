@@ -21,7 +21,7 @@
 #define     USE_C_GENERIC_COLLISION
 #define     USE_C_COLORTEXEL
 #define     USE_C_DICHOBUF
-
+#define     USE_C_SPRITE
 
 #else
 
@@ -39,6 +39,7 @@
 #undef     USE_C_GENERIC_COLLISION
 #undef     USE_C_COLORTEXEL
 #undef     USE_C_DICHOBUF
+#undef     USE_C_SPRITE
 #endif
 
 #endif // CONFIG_H

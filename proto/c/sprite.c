@@ -22,7 +22,7 @@ unsigned char       spriteNbLoopColumn, spriteNbLoopLine;
 
 unsigned char       spriteWallHeight; // TODO: remove
 
-#ifdef __GNUC__
+#ifdef USE_C_SPRITE 
 unsigned char           *spritePtrReadTexture;
 #else
 extern unsigned char    *spritePtrReadTexture;
@@ -63,14 +63,13 @@ extern void colorRightTexel ();
 
 
 // ============================================ //
-
+#ifdef USE_C_SPRITE 
 void unrollLeftColumn();
 void unrollRightColumn();
 
-void unrollColumn() {
-
-    spriteWallHeight = TableVerticalPos[spriteViewportColIdx];
-    if (spriteHeight > spriteWallHeight) {
+void spriteDrawColumn() {
+    
+    if (objLogDistance[engCurrentObjectIdx] < raylogdist[spriteViewportColIdx]) {
 
         spriteTextureLinIdx     = spriteSavTextureLinIdx;
         spriteNbLoopLine              = spriteSavNbLoopLine;
@@ -81,12 +80,12 @@ void unrollColumn() {
         spriteTexColumn               = precalTexPixelOffset [spriteTextureColIdx];
         spritePtrReadTexture    = spriteTexture + (unsigned int)((multi32_high[spriteTexColumn] << 8) | multi32_low[spriteTexColumn]);
 
-        if ((spriteViewportColIdx&0x01) != 0){
-            unrollLeftColumnASM();
-        } else {
-            unrollRightColumnASM();
-        }
 
+        if ((spriteViewportColIdx&0x01) != 0){
+            unrollLeftColumn();
+        } else {
+            unrollRightColumn();
+        }
     }
 }
 
@@ -120,6 +119,7 @@ void unrollLeftColumn() {
     } while ((--spriteNbLoopLine) != 0);
 
 }
+#endif // USE_C_SPRITE 
 
 #define min(x,y)          (((x)<(y))?(x):(y))
 void displaySprite03(){
@@ -154,26 +154,7 @@ void displaySprite03(){
     // Parcours colonne
     do {
 
-        // spriteWallHeight = TableVerticalPos[spriteViewportColIdx];
-        // if (spriteHeight > spriteWallHeight) {
-
-        //     spriteTextureLinIdx     = spriteSavTextureLinIdx;
-        //     spriteNbLoopLine              = spriteSavNbLoopLine;
-
-        //     theAdr                  = (unsigned char *)((int)baseAdr + spriteScreenOffset ); // multi120[spriteViewportLinIdx]); // 
-
-        //     // Parcours ligne
-        //     spriteTexColumn               = precalTexPixelOffset [spriteTextureColIdx];
-        //     spritePtrReadTexture    = spriteTexture + (unsigned int)((multi32_high[spriteTexColumn] << 8) | multi32_low[spriteTexColumn]);
-
-        //     if ((spriteViewportColIdx&0x01) != 0){
-        //         unrollLeftColumn();
-        //     } else {
-        //         unrollRightColumn();
-        //     }
-        // }
-
-        unrollColumn();
+        spriteDrawColumn();
 
         spriteTextureColIdx         += 1;
         spriteViewportColIdx        += 1;
@@ -208,26 +189,7 @@ void displaySpriteRightVisible(){
     // Parcours colonne
     do {
 
-        // spriteWallHeight = TableVerticalPos[spriteViewportColIdx];
-        // if (spriteHeight > spriteWallHeight) {
-
-        //     spriteTextureLinIdx     = spriteSavTextureLinIdx;
-        //     spriteNbLoopLine              = spriteSavNbLoopLine;
-
-        //     theAdr                  = (unsigned char *)((int)baseAdr + spriteScreenOffset ); // multi120[spriteViewportLinIdx]); // 
-
-        //     // Parcours ligne
-        //     spriteTexColumn               = precalTexPixelOffset [spriteTextureColIdx];
-        //     spritePtrReadTexture    = spriteTexture + (unsigned int)((multi32_high[spriteTexColumn] << 8) | multi32_low[spriteTexColumn]);
-
-        //     if ((spriteViewportColIdx&0x01) != 0){
-        //         unrollLeftColumn();
-        //     } else {
-        //         unrollRightColumn();
-        //     }
-        // }
-
-        unrollColumn();
+        spriteDrawColumn();
 
         spriteTextureColIdx         -= 1;
         spriteViewportColIdx        -= 1;
@@ -263,26 +225,8 @@ void displaySpriteLeftVisible(){
     // Parcours colonne
     do {
 
-        // spriteWallHeight = TableVerticalPos[spriteViewportColIdx];
-        // if (spriteHeight > spriteWallHeight) {
 
-        //     spriteTextureLinIdx     = spriteSavTextureLinIdx;
-        //     spriteNbLoopLine              = spriteSavNbLoopLine;
-
-        //     theAdr                  = (unsigned char *)((int)baseAdr + spriteScreenOffset ); // multi120[spriteViewportLinIdx]); // 
-
-        //     // Parcours ligne
-        //     spriteTexColumn               = precalTexPixelOffset [spriteTextureColIdx];
-        //     spritePtrReadTexture    = spriteTexture + (unsigned int)((multi32_high[spriteTexColumn] << 8) | multi32_low[spriteTexColumn]);
-
-        //     if ((spriteViewportColIdx&0x01) != 0){
-        //         unrollLeftColumn();
-        //     } else {
-        //         unrollRightColumn();
-        //     }
-        // }
-
-        unrollColumn();
+        spriteDrawColumn();
 
         spriteTextureColIdx       ++;
 

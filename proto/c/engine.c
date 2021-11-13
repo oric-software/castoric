@@ -35,7 +35,7 @@ unsigned char engCurrentObjectIdx;
 
 // void itemUpdate();
 // char soldier_data [] = {32};
-// void soldierUpdate();
+void soldierUpdate();
 
 
 
@@ -118,7 +118,7 @@ void engPulse() {
 }
 
 
-
+unsigned char computeRelativeOrientation (signed char direction, signed char rayCamRotZ);
 // void keyUpdate()
 // {
 // 	// unsigned char ex = objPosX[engCurrentObjectIdx];

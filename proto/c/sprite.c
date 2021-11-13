@@ -1,7 +1,7 @@
 
 
 #include "iea2d.c"
-#include "dist.c"
+
 
 
 signed char         spriteViewportColIdx, spriteViewportLinIdx;
@@ -44,10 +44,24 @@ void precalcTexPixelRunthrough(){
         iea2StartValue      = 0;
         iea2NbVal           = TEXTURE_SIZE-1;
         iea2NbStep          = spriteHeight;
-        iea2Init();
+
+
+        // iea2Init();
+        iea2CurrentValue         = iea2StartValue;
+        iea2EndValue             = iea2StartValue + iea2NbVal;
+        iea2CurrentError     = iea2NbStep;
+        // iea2StepFunction     = &iea2Step2;
+
         do {
             precalTexPixelOffset [idxTexPixel++] = iea2CurrentValue;
-            (*iea2StepFunction)();
+
+            // (*iea2StepFunction)();
+            iea2CurrentError         -= iea2NbVal;
+            if ((iea2CurrentError<<1) < iea2NbStep) {
+                iea2CurrentError     += iea2NbStep;
+                iea2CurrentValue     += 1;
+            }
+
         } while (iea2CurrentValue < iea2EndValue);
         precalTexPixelOffset [idxTexPixel++] = iea2CurrentValue;
     } else {
@@ -56,11 +70,8 @@ void precalcTexPixelRunthrough(){
 
 }
 
-
 extern void colorLeftTexel ();
 extern void colorRightTexel ();
-
-
 
 // ============================================ //
 #ifdef USE_C_SPRITE 

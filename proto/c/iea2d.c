@@ -65,42 +65,42 @@ unsigned char   iea2CurrentValue;
 unsigned char   iea2EndValue;
 
 signed char     iea2CurrentError;
-void            (*iea2StepFunction)(); 
+// void            (*iea2StepFunction)(); 
 
-void iea2Step0(){
-    iea2CurrentValue         += 1;
-}
+// void iea2Step0(){
+//     iea2CurrentValue         += 1;
+// }
 
-void iea2Step1(){
+// void iea2Step1(){
 
-    while ((iea2CurrentError<<1) >= iea2NbStep) {
-        iea2CurrentError         -= iea2NbStep;
-        iea2CurrentValue         += 1;
-    }
-    iea2CurrentError     += iea2NbVal;
+//     while ((iea2CurrentError<<1) >= iea2NbStep) {
+//         iea2CurrentError         -= iea2NbStep;
+//         iea2CurrentValue         += 1;
+//     }
+//     iea2CurrentError     += iea2NbVal;
  
-}
-void iea2Step2(){
-    iea2CurrentError         -= iea2NbVal;
-    if ((iea2CurrentError<<1) < iea2NbStep) {
-        iea2CurrentError     += iea2NbStep;
-        iea2CurrentValue     += 1;
-    }
-}
+// }
+// void iea2Step2(){
+//     iea2CurrentError         -= iea2NbVal;
+//     if ((iea2CurrentError<<1) < iea2NbStep) {
+//         iea2CurrentError     += iea2NbStep;
+//         iea2CurrentValue     += 1;
+//     }
+// }
 
-void iea2Init(){
-    iea2CurrentValue         = iea2StartValue;
-    iea2EndValue             = iea2StartValue + iea2NbVal;
+// void iea2Init(){
+//     iea2CurrentValue         = iea2StartValue;
+//     iea2EndValue             = iea2StartValue + iea2NbVal;
 
-    if          (iea2NbVal > iea2NbStep) {
-        iea2CurrentError     = iea2NbVal;
-        iea2StepFunction     = &iea2Step1;
-    } else if   (iea2NbVal < iea2NbStep) {
-        iea2CurrentError     = iea2NbStep;
-        iea2StepFunction     = &iea2Step2;
-    } else {
-        iea2CurrentError     = iea2EndValue;
-        iea2StepFunction     = &iea2Step0;
-    }
-}
+//     if          (iea2NbVal > iea2NbStep) {
+//         iea2CurrentError     = iea2NbVal;
+//         iea2StepFunction     = &iea2Step1;
+//     } else if   (iea2NbVal < iea2NbStep) {
+//         iea2CurrentError     = iea2NbStep;
+//         iea2StepFunction     = &iea2Step2;
+//     } else {
+//         iea2CurrentError     = iea2EndValue;
+//         iea2StepFunction     = &iea2Step0;
+//     }
+// }
 #endif // USE_IEA2

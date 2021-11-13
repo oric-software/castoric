@@ -28,6 +28,7 @@
 #include "texture_sright.h"
 #include "dichobuf.c"
 #include "engine.c"
+#include "dist.c"
 #include "sprite.c"
 #include "texture_key.h"
 #include "texture_tree.h"

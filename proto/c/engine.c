@@ -163,7 +163,7 @@ void soldierUpdate()
     } else {
         ex--;
     }
-    if (isInWall(ex, ey)) {
+    if (isInWall(ex, ey) || ((abs(ex-rayCamPosX)<2) && (abs(ey-rayCamPosY)<2)) ) {
          direction += 16;
          *(objData[engCurrentObjectIdx]) = direction;
          ex = sex;

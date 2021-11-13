@@ -60,9 +60,9 @@ void prepareRGB(){
 
 // [ref camera_situation]
 void initCamera(){
-    rayCamPosX               = 1;
-    rayCamPosY               = 0; 
-    rayCamRotZ               = -16;
+    rayCamPosX               = 9;
+    rayCamPosY               = 9; 
+    rayCamRotZ               = -127;
     RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
 }
 
@@ -124,12 +124,14 @@ void gameLoop() {
 
 
     engInitObjects();
-    engAddObject(OBJ_KEY, 3, 3, 0);
+    engAddObject(OBJ_KEY, 9, -6, 0);
     objTexture[0] = texture_aKey;
-    engAddObject(OBJ_TREE, -3, 3, 0);
+    engAddObject(OBJ_TREE, 0, 11, 0);
     objTexture[1] = texture_tree;
+    engAddObject(OBJ_TREE, 3, -11, 0);
+    objTexture[2] = texture_tree;
     engAddObject(OBJ_SOLDIER, -1, 0, 0);
-    objTexture[2] = texture_smily_back;
+    objTexture[3] = texture_smily_back;
 
 	kernelInit();
 	osmeInit();

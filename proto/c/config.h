@@ -17,6 +17,7 @@
 #define     USE_C_PROCESS_POINT
 #define     USE_C_ZBUFFWALLS
 #define     USE_C_EXP
+#define     USE_C_3TRIGO
 #define     USE_C_DISTOFFSETSLICES
 #define     USE_C_GENERIC_COLLISION
 #define     USE_C_COLORTEXEL
@@ -36,6 +37,7 @@
 #undef     USE_C_EXP
 #undef     USE_C_DISTOFFSETSLICES
 #define    USE_ASM_LOGTRIGO
+#undef     USE_C_3TRIGO
 #undef     USE_C_GENERIC_COLLISION
 #undef     USE_C_COLORTEXEL
 #undef     USE_C_DICHOBUF

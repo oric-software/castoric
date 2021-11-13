@@ -1,3 +1,4 @@
+#include "config.h"
 
 .zero
 
@@ -221,4 +222,27 @@ spriteDrawColumn_Done
 .)
     rts
 
+
+_prepareScreenAdr
+.(
+    ;; spriteScreenOffset = ((int)(multi120_high[spriteViewportLinIdx]<<8) | (int)(multi120_low[spriteViewportLinIdx]));
+    ldy _spriteViewportLinIdx
+    lda _multi120_low, y
+    sta _spriteScreenOffset
+    lda _multi120_high, y
+    sta _spriteScreenOffset+1
+
+    ;; baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (spriteViewportColIdx>>1));
+    lda _spriteViewportColIdx
+    lsr
+    clc
+    adc #<($A000)
+    sta _baseAdr
+    lda #>($A000)
+    adc #0
+    sta _baseAdr+1
+
+
+.)
+    rts
 #endif ;;USE_C_SPRITE

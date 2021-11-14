@@ -21,15 +21,14 @@ signed char scene_00[] = {
 	,  6,  6		// P2
 	,  6, -6		// P3
     // movable wall
-	, -1, -6	 	// P4
-	,  1, -6		// P5
+	, -2, -6	 	// P4
+	,  2, -6		// P5
 
 	, 0, 1   // W0
 	, 1, 2   // W1
 	, 2, 3   // W2
 	, 0, 4   // W3
 	, 5, 3   // W4
-
 };
 
 // [ref texture_file2buffer]

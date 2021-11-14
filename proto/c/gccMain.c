@@ -4,13 +4,14 @@
 // Build with GCC: gcc -o a.out gccMain.c && a.out
 //
 #include <stdio.h>
+
 #include "config.h"
 
 
 #include "raycast.c"
-
+#include "collision.c"
 #include "scene.c"
-
+#include "game.c"
 // #include "iea2d.c"
 
 
@@ -31,8 +32,13 @@ unsigned char           *baseAdr;
 #include "drawWalls.c"
 
 #ifdef USE_SPRITE
+#include "texture_sfront.h"
+#include "texture_sback.h"
+#include "texture_sleft.h"
+#include "texture_sright.h"
 #include "dichobuf.c"
 #include "engine.c"
+#include "dist.c"
 #include "sprite.c"
 #include "texture_key.h"
 #include "texture_tree.h"
@@ -41,9 +47,9 @@ unsigned char           *baseAdr;
 
 
 void initCamera(){
-    rayCamPosX               = 0; // 0; // -62; // 39;  //
-    rayCamPosY               = 4; // 0; //- 62; // -25; //
-    rayCamRotZ               = -64; // 32; // 64; //
+    rayCamPosX               = -3; // 0; // -62; // 39;  //
+    rayCamPosY               = -9; // 0; //- 62; // -25; //
+    rayCamRotZ               = 64; // 32; // 64; //
     RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
 }
 
@@ -116,10 +122,10 @@ void main(){
     // drawSprite (0, 0, texture_aKey);
 
     engInitObjects();
-    engAddObject(OBJ_KEY, 3, 3, 0);
-    objTexture[0] = texture_aKey;
-    engAddObject(OBJ_TREE, -3, 3, 0);
-    objTexture[1] = texture_tree;
+    engAddObject(OBJ_TREE, 0, -3, 0);
+    objTexture[0] = texture_tree;
+    // engAddObject(OBJ_KEY, 3, 3, 0);
+    // objTexture[1] = texture_aKey;
 
     dichoInit();
     engPulse();

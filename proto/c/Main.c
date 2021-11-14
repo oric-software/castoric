@@ -14,11 +14,12 @@
 #include "scene.c"
 
 #include "game.c"
-
+#include "collision.c"
 #include "player.c"
 
 #include "texel.c"
 #include "keyboard_c.c"
+#include "viewport.c"
 #include "drawWalls.c"
 
 #ifdef USE_SPRITE
@@ -60,9 +61,9 @@ void prepareRGB(){
 
 // [ref camera_situation]
 void initCamera(){
-    rayCamPosX               = 9;
-    rayCamPosY               = 9; 
-    rayCamRotZ               = -127;
+    rayCamPosX               = -3;
+    rayCamPosY               = -9; 
+    rayCamRotZ               = 64;
     RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
 }
 
@@ -71,7 +72,7 @@ void initCamera(){
 #include "debug.c"
 #endif
 
-#include "viewport.c"
+
 
 void keyPressed(unsigned char c){
 	// printf ("kp: %x, ", c);

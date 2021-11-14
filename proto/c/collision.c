@@ -1,8 +1,13 @@
 
+#ifdef __GNUC__
+unsigned char collideX   ;
+unsigned char collideY   ;
+unsigned char isColliding;
+#else
 extern unsigned char collideX   ;
 extern unsigned char collideY   ;
 extern unsigned char isColliding;
-
+#endif
 
 
 #ifdef USE_C_GENERIC_COLLISION

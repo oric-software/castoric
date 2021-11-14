@@ -80,7 +80,7 @@ void unrollRightColumn();
 
 void spriteDrawColumn() {
     
-    if (objLogDistance[engCurrentObjectIdx] < raylogdist[spriteViewportColIdx]) {
+    if (objLogDistance[engCurrentObjectIdx] < raylogdist[spriteViewportColIdx-VIEWPORT_START_COLUMN-1]) {
 
         spriteTextureLinIdx     = spriteSavTextureLinIdx;
         spriteNbLoopLine              = spriteSavNbLoopLine;
@@ -132,15 +132,9 @@ void unrollLeftColumn() {
 }
 
 void prepareScreenAdr(){
-    // spriteScreenOffset = ((int)(multi120_high[spriteViewportLinIdx]<<8) | (int)(multi120_low[spriteViewportLinIdx]));
-    {asm(
-        "ldy _spriteViewportLinIdx:"
-        "lda _multi120_low, y:"
-        "sta _spriteScreenOffset:"
-        "lda _multi120_high, y:"
-        "sta _spriteScreenOffset+1:"
-    );}
-    baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (spriteViewportColIdx>>1));
+
+    spriteScreenOffset = ((int)(multi120_high[spriteViewportLinIdx]<<8) | (int)(multi120_low[spriteViewportLinIdx]));
+    baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + 1 + ((spriteViewportColIdx)>>1));
 
 }
 #endif // USE_C_SPRITE 
@@ -177,18 +171,19 @@ void displaySprite03(){
     prepareScreenAdr();
 
     // Parcours colonne
-    // do {
+#ifdef __GNUC__    
+    do {
 
-    //     spriteDrawColumn();
+        spriteDrawColumn();
 
-    //     spriteTextureColIdx         += 1;
-    //     spriteViewportColIdx        += 1;
+        spriteTextureColIdx         += 1;
+        spriteViewportColIdx        += 1;
 
-    //     if ((spriteViewportColIdx&0x01) != 0){
-    //         baseAdr             += 1;
-    //     }
-    // } while ((--spriteNbLoopColumn) != 0);
- 
+        if ((spriteViewportColIdx&0x01) != 0){
+            baseAdr             += 1;
+        }
+    } while ((--spriteNbLoopColumn) != 0);
+#else
     {asm(
         ".(:loopColumn:"
         "jsr _spriteDrawColumn:"
@@ -204,7 +199,7 @@ void displaySprite03(){
         "dec _spriteNbLoopColumn:bne loopColumn:"
         ":.):"
     );}
-
+#endif
 }
 
 void displaySpriteRightVisible(){
@@ -227,18 +222,19 @@ void displaySpriteRightVisible(){
     prepareScreenAdr();
 
     // Parcours colonne
-    // do {
-    //     spriteDrawColumn();
+#ifdef __GNUC__    
+    do {
+        spriteDrawColumn();
 
-    //     spriteTextureColIdx         -= 1;
-    //     spriteViewportColIdx        -= 1;
+        spriteTextureColIdx         -= 1;
+        spriteViewportColIdx        -= 1;
 
-    //     if ((spriteViewportColIdx&0x01) == 0){
-    //         baseAdr                 -= 1;
-    //     }
+        if ((spriteViewportColIdx&0x01) == 0){
+            baseAdr                 -= 1;
+        }
 
-    // } while ((--spriteNbLoopColumn) != 0);    
-
+    } while ((--spriteNbLoopColumn) != 0);    
+#else
 
     {asm(
         ".(:loopColumn:"
@@ -259,7 +255,7 @@ void displaySpriteRightVisible(){
         "dec _spriteNbLoopColumn:bne loopColumn:"
         ":.):"
     );}
-
+#endif
 }
 
 
@@ -284,19 +280,21 @@ void displaySpriteLeftVisible(){
 
 
     // Parcours colonne
-    // do {
-    //     spriteDrawColumn();
 
-    //     spriteTextureColIdx       ++;
-    //     spriteViewportColIdx++;
+#ifdef __GNUC__    
+    do {
+        spriteDrawColumn();
 
-    //     if ((spriteViewportColIdx&0x01) != 0){
-    //         baseAdr             += 1;
-    //     }
+        spriteTextureColIdx       ++;
+        spriteViewportColIdx++;
 
-    // } while ((--spriteNbLoopColumn) != 0);
+        if ((spriteViewportColIdx&0x01) != 0){
+            baseAdr             += 1;
+        }
 
+    } while ((--spriteNbLoopColumn) != 0);
 
+#else
     {asm(
         ".(:loopColumn:"
         "jsr _spriteDrawColumn:"
@@ -313,7 +311,7 @@ void displaySpriteLeftVisible(){
         ":.):"
     );}
 
-
+#endif
 
 }
 

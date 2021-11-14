@@ -31,24 +31,24 @@ def main ():
     # Generate Sky part of viewport
 	content += f"patch_red_in_sky:lda #$40	; pixel eteint\n"
 	for ii in range (0, (config.VIEWPORT_HEIGHT * 3)//2, 3):
-		content += f"sta HIRES_SCREEN_ADDRESS + VIEWPORT_START_COLUMN/2 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + {ii}),x\n"
+		content += f"sta HIRES_SCREEN_ADDRESS + 1 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + {ii}),x\n"
 	content += f"patch_green_in_sky:lda #$40	; pixel eteint\n"
 	for ii in range (0, (config.VIEWPORT_HEIGHT * 3)//2, 3):
-		content += f"sta HIRES_SCREEN_ADDRESS + VIEWPORT_START_COLUMN/2 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + {ii+1}),x\n"
+		content += f"sta HIRES_SCREEN_ADDRESS + 1 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + {ii+1}),x\n"
 	content += f"patch_blue_in_sky:lda #$7F	; pixel allume\n"
 	for ii in range (0, (config.VIEWPORT_HEIGHT * 3)//2, 3):
-		content += f"sta HIRES_SCREEN_ADDRESS + VIEWPORT_START_COLUMN/2 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + {ii+2}),x\n"
+		content += f"sta HIRES_SCREEN_ADDRESS + 1 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + {ii+2}),x\n"
 
 	# Generate Ground part of viewport
 	content += f"patch_red_on_ground:lda #$40	; pixel eteint\n"
 	for ii in range ((config.VIEWPORT_HEIGHT * 3)//2, (config.VIEWPORT_HEIGHT * 3), 3):
-		content += f"sta HIRES_SCREEN_ADDRESS + VIEWPORT_START_COLUMN/2 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + {ii}),x\n"
+		content += f"sta HIRES_SCREEN_ADDRESS + 1 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + {ii}),x\n"
 	content += f"patch_green_on_ground:lda #$7F	; pixel allume\n"
 	for ii in range ((config.VIEWPORT_HEIGHT * 3)//2, (config.VIEWPORT_HEIGHT * 3), 3):
-		content += f"sta HIRES_SCREEN_ADDRESS + VIEWPORT_START_COLUMN/2 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + {ii+1}),x\n"
+		content += f"sta HIRES_SCREEN_ADDRESS + 1 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + {ii+1}),x\n"
 	content += f"patch_blue_on_ground:lda #$40	; pixel eteint\n"
 	for ii in range ((config.VIEWPORT_HEIGHT * 3)//2, (config.VIEWPORT_HEIGHT * 3), 3):
-		content += f"sta HIRES_SCREEN_ADDRESS + VIEWPORT_START_COLUMN/2 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + {ii+2}),x\n"
+		content += f"sta HIRES_SCREEN_ADDRESS + 1 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + {ii+2}),x\n"
 
 	content += ficcontent_trailer
 	print (content)

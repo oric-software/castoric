@@ -343,11 +343,11 @@ _drawWalls
     ;; pha:txa:pha:tya:pha
 	;; lda tmp0: pha: lda tmp0+1 : pha
 
-    ; idxScreenCol        = VIEWPORT_START_COLUMN-1;
+    ; idxScreenCol        = VIEWPORT_START_COLUMN;
     ; baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (idxScreenCol>>1));
     ; idxCurrentSlice     = 0;
 
-    lda     #VIEWPORT_START_COLUMN-1
+    lda     #VIEWPORT_START_COLUMN
     sta     _idxScreenCol
     lsr     
 

@@ -199,7 +199,7 @@ void clearColumn(){
 #endif
 void drawWalls(){
 
-    idxScreenCol        = VIEWPORT_START_COLUMN-1;
+    idxScreenCol        = VIEWPORT_START_COLUMN;
     baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (idxScreenCol>>1));
 
     idxCurrentSlice     = 0;

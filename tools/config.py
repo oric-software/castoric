@@ -4,10 +4,10 @@ WALL_HEIGHT             = 6
 CAMERA_PLANE_HEIGHT     = 8
 
 HFOV_IN_DEGREES         = 112 # 112
-VIEWPORT_WIDTH          = 74 # 80 # 48 # 48 # 48 # Max : 80
-VIEWPORT_HEIGHT         = 60 # 64 # 32 # 32 # 32 # Max : 64
-VIEWPORT_START_COLUMN   =  3 #  0 # 32 #  2 # 16 # Min : 0
-VIEWPORT_START_LINE     =  2 #  0 # 32 #  0 # 16 # Min : 0
+VIEWPORT_WIDTH          = 74 # 48 # 80 # 48 # 48 # Max : 80
+VIEWPORT_HEIGHT         = 60 # 32 # 64 # 32 # 32 # Max : 64
+VIEWPORT_START_COLUMN   =  3 # 16 #  0 # 32 #  2 # Min : 0
+VIEWPORT_START_LINE     =  2 # 16 #  0 # 32 #  0 # Min : 0
 
 NB_MAX_WALL             = 32
 NB_MAX_POINT            = 64

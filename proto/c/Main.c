@@ -125,8 +125,8 @@ void gameLoop() {
 
 
     engInitObjects();
-    // engAddObject(OBJ_TREE, 0, -3, 0);
-    // objTexture[0] = texture_tree;
+    engAddObject(OBJ_TREE, 0, -3, 0);
+    objTexture[0] = texture_tree;
     // engAddObject(OBJ_KEY, 3, 3, 0);
     // objTexture[1] = texture_aKey;
     // engAddObject(OBJ_SOLDIER, -1, 0, 0);

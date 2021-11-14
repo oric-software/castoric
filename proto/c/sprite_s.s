@@ -163,10 +163,12 @@ _spriteDrawColumn
 .(
     ;; FIXME : ugly hack because raylogdist is array of 16 bits
     lda _spriteViewportColIdx
+    sec
+    sbc #VIEWPORT_START_COLUMN+1 
     asl
     sta tmp5
 
-    ;; if (objLogDistance[engCurrentObjectIdx] < raylogdist[spriteViewportColIdx])
+    ;; if (objLogDistance[engCurrentObjectIdx] < raylogdist[spriteViewportColIdx-VIEWPORT_START_COLUMN-1])
     ldy _engCurrentObjectIdx
     lda _objLogDistance,Y
     ldy tmp5
@@ -234,13 +236,13 @@ _prepareScreenAdr
     lda _multi120_high, y
     sta _spriteScreenOffset+1
 
-    ;; baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (spriteViewportColIdx>>1));
+    ;; baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + 1 + (spriteViewportColIdx>>1));
     lda _spriteViewportColIdx
     lsr
     clc
-    adc #<($A000)
+    adc #<($A001)
     sta _baseAdr
-    lda #>($A000)
+    lda #>($A001)
     adc #0
     sta _baseAdr+1
 

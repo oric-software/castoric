@@ -14,11 +14,12 @@
 #include "scene.c"
 
 #include "game.c"
-
+#include "collision.c"
 #include "player.c"
 
 #include "texel.c"
 #include "keyboard_c.c"
+#include "viewport.c"
 #include "drawWalls.c"
 
 #ifdef USE_SPRITE
@@ -60,9 +61,9 @@ void prepareRGB(){
 
 // [ref camera_situation]
 void initCamera(){
-    rayCamPosX               = 1;
-    rayCamPosY               = 0; 
-    rayCamRotZ               = -16;
+    rayCamPosX               = -3;
+    rayCamPosY               = -9; 
+    rayCamRotZ               = 64;
     RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
 }
 
@@ -71,7 +72,7 @@ void initCamera(){
 #include "debug.c"
 #endif
 
-#include "viewport.c"
+
 
 void keyPressed(unsigned char c){
 	// printf ("kp: %x, ", c);
@@ -124,12 +125,12 @@ void gameLoop() {
 
 
     engInitObjects();
-    engAddObject(OBJ_KEY, 3, 3, 0);
-    objTexture[0] = texture_aKey;
-    engAddObject(OBJ_TREE, -3, 3, 0);
-    objTexture[1] = texture_tree;
-    engAddObject(OBJ_SOLDIER, -1, 0, 0);
-    objTexture[2] = texture_smily_back;
+    // engAddObject(OBJ_KEY, 3, 3, 0);
+    // objTexture[0] = texture_aKey;
+    // engAddObject(OBJ_TREE, 0, -3, 0);
+    // objTexture[1] = texture_tree;
+    // engAddObject(OBJ_SOLDIER, -1, 0, 0);
+    // objTexture[2] = texture_smily_back;
 
 	kernelInit();
 	osmeInit();

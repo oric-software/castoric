@@ -1,5 +1,5 @@
 
-#include "collision.c"
+
 
 #define ROT_ANGLE_STEP 16
 /*    ___  _                           

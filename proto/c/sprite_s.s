@@ -2,7 +2,9 @@
 
 .zero
 
+#ifndef USE_C_SPRITE
 _spritePtrReadTexture .dsb 2
+#endif
 
 .text
 

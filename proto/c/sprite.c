@@ -80,7 +80,8 @@ void unrollRightColumn();
 
 void spriteDrawColumn() {
     
-    if (objLogDistance[engCurrentObjectIdx] < raylogdist[spriteViewportColIdx-VIEWPORT_START_COLUMN-1]) {
+    if ((objLogDistance[engCurrentObjectIdx] < raylogdist[spriteViewportColIdx-VIEWPORT_START_COLUMN-1])
+     || (raylogdist[spriteViewportColIdx-VIEWPORT_START_COLUMN-1] == 0)) {
 
         spriteTextureLinIdx     = spriteSavTextureLinIdx;
         spriteNbLoopLine              = spriteSavNbLoopLine;

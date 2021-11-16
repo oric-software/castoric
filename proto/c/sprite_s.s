@@ -163,16 +163,18 @@ _spriteDrawColumn
 .(
 
     ;; if ((objLogDistance[engCurrentObjectIdx] < raylogdist[spriteViewportColIdx-VIEWPORT_START_COLUMN-1])
-    ;;  || (raylogdist[spriteViewportColIdx-VIEWPORT_START_COLUMN-1] == 0)) {
+    ;;  || (raywall[spriteViewportColIdx-VIEWPORT_START_COLUMN-1] == 255)) {
 
     ;; FIXME : ugly hack because raylogdist is array of 16 bits
     lda _spriteViewportColIdx
     sec
     sbc #VIEWPORT_START_COLUMN+1 
+    tay
     asl
     sta tmp5
-    tay
-    lda _raylogdist,Y
+
+    lda _raywall, Y
+    eor #$FF
     beq noWallOnCol
 
     ldy _engCurrentObjectIdx

@@ -161,20 +161,29 @@ endIf
 
 _spriteDrawColumn   
 .(
+
+    ;; if ((objLogDistance[engCurrentObjectIdx] < raylogdist[spriteViewportColIdx-VIEWPORT_START_COLUMN-1])
+    ;;  || (raywall[spriteViewportColIdx-VIEWPORT_START_COLUMN-1] == 255)) {
+
     ;; FIXME : ugly hack because raylogdist is array of 16 bits
     lda _spriteViewportColIdx
     sec
     sbc #VIEWPORT_START_COLUMN+1 
+    tay
     asl
     sta tmp5
 
-    ;; if (objLogDistance[engCurrentObjectIdx] < raylogdist[spriteViewportColIdx-VIEWPORT_START_COLUMN-1])
+    lda _raywall, Y
+    eor #$FF
+    beq noWallOnCol
+
     ldy _engCurrentObjectIdx
     lda _objLogDistance,Y
     ldy tmp5
     cmp _raylogdist,Y
     bcs spriteDrawColumn_Done
 
+noWallOnCol:
         ;; spriteTextureLinIdx     = spriteSavTextureLinIdx;
         ;; spriteNbLoopLine              = spriteSavNbLoopLine;
         lda _spriteSavTextureLinIdx

@@ -86,6 +86,9 @@ void engObjectPulse()
     switch (objType[engCurrentObjectIdx])
     {
         case OBJ_KEY:
+            computeLogDistance();
+            if (! hasKey) dichoInsert (engCurrentObjectIdx, objLogDistance[engCurrentObjectIdx]); 
+            break;
         case OBJ_TREE:
             computeLogDistance();
             dichoInsert (engCurrentObjectIdx, objLogDistance[engCurrentObjectIdx]);
@@ -172,6 +175,11 @@ void soldierUpdate()
     objPosX[engCurrentObjectIdx] = ex;
     objPosY[engCurrentObjectIdx] = ey;
     // ldist = computeLogDist (ex, ey);
+    if (abs(ey) > 6) {
+        running = 0;
+        isWon = 1;
+        return ; 
+    }
     computeLogDistance();
     dichoInsert (engCurrentObjectIdx, objLogDistance[engCurrentObjectIdx]);
 

@@ -5,6 +5,7 @@
 // #include "texture_redbrick.h"
 // #include "texture_logo.h"
 #include "textures/texture_bigbricks.h"
+#include "textures/texture_creakydoor.h"
 // #include "textures/texture_bigleaves.h"
 // #include "textures/texture_bigsquares.h"
 // #include "textures/texture_dentwall.h"
@@ -15,20 +16,23 @@ unsigned char wallTexture_low[NB_MAX_WALL] ;
 // [ref scene_describe]
 signed char scene_00[] = {
 
-    /* nbPoints = */ 6, /* nbWall = */ 5
+    /* nbPoints = */ 8, /* nbWall = */ 6
 	, -6, -6	 	// P0
 	, -6,  6		// P1
 	,  6,  6		// P2
 	,  6, -6		// P3
+	, -3, -6	 	// P4
+	,  3, -6		// P5
     // movable wall
-	, -2, -6	 	// P4
-	,  2, -6		// P5
+	, -3, -6	 	// P6
+	,  3, -6		// P7
 
 	, 0, 1   // W0
 	, 1, 2   // W1
 	, 2, 3   // W2
 	, 0, 4   // W3
 	, 5, 3   // W4
+	, 6, 7   // W5
 };
 
 // [ref texture_file2buffer]
@@ -38,6 +42,7 @@ unsigned char *texture_00[]= {
 	, texture_bigbricks //, texture_bigsquares		// W2
 	, texture_bigbricks // , texture_dentwall			// W3
 	, texture_bigbricks // , texture_dentwall			// W4
+	, texture_creakydoor // , texture_dentwall			// W5
 };
 
 

@@ -33,6 +33,7 @@
 #include "sprite.c"
 #include "texture_key.h"
 #include "texture_tree.h"
+
 #endif
 
 #define CHANGE_INK_TO_RED	            1		
@@ -99,7 +100,7 @@ void keyPressed(unsigned char c){
     } else if (c == keyQuit) {
             running = 0;
     } else if (c ==  0x20) {
-        if ((rayCamPosY <= -4) && (doorState == 2)){
+        if ((hasKey) && (abs (rayCamPosX) < 3) && (abs(rayCamPosY+6) <= 2) && (doorState == 2)){
             doorState = 1;
         }
     }
@@ -120,14 +121,16 @@ void lsys(){
 		}
 	}
 }
+#define KEY_POSX 9
+#define KEY_POSY -6
 
 void gameLoop() {
 
 
     engInitObjects();
-    engAddObject(OBJ_KEY, 9, -6, 0);
+    engAddObject(OBJ_KEY, KEY_POSX, KEY_POSY, 0);
     objTexture[0] = texture_aKey;
-    engAddObject(OBJ_TREE, 0, 11, 0);
+    engAddObject(OBJ_TREE, -3, -11, 0);
     objTexture[1] = texture_tree;
     engAddObject(OBJ_TREE, 3, -11, 0);
     objTexture[2] = texture_tree;
@@ -141,10 +144,10 @@ void gameLoop() {
     while (running) {
         doke(630,0);
 
-        if ((doorState==1) && (scene_00[2+4*2] != 6)) {
-            scene_00[2+4*2] ++;
-            scene_00[2+5*2] ++;
-            if (scene_00[2+4*2] == 6) doorState = 0;
+        if ((doorState==1) && (scene_00[2+6*2] != 3)) {
+            scene_00[2+6*2] ++;
+            // scene_00[2+5*2] ++;
+            if (scene_00[2+6*2] == 3) doorState = 0;
             initScene (scene_00, texture_00);
             refreshNeeded = 1;
         } else {
@@ -164,16 +167,16 @@ void gameLoop() {
 
             // clearViewport();
             drawWalls();
-// #ifdef USE_SPRITE
-//             // logdist(signed char posX, signed char posY) 
-//             if ((rayCamPosX == 0) && (rayCamPosY == 0)){
-//                 if (hasKey == 0) {
-//                     zap();
-//                 }
-//                 // hasKey = 1;
-//             }
-//             if (! hasKey) drawSprite (0, 0, texture_aKey);
-// #endif
+
+            // logdist(signed char posX, signed char posY) 
+            if ((rayCamPosX == KEY_POSX) && (rayCamPosY == KEY_POSY)){
+                if (hasKey == 0) {
+                    zap();
+                }
+                hasKey = 1;
+            }
+            // if (! hasKey) drawSprite (0, 0, texture_aKey);
+
             drawSprites ();
             refreshNeeded = 0;
             printf("\n(X=%d Y=%d) [a=%d] [t=%d]\n\n", rayCamPosX, rayCamPosY, rayCamRotZ, 65535-deek(630));
@@ -196,8 +199,16 @@ void gameLoop() {
 
 void main(){
 
-    printf ("DEBUT\n");
+    printf ("\n\n  ----==== M. VOCID ====---\n\n"
+    "      par Jean-Baptiste PERIN\n"
+    "  (conseille par Mickael POINTIER)\n\n"
+    "Aidez M.Vocid a sortir du laboratoire\n"
+    "de Huwan ou il est prisonnier\n\n"
+    "Conseil: M.Vocid tourne a gauche\nlorsqu'il rencontre un obstacle\n\n"
+    "Appuyer sur une touche.\n\n"
 
+    );
+    get();
     // [res camera_situation]]
     initCamera();
     
@@ -226,9 +237,12 @@ void main(){
     drawWalls();
     // drawSprite (6, 6, texture_pillar);
 #endif
+
     running = 1;
     refreshNeeded           = 1;
     gameLoop();
+    if (isWon) printf ("\nBravo vous avez gagne") ;
+    else printf ("\nAu revoir");
 	
 }
 

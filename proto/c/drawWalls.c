@@ -28,8 +28,11 @@ unsigned char       ddaNbIter;
 void PREPARE(){
     columnTextureCoord  = tabTexCol[idxCurrentSlice]&(TEXTURE_SIZE-1);
     offTexture          = (multi32_high[columnTextureCoord] << 8) | multi32_low[columnTextureCoord];
-    
+#ifndef __GNUC__    
     ptrTexture          = (unsigned char *)((wallTexture_high[wallId] << 8) | wallTexture_low[wallId]);
+#else
+    ptrTexture          = (unsigned char *)(texture_00[wallId]);
+#endif
     ptrReadTexture      = &(ptrTexture[offTexture]);
     columnHeight        = min(47,TableVerticalPos[idxCurrentSlice]);
     ddaNbStep           = columnHeight<<1;

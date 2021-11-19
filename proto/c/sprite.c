@@ -1,5 +1,5 @@
 
-
+#ifdef USE_SPRITE
 #include "iea2d.c"
 
 
@@ -364,3 +364,5 @@ void drawSprites (){
     }
 
 }
+
+#endif // USE_SPRITE

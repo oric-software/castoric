@@ -82,8 +82,10 @@ void initScene (signed char sceneData[], unsigned char *wallTexture[]){
 	}
 	for (jj=0; jj < rayNbWalls; jj++){
 		lWallsPt1[jj]= (unsigned char)(sceneData[ii++]) ; lWallsPt2[jj] = (unsigned char)(sceneData[ii++]);// points 0
+#ifndef __GNUC__
         wallTexture_high[jj]    = (unsigned char)((((int)(wallTexture[jj])&0xFF00) >> 8) & 0x00FF);
         wallTexture_low[jj]     = (unsigned char)(((int)(wallTexture[jj])&0x00FF));
+#endif		
 	}
     precalculateWallsAngle();
 }

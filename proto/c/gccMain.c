@@ -36,8 +36,10 @@ unsigned char           *baseAdr;
 #include "texture_sback.h"
 #include "texture_sleft.h"
 #include "texture_sright.h"
+#endif
 #include "dichobuf.c"
 #include "engine.c"
+#ifdef USE_SPRITE
 #include "dist.c"
 #include "sprite.c"
 #include "texture_key.h"
@@ -103,7 +105,7 @@ void main(){
 //     printf ("result = %d\n", alpha);
 //     alpha           = ATAN2(0, -2);
 //     printf ("result = %d\n", alpha);
-//     // drawWalls();
+    drawWalls();
 // #ifdef USE_SPRITE    
 //     drawSprite (0, 0, texture_aKey);
 // #endif // USE_SPRITE
@@ -122,6 +124,7 @@ void main(){
     // drawSprite (0, 0, texture_aKey);
 
     engInitObjects();
+#ifdef USE_SPRITE
     engAddObject(OBJ_TREE, 3, -11, 0);
     objTexture[0] = texture_tree;
     // engAddObject(OBJ_TREE, 0, 11, 0);
@@ -130,7 +133,7 @@ void main(){
     // objTexture[2] = texture_aKey;
     // engAddObject(OBJ_SOLDIER, -1, 0, 0);
     // objTexture[3] = texture_smily_back;
-
+#endif
     dichoInit();
     engPulse();
 
@@ -139,7 +142,9 @@ void main(){
         ii -= 1;
         // printf("%d\t", tabDichoIdxs[ii]);
         engCurrentObjectIdx = tabDichoIdxs[ii];
+#ifdef USE_SPRTIE        
         drawSprite (); //objPosX[engCurrentObjectIdx], objPosY[engCurrentObjectIdx], objTexture[engCurrentObjectIdx]);
+#endif
     }
 
     

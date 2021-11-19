@@ -27,13 +27,15 @@
 #include "texture_sback.h"
 #include "texture_sleft.h"
 #include "texture_sright.h"
+#endif // USE_SPRITE
 #include "dichobuf.c"
 #include "engine.c"
+#ifdef USE_SPRITE
 #include "dist.c"
 #include "sprite.c"
 #include "texture_key.h"
 #include "texture_tree.h"
-#endif
+#endif // USE_SPRITE
 
 #define CHANGE_INK_TO_RED	            1		
 #define CHANGE_INK_TO_GREEN	            2		
@@ -123,7 +125,7 @@ void lsys(){
 
 void gameLoop() {
 
-
+#ifdef USE_SPRITE
     engInitObjects();
     engAddObject(OBJ_TREE, 3, -11, 0);
     objTexture[0] = texture_tree;
@@ -131,8 +133,9 @@ void gameLoop() {
     // objTexture[1] = texture_tree;
     // engAddObject(OBJ_KEY, 9, -6, 0);
     // objTexture[2] = texture_aKey;
-    // engAddObject(OBJ_SOLDIER, -1, 0, 0);
-    // objTexture[3] = texture_smily_back;
+    engAddObject(OBJ_SOLDIER, -1, 0, 0);
+    objTexture[1] = texture_smily_back;
+#endif // USE_SPRITE
 
 	kernelInit();
 	osmeInit();
@@ -164,7 +167,7 @@ void gameLoop() {
 
             // clearViewport();
             drawWalls();
-// #ifdef USE_SPRITE
+#ifdef USE_SPRITE
 //             // logdist(signed char posX, signed char posY) 
 //             if ((rayCamPosX == 0) && (rayCamPosY == 0)){
 //                 if (hasKey == 0) {
@@ -173,8 +176,8 @@ void gameLoop() {
 //                 // hasKey = 1;
 //             }
 //             if (! hasKey) drawSprite (0, 0, texture_aKey);
-// #endif
             drawSprites ();
+#endif
             refreshNeeded = 0;
             printf("\n(X=%d Y=%d) [a=%d] [t=%d]\n\n", rayCamPosX, rayCamPosY, rayCamRotZ, 65535-deek(630));
             if (hasKey) printf ("Key");

@@ -7,7 +7,7 @@
 
 #define VIEWPORT_HEIGHT                 60
 #define VIEWPORT_WIDTH                  74
-#define VIEWPORT_START_COLUMN           3
+#define VIEWPORT_START_COLUMN           2
 #define VIEWPORT_START_LINE             2
 #define TEXTURE_SIZE                    32
 #define HALF_FOV_FIX_ANGLE              40

@@ -67,7 +67,7 @@ unsigned char isAllowedPosition(signed char X, signed char Y) {
 #endif
 signed int savRayCamPosX, savRayCamPosY;
 
-
+#ifdef USE_C_MOVE
 void oneStepForward() {
     if (rayCamRotZ < -96) {
         rayCamPosX--;
@@ -89,6 +89,7 @@ void oneStepForward() {
         rayCamPosX--;
     }
 }
+#endif // USE_C_MOVE
 void forward() {
     
     savRayCamPosX = rayCamPosX; savRayCamPosY = rayCamPosY;
@@ -102,7 +103,7 @@ void forward() {
         rayCamPosX = savRayCamPosX; rayCamPosY = savRayCamPosY;
     }
 }
-
+#ifdef USE_C_MOVE
 void oneStepBackward() {
     if (rayCamRotZ < -96) {
         rayCamPosX++;
@@ -124,6 +125,7 @@ void oneStepBackward() {
         rayCamPosX++;
     }    
 }
+#endif // USE_C_MOVE
 void backward() {
     savRayCamPosX = rayCamPosX; savRayCamPosY = rayCamPosY;
     oneStepBackward();
@@ -136,6 +138,7 @@ void backward() {
         rayCamPosX = savRayCamPosX; rayCamPosY = savRayCamPosY;
     }
 }
+#ifdef USE_C_MOVE
 void oneStepLeft(){
     if (rayCamRotZ < -96) {
         rayCamPosY--;
@@ -157,6 +160,7 @@ void oneStepLeft(){
         rayCamPosY--;
     }
 }
+#endif // USE_C_MOVE
 void shiftLeft() {
     savRayCamPosX = rayCamPosX; savRayCamPosY = rayCamPosY;
     oneStepLeft();
@@ -168,6 +172,7 @@ void shiftLeft() {
         rayCamPosX = savRayCamPosX; rayCamPosY = savRayCamPosY;
     }
 }
+#ifdef USE_C_MOVE
 void oneStepRight(){
     if (rayCamRotZ < -96) {
         rayCamPosY++;
@@ -189,6 +194,7 @@ void oneStepRight(){
         rayCamPosX++;
     }    
 }
+#endif // USE_C_MOVE
 void shiftRight() {
     savRayCamPosX = rayCamPosX; savRayCamPosY = rayCamPosY;
     oneStepRight();

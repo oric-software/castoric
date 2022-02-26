@@ -27,14 +27,15 @@
 #include "texture_sback.h"
 #include "texture_sleft.h"
 #include "texture_sright.h"
+#endif // USE_SPRITE
 #include "dichobuf.c"
 #include "engine.c"
+#ifdef USE_SPRITE
 #include "dist.c"
 #include "sprite.c"
 #include "texture_key.h"
 #include "texture_tree.h"
-
-#endif
+#endif // USE_SPRITE
 
 #define CHANGE_INK_TO_RED	            1		
 #define CHANGE_INK_TO_GREEN	            2		
@@ -126,7 +127,7 @@ void lsys(){
 
 void gameLoop() {
 
-
+#ifdef USE_SPRITE
     engInitObjects();
     engAddObject(OBJ_KEY, KEY_POSX, KEY_POSY, 0);
     objTexture[0] = texture_aKey;
@@ -178,6 +179,7 @@ void gameLoop() {
             // if (! hasKey) drawSprite (0, 0, texture_aKey);
 
             drawSprites ();
+#endif
             refreshNeeded = 0;
             printf("\n(X=%d Y=%d) [a=%d] [t=%d]\n\n", rayCamPosX, rayCamPosY, rayCamRotZ, 65535-deek(630));
             if (hasKey) printf ("Key");

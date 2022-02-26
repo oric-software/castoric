@@ -84,120 +84,104 @@ _ddaNbIter              .dsb 1
 
 ; x contains _renCurrentColor
 #define COLOR_LEFT_TEXEL :.(:\
+    ldy         _idxVertCol:\
     lda         _tabLeftRed,x:\
-    ldy         #0:\
-    sta         (_theAdr),y:\
+    sta         _bufVertCol,y:\
+    iny        :\
     lda         _tabLeftGreen,x:\
-    ldy         #40:\
-    sta         (_theAdr),y:\
+    sta         _bufVertCol,y:\
+    iny        :\
     lda         _tabLeftBlue,x:\
-    ldy         #80:\
-    sta         (_theAdr),y:\
-    clc     :\
-    lda         _theAdr:\
-    adc         #120:\
-    sta         _theAdr:\
-.(  :\
-    bcc skip:    inc _theAdr+1: skip .):\
+    sta         _bufVertCol,y:\
+    iny        :\
+    sty         _idxVertCol:\
 .)
 
 
 ; x contains _renCurrentColor
 #define COLOR_LEFT_TEXEL_FIRST :.(:\
+    ldy         _idxVertCol:\
     lda         _tabLeftRed,x:\
-    ldy         #0:\
-    sta         (_theAdr),y:\
+    sta         _bufVertCol,y:\
+    iny        :\
     lda         _tabLeftGreen,x:\
-    ldy         #40:\
-    sta         (_theAdr),y:\
+    sta         _bufVertCol,y:\
+    iny        :\
     lda         _tabLeftBlue,x:\
-    ldy         #80:\
-    sta         (_theAdr),y:\
-.(  :\
-    bcc skip:    inc _theAdr+1: skip .):\
+    sta         _bufVertCol,y:\
+    iny        :\
+    sty         _idxVertCol:\
 .)
 
 
 ; x contains _renCurrentColor
 #define COLOR_LEFT_TEXEL_SECOND :.(:\
+    ldy         _idxVertCol:\
     lda         _tabLeftRed,x:\
-    ldy         #120:\
-    sta         (_theAdr),y:\
+    sta         _bufVertCol,y:\
+    iny        :\
     lda         _tabLeftGreen,x:\
-    ldy         #160:\
-    sta         (_theAdr),y:\
+    sta         _bufVertCol,y:\
+    iny        :\
     lda         _tabLeftBlue,x:\
-    ldy         #200:\
-    sta         (_theAdr),y:\
-    clc     :\
-    lda         _theAdr:\
-    adc         #240:\
-    sta         _theAdr:\
-.(  :\
-    bcc skip:    inc _theAdr+1: skip .):\
+    sta         _bufVertCol,y:\
+    iny        :\
+    sty         _idxVertCol:\
 .)
 
 ; x contains _renCurrentColor
 #define COLOR_RIGHT_TEXEL :.(:\
+    ldy         _idxVertCol:\
     lda         _tabRightRed,x:\
-    ldy         #0:\
-    ora         (_theAdr),y:\
-    sta         (_theAdr),y:\
+    ora         _bufVertCol,y:\
+    sta         _bufVertCol,y:\
+    iny        :\
     lda         _tabRightGreen,x:\
-    ldy         #40:\
-    ora         (_theAdr),y:\
-    sta         (_theAdr),y:\
+    ora         _bufVertCol,y:\
+    sta         _bufVertCol,y:\
+    iny        :\
     lda         _tabRightBlue,x:\
-    ldy         #80:\
-    ora         (_theAdr),y:\
-    sta         (_theAdr),y:\
-    clc     :\
-    lda         _theAdr :\
-    adc         #120:\
-    sta         _theAdr:\
-.(  :\
-    bcc skip:    inc _theAdr+1: skip .):\
+    ora         _bufVertCol,y:\
+    sta         _bufVertCol,y:\
+    iny        :\
+    sty         _idxVertCol:\
 .)
 
 
 ; x contains _renCurrentColor
 #define COLOR_RIGHT_TEXEL_FIRST :.(:\
+    ldy         _idxVertCol:\
     lda         _tabRightRed,x:\
-    ldy         #0:\
-    ora         (_theAdr),y:\
-    sta         (_theAdr),y:\
+    ora         _bufVertCol,y:\
+    sta         _bufVertCol,y:\
+    iny        :\
     lda         _tabRightGreen,x:\
-    ldy         #40:\
-    ora         (_theAdr),y:\
-    sta         (_theAdr),y:\
+    ora         _bufVertCol,y:\
+    sta         _bufVertCol,y:\
+    iny        :\
     lda         _tabRightBlue,x:\
-    ldy         #80:\
-    ora         (_theAdr),y:\
-    sta         (_theAdr),y:\
-.(  :\
-    bcc skip:    inc _theAdr+1: skip .):\
+    ora         _bufVertCol,y:\
+    sta         _bufVertCol,y:\
+    iny        :\
+    sty         _idxVertCol:\
 .)
 
 ; x contains _renCurrentColor
 #define COLOR_RIGHT_TEXEL_SECOND :.(:\
+    ldy         _idxVertCol:\
     lda         _tabRightRed,x:\
-    ldy         #120:\
-    ora         (_theAdr),y:\
-    sta         (_theAdr),y:\
+    ora         _bufVertCol,y:\
+    sta         _bufVertCol,y:\
+    iny        :\
     lda         _tabRightGreen,x:\
-    ldy         #160:\
-    ora         (_theAdr),y:\
-    sta         (_theAdr),y:\
+    ora         _bufVertCol,y:\
+    sta         _bufVertCol,y:\
+    iny        :\
     lda         _tabRightBlue,x:\
-    ldy         #200:\
-    ora         (_theAdr),y:\
-    sta         (_theAdr),y:\
-    clc     :\
-    lda         _theAdr :\
-    adc         #240:\
-    sta         _theAdr:\
-.(  :\
-    bcc skip:    inc _theAdr+1: skip .):\
+    ora         _bufVertCol,y:\
+    sta         _bufVertCol,y:\
+    iny        :\
+    sty         _idxVertCol:\
 .)
 
 ;; ddaCurrentValue = ptrOffsetIndex[nxtOffsetIndex++];
@@ -239,6 +223,7 @@ loop_000 : lda _idxScreenLine :\
         inc _idxScreenLine:\
         jmp loop_000 :\
 end_loop_000:\
+    lda _idxScreenLine: asl : clc: adc _idxScreenLine: sta _idxVertCol:\
     ldy _idxScreenLine:lda _multi120_low,Y:clc:adc _baseAdr:sta _theAdr:lda _multi120_high,Y:adc _baseAdr+1:sta _theAdr+1 :\
 loop_001 :\
         DDA_STEP_2:\
@@ -264,6 +249,7 @@ loop_000 : lda _idxScreenLine :\
         inc _idxScreenLine:\
         jmp loop_000 :\
 end_loop_000:\
+    lda _idxScreenLine: asl : clc: adc _idxScreenLine: sta _idxVertCol:\
     ldy _idxScreenLine:lda _multi120_low,Y:clc:adc _baseAdr:sta _theAdr:lda _multi120_high,Y:adc _baseAdr+1:sta _theAdr+1 :\
 loop_001 :\
         DDA_STEP:\
@@ -370,9 +356,8 @@ drawWalls_loop
 ;;         wallId              = raywall[idxCurrentSlice];
 
             inc _baseAdr: .( : bne skip : inc _baseAdr+1: skip:.)
-            inc _idxScreenCol
 
-            jsr _clearColumn
+            jsr _initVertCol
             
             ldy _idxCurrentSlice
             lda _raywall,Y
@@ -401,7 +386,9 @@ LeftSliceEmpty
                 jsr drawRightColumn
 ;;         }
 RightSliceEmpty
+            jsr         _copyVertCol
             inc         _idxCurrentSlice
+            inc         _idxScreenCol
 
 ;;     } while (idxCurrentSlice < NUMBER_OF_SLICE-1);
         lda         _idxCurrentSlice

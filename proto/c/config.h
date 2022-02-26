@@ -12,6 +12,7 @@
 #define     USE_C_PREDRAW
 #define     USE_C_TOTO
 #define     USE_C_DRAWWALLS
+#define     USE_C_VERTCOLBUF
 #define     USE_C_RAYCAST
 #define     USE_C_VIEWPORT
 #define     USE_C_PROCESS_POINT
@@ -30,6 +31,7 @@
 #undef     USE_C_PREDRAW
 #undef     USE_C_TOTO
 #undef     USE_C_DRAWWALLS
+#undef     USE_C_VERTCOLBUF
 #undef     USE_C_RAYCAST
 #undef     USE_C_VIEWPORT
 #undef     USE_C_PROCESS_POINT

@@ -1,7 +1,9 @@
 
-
+#ifdef USE_SPRITE
 #include "iea2d.c"
-
+#ifdef __GNUC__
+#include <string.h>
+#endif
 
 
 signed char         spriteViewportColIdx, spriteViewportLinIdx;
@@ -364,3 +366,5 @@ void drawSprites (){
     }
 
 }
+
+#endif // USE_SPRITE

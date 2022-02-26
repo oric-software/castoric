@@ -13,6 +13,9 @@ extern unsigned char *      ptrOffsetIndex;
 #endif
 unsigned char               nxtOffsetIndex;
 
+unsigned char bufVertCol [(VIEWPORT_HEIGHT + VIEWPORT_START_LINE)*3];
+unsigned char idxVertCol ;
+
 #ifdef USE_C_DRAWWALLS
 
 unsigned char *     ptrReadTexture;             // Address of the texture 
@@ -28,8 +31,11 @@ unsigned char       ddaNbIter;
 void PREPARE(){
     columnTextureCoord  = tabTexCol[idxCurrentSlice]&(TEXTURE_SIZE-1);
     offTexture          = (multi32_high[columnTextureCoord] << 8) | multi32_low[columnTextureCoord];
-    
+#ifndef __GNUC__    
     ptrTexture          = (unsigned char *)((wallTexture_high[wallId] << 8) | wallTexture_low[wallId]);
+#else
+    ptrTexture          = (unsigned char *)(texture_00[wallId]);
+#endif
     ptrReadTexture      = &(ptrTexture[offTexture]);
     columnHeight        = min(47,TableVerticalPos[idxCurrentSlice]);
     ddaNbStep           = columnHeight<<1;
@@ -37,27 +43,13 @@ void PREPARE(){
     ddaCurrentValue     = 0;
 }
 
-#ifdef __GNUC__
-#define COLOR_LEFT_TEXEL  theAdr += NEXT_SCANLINE_INCREMENT;\
-    theAdr += NEXT_SCANLINE_INCREMENT;\
-    theAdr += NEXT_SCANLINE_INCREMENT;
-#else
-// #define COLOR_LEFT_TEXEL colorLeftTexel()
-#define COLOR_LEFT_TEXEL  *theAdr = tabLeftRed[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;\
-    *theAdr = tabLeftGreen[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;\
-    *theAdr = tabLeftBlue[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;
-#endif
+#define COLOR_LEFT_TEXEL  bufVertCol[idxVertCol++]=tabLeftRed[renCurrentColor];\
+    bufVertCol[idxVertCol++]=tabLeftGreen[renCurrentColor];\
+    bufVertCol[idxVertCol++]=tabLeftBlue[renCurrentColor];
 
-// #define COLOR_RIGHT_TEXEL colorRightTexel()
-#ifdef __GNUC__
-#define COLOR_RIGHT_TEXEL theAdr += NEXT_SCANLINE_INCREMENT;\
-    theAdr += NEXT_SCANLINE_INCREMENT;\
-    theAdr += NEXT_SCANLINE_INCREMENT;
-#else
-#define COLOR_RIGHT_TEXEL *theAdr |= tabRightRed[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;\
-    *theAdr |= tabRightGreen[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;\
-    *theAdr |= tabRightBlue[renCurrentColor];theAdr += NEXT_SCANLINE_INCREMENT;
-#endif
+#define COLOR_RIGHT_TEXEL bufVertCol[idxVertCol]|=tabRightRed[renCurrentColor];idxVertCol++;\
+    bufVertCol[idxVertCol]|=tabRightGreen[renCurrentColor];idxVertCol++;\
+    bufVertCol[idxVertCol]|=tabRightBlue[renCurrentColor];idxVertCol++;
 
 #define DDA_STEP ddaCurrentValue = ptrOffsetIndex[nxtOffsetIndex++];\
 
@@ -76,7 +68,7 @@ void OVER_SAMPLE_COLOR_LEFT_TEXEL() {
             ddaNbIter       -= 1;
             idxScreenLine   += 1;
         } 
-        theAdr              = (unsigned char *)(baseAdr + (int)((multi120_high[idxScreenLine]<<8) | multi120_low[idxScreenLine]));
+        idxVertCol          = idxScreenLine*3;\
         do {
             DDA_STEP_2();
             ddaNbIter       -= 1;
@@ -97,7 +89,7 @@ void OVER_SAMPLE_COLOR_RIGHT_TEXEL() {
             ddaNbIter       -= 1;
             idxScreenLine   += 1;
         } 
-        theAdr              = (unsigned char *)(baseAdr + (int)((multi120_high[idxScreenLine]<<8) | multi120_low[idxScreenLine]));
+        idxVertCol          = idxScreenLine*3;\
         do {
             DDA_STEP_2();
             ddaNbIter       -= 1;
@@ -133,6 +125,7 @@ void OVER_SAMPLE_COLOR_RIGHT_TEXEL() {
             ddaNbIter       -= 1;\
             idxScreenLine   += 1;\
         } \
+        idxVertCol          = idxScreenLine*3;\
         theAdr              = (unsigned char *)(baseAdr + (int)((multi120_high[idxScreenLine]<<8) | multi120_low[idxScreenLine]));\
         do {\
             DDA_STEP\
@@ -197,6 +190,40 @@ void clearColumn(){
 
 }
 #endif
+
+
+#ifdef USE_C_VERTCOLBUF
+void initVertCol () {
+    for (idxVertCol=0; idxVertCol<(VIEWPORT_HEIGHT * 3)/2; ){
+        bufVertCol[idxVertCol]  = 0x40; 
+        idxVertCol  +=1;
+        bufVertCol[idxVertCol]  = 0x40; 
+        idxVertCol  +=1;
+        bufVertCol[idxVertCol]  = 0x7F; 
+        idxVertCol  +=1;
+    }
+    for (idxVertCol=(VIEWPORT_HEIGHT * 3)/2; idxVertCol<VIEWPORT_HEIGHT * 3; ){
+        bufVertCol[idxVertCol]  = 0x40; 
+        idxVertCol  +=1;
+        bufVertCol[idxVertCol]  = 0x7F; 
+        idxVertCol  +=1;
+        bufVertCol[idxVertCol]  = 0x40; 
+        idxVertCol  +=1;
+    }
+}
+
+
+void copyVertCol (){
+    baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (idxScreenCol>>1));
+    theAdr  = (unsigned char *)(baseAdr + (int)((multi120_high[VIEWPORT_START_LINE]<<8) | multi120_low[VIEWPORT_START_LINE])); 
+    for (idxVertCol=0; idxVertCol<VIEWPORT_HEIGHT * 3; idxVertCol++){
+#ifndef __GNUC__
+        *theAdr  = bufVertCol[idxVertCol]; 
+#endif
+        theAdr += NEXT_SCANLINE_INCREMENT;
+    }
+}
+#endif
 void drawWalls(){
 
     idxScreenCol        = VIEWPORT_START_COLUMN;
@@ -206,9 +233,8 @@ void drawWalls(){
 
     do {
         baseAdr             += 1;
-        idxScreenCol        += 1;
 
-        clearColumn();
+        initVertCol ();
 
         wallId              = raywall[idxCurrentSlice];
 
@@ -225,7 +251,9 @@ void drawWalls(){
             drawRightColumn();
         }
 
+        copyVertCol ();
         idxCurrentSlice++;
+        idxScreenCol        += 1;
 
     } while (idxCurrentSlice < NUMBER_OF_SLICE-2);
 }

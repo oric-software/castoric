@@ -184,6 +184,7 @@ void soldierUpdate()
     dichoInsert (engCurrentObjectIdx, objLogDistance[engCurrentObjectIdx]);
 
     // computeRelativeOrientation (*(objData[engCurrentObjectIdx]));
+#ifdef USE_SPRITE    
     displaystate = computeRelativeOrientation (direction, rayCamRotZ);
     switch (displaystate) {
         case 0:
@@ -199,6 +200,7 @@ void soldierUpdate()
             objTexture[engCurrentObjectIdx] = texture_smily_right; // ptrTextureSoldierLeft;
             break;
     }
+#endif
     refreshNeeded = 1;
 }
 

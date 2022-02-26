@@ -66,9 +66,9 @@ unsigned char isAllowedPosition(signed char X, signed char Y) {
 }
 #endif
 signed int savRayCamPosX, savRayCamPosY;
-void forward() {
-    
-    savRayCamPosX = rayCamPosX; savRayCamPosY = rayCamPosY;
+
+
+void oneStepForward() {
     if (rayCamRotZ < -96) {
         rayCamPosX--;
     } else if (rayCamRotZ < -64) {
@@ -88,6 +88,11 @@ void forward() {
     } else {
         rayCamPosX--;
     }
+}
+void forward() {
+    
+    savRayCamPosX = rayCamPosX; savRayCamPosY = rayCamPosY;
+    oneStepForward();
 #ifdef USE_GENERIC_COLLISION
     if (isInWall(rayCamPosX, rayCamPosY)){
 #else
@@ -97,8 +102,8 @@ void forward() {
         rayCamPosX = savRayCamPosX; rayCamPosY = savRayCamPosY;
     }
 }
-void backward() {
-    savRayCamPosX = rayCamPosX; savRayCamPosY = rayCamPosY;
+
+void oneStepBackward() {
     if (rayCamRotZ < -96) {
         rayCamPosX++;
     } else if (rayCamRotZ < -64) {
@@ -117,7 +122,11 @@ void backward() {
         rayCamPosX++; rayCamPosY--;
     } else {
         rayCamPosX++;
-    }
+    }    
+}
+void backward() {
+    savRayCamPosX = rayCamPosX; savRayCamPosY = rayCamPosY;
+    oneStepBackward();
 #ifdef USE_GENERIC_COLLISION
     if (isInWall(rayCamPosX, rayCamPosY)){
 #else
@@ -125,29 +134,32 @@ void backward() {
 #endif
 
         rayCamPosX = savRayCamPosX; rayCamPosY = savRayCamPosY;
+    }
+}
+void oneStepLeft(){
+    if (rayCamRotZ < -96) {
+        rayCamPosY--;
+    } else if (rayCamRotZ < -64) {
+        rayCamPosX++; rayCamPosY--;
+    } else if (rayCamRotZ < -32) {
+        rayCamPosX++;
+    } else if (rayCamRotZ < 0) {
+        rayCamPosX++; rayCamPosY++;
+    } else if (rayCamRotZ < 32) {
+        rayCamPosY++;
+    } else if (rayCamRotZ < 64) {
+        rayCamPosX--; rayCamPosY++;
+    } else if (rayCamRotZ < 96) {
+        rayCamPosX--;
+    } else if (rayCamRotZ < 127) {
+        rayCamPosX--; rayCamPosY--;
+    } else {
+        rayCamPosY--;
     }
 }
 void shiftLeft() {
     savRayCamPosX = rayCamPosX; savRayCamPosY = rayCamPosY;
-    if (rayCamRotZ < -96) {
-        rayCamPosY--;
-    } else if (rayCamRotZ < -64) {
-        rayCamPosX++; rayCamPosY--;
-    } else if (rayCamRotZ < -32) {
-        rayCamPosX++;
-    } else if (rayCamRotZ < 0) {
-        rayCamPosX++; rayCamPosY++;
-    } else if (rayCamRotZ < 32) {
-        rayCamPosY++;
-    } else if (rayCamRotZ < 64) {
-        rayCamPosX--; rayCamPosY++;
-    } else if (rayCamRotZ < 96) {
-        rayCamPosX--;
-    } else if (rayCamRotZ < 127) {
-        rayCamPosX--; rayCamPosY--;
-    } else {
-        rayCamPosY--;
-    }
+    oneStepLeft();
 #ifdef USE_GENERIC_COLLISION
     if (isInWall(rayCamPosX, rayCamPosY)){
 #else
@@ -156,8 +168,7 @@ void shiftLeft() {
         rayCamPosX = savRayCamPosX; rayCamPosY = savRayCamPosY;
     }
 }
-void shiftRight() {
-    savRayCamPosX = rayCamPosX; savRayCamPosY = rayCamPosY;
+void oneStepRight(){
     if (rayCamRotZ < -96) {
         rayCamPosY++;
     } else if (rayCamRotZ < -64) {
@@ -176,7 +187,11 @@ void shiftRight() {
         rayCamPosX++; rayCamPosY++;
     } else {
         rayCamPosX++;
-    }
+    }    
+}
+void shiftRight() {
+    savRayCamPosX = rayCamPosX; savRayCamPosY = rayCamPosY;
+    oneStepRight();
 #ifdef USE_GENERIC_COLLISION
     if (isInWall(rayCamPosX, rayCamPosY)){
 #else

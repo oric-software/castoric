@@ -65,127 +65,144 @@ unsigned char isAllowedPosition(signed char X, signed char Y) {
     return 0;
 }
 #endif
+signed int savRayCamPosX, savRayCamPosY;
+
+#ifdef USE_C_MOVE
+void oneStepForward() {
+    if (rayCamRotZ < -96) {
+        rayCamPosX--;
+    } else if (rayCamRotZ < -64) {
+        rayCamPosX--; rayCamPosY--;
+    }else if (rayCamRotZ < -32) {
+        rayCamPosY--;
+    }else if (rayCamRotZ < 0) {
+        rayCamPosX++; rayCamPosY--;
+    }else if (rayCamRotZ < 32) {
+        rayCamPosX++;
+    }else if (rayCamRotZ < 64) {
+        rayCamPosX++; rayCamPosY++;
+    } else if (rayCamRotZ < 96) {
+        rayCamPosY++;
+    } else if (rayCamRotZ < 127) {
+        rayCamPosX--; rayCamPosY++;
+    } else {
+        rayCamPosX--;
+    }
+}
+#endif // USE_C_MOVE
 void forward() {
-    signed int X, Y;
-    X = rayCamPosX; Y = rayCamPosY;
-    if (-112 >= rayCamRotZ) {
-        rayCamPosX--;
-    } else if ((-112 < rayCamRotZ) && (-80 >= rayCamRotZ)) {
-        rayCamPosX--; rayCamPosY--;
-    } else if ((-80 < rayCamRotZ) && (-48 >= rayCamRotZ)) {
-        rayCamPosY--;
-    } else if ((-48 < rayCamRotZ) && (-16 >= rayCamRotZ)) {
-        rayCamPosX++; rayCamPosY--;
-    } else if ((-16 < rayCamRotZ) && (16 >= rayCamRotZ)) {
-        rayCamPosX++;
-    } else if ((16 < rayCamRotZ) && (48 >= rayCamRotZ)) {
-        rayCamPosX++; rayCamPosY++;
-    } else if ((48 < rayCamRotZ) && (80 >= rayCamRotZ)) {
-        rayCamPosY++;
-    } else if ((80 < rayCamRotZ) && (112 >= rayCamRotZ)) {
-        rayCamPosX--; rayCamPosY++;
-    } else {
-        rayCamPosX--;
-    }
-
+    
+    savRayCamPosX = rayCamPosX; savRayCamPosY = rayCamPosY;
+    oneStepForward();
 #ifdef USE_GENERIC_COLLISION
     if (isInWall(rayCamPosX, rayCamPosY)){
 #else
     if (!isAllowedPosition(rayCamPosX, rayCamPosY)) {
 #endif
 
-        rayCamPosX = X; rayCamPosY = Y;
+        rayCamPosX = savRayCamPosX; rayCamPosY = savRayCamPosY;
     }
 }
+#ifdef USE_C_MOVE
+void oneStepBackward() {
+    if (rayCamRotZ < -96) {
+        rayCamPosX++;
+    } else if (rayCamRotZ < -64) {
+        rayCamPosX++; rayCamPosY++;
+    } else if (rayCamRotZ < -32) {
+        rayCamPosY++;
+    } else if (rayCamRotZ < 0) {
+        rayCamPosX--; rayCamPosY++;
+    } else if (rayCamRotZ < 32) {
+        rayCamPosX--;
+    } else if (rayCamRotZ < 64) {
+        rayCamPosX--; rayCamPosY--;
+    } else if (rayCamRotZ < 96) {
+        rayCamPosY--;
+    } else if (rayCamRotZ < 127) {
+        rayCamPosX++; rayCamPosY--;
+    } else {
+        rayCamPosX++;
+    }    
+}
+#endif // USE_C_MOVE
 void backward() {
-    signed int X, Y;
-    X = rayCamPosX; Y = rayCamPosY;
-    if (-112 >= rayCamRotZ) {
-        rayCamPosX++;
-    } else if ((-112 < rayCamRotZ) && (-80 >= rayCamRotZ)) {
-        rayCamPosX++; rayCamPosY++;
-    } else if ((-80 < rayCamRotZ) && (-48 >= rayCamRotZ)) {
-        rayCamPosY++;
-    } else if ((-48 < rayCamRotZ) && (-16 >= rayCamRotZ)) {
-        rayCamPosX--; rayCamPosY++;
-    } else if ((-16 < rayCamRotZ) && (16 >= rayCamRotZ)) {
-        rayCamPosX--;
-    } else if ((16 < rayCamRotZ) && (48 >= rayCamRotZ)) {
-        rayCamPosX--; rayCamPosY--;
-    } else if ((48 < rayCamRotZ) && (80 >= rayCamRotZ)) {
-        rayCamPosY--;
-    } else if ((80 < rayCamRotZ) && (112 >= rayCamRotZ)) {
-        rayCamPosX++; rayCamPosY--;
-    } else {
-        rayCamPosX++;
-    }
+    savRayCamPosX = rayCamPosX; savRayCamPosY = rayCamPosY;
+    oneStepBackward();
 #ifdef USE_GENERIC_COLLISION
     if (isInWall(rayCamPosX, rayCamPosY)){
 #else
     if (!isAllowedPosition(rayCamPosX, rayCamPosY)) {
 #endif
 
-        rayCamPosX = X; rayCamPosY = Y;
+        rayCamPosX = savRayCamPosX; rayCamPosY = savRayCamPosY;
     }
 }
+#ifdef USE_C_MOVE
+void oneStepLeft(){
+    if (rayCamRotZ < -96) {
+        rayCamPosY--;
+    } else if (rayCamRotZ < -64) {
+        rayCamPosX++; rayCamPosY--;
+    } else if (rayCamRotZ < -32) {
+        rayCamPosX++;
+    } else if (rayCamRotZ < 0) {
+        rayCamPosX++; rayCamPosY++;
+    } else if (rayCamRotZ < 32) {
+        rayCamPosY++;
+    } else if (rayCamRotZ < 64) {
+        rayCamPosX--; rayCamPosY++;
+    } else if (rayCamRotZ < 96) {
+        rayCamPosX--;
+    } else if (rayCamRotZ < 127) {
+        rayCamPosX--; rayCamPosY--;
+    } else {
+        rayCamPosY--;
+    }
+}
+#endif // USE_C_MOVE
 void shiftLeft() {
-    signed int X, Y;
-    X = rayCamPosX; Y = rayCamPosY;
-    if (-112 >= rayCamRotZ) {
-        rayCamPosY--;
-    } else if ((-112 < rayCamRotZ) && (-80 >= rayCamRotZ)) {
-        rayCamPosX++; rayCamPosY--;
-    } else if ((-80 < rayCamRotZ) && (-48 >= rayCamRotZ)) {
-        rayCamPosX++;
-    } else if ((-48 < rayCamRotZ) && (-16 >= rayCamRotZ)) {
-        rayCamPosX++; rayCamPosY++;
-    } else if ((-16 < rayCamRotZ) && (16 >= rayCamRotZ)) {
-        rayCamPosY++;
-    } else if ((16 < rayCamRotZ) && (48 >= rayCamRotZ)) {
-        rayCamPosX--; rayCamPosY++;
-    } else if ((48 < rayCamRotZ) && (80 >= rayCamRotZ)) {
-        rayCamPosX--;
-    } else if ((80 < rayCamRotZ) && (112 >= rayCamRotZ)) {
-        rayCamPosX--; rayCamPosY--;
-    } else {
-        rayCamPosY--;
-    }
+    savRayCamPosX = rayCamPosX; savRayCamPosY = rayCamPosY;
+    oneStepLeft();
 #ifdef USE_GENERIC_COLLISION
     if (isInWall(rayCamPosX, rayCamPosY)){
 #else
     if (!isAllowedPosition(rayCamPosX, rayCamPosY)) {
 #endif
-        rayCamPosX = X; rayCamPosY = Y;
+        rayCamPosX = savRayCamPosX; rayCamPosY = savRayCamPosY;
     }
 }
-void shiftRight() {
-    signed int X, Y;
-    X = rayCamPosX;
-    Y = rayCamPosY;
-    if (-112 >= rayCamRotZ) {
+#ifdef USE_C_MOVE
+void oneStepRight(){
+    if (rayCamRotZ < -96) {
         rayCamPosY++;
-    } else if ((-112 < rayCamRotZ) && (-80 >= rayCamRotZ)) {
+    } else if (rayCamRotZ < -64) {
         rayCamPosX--; rayCamPosY++;
-    } else if ((-80 < rayCamRotZ) && (-48 >= rayCamRotZ)) {
+    } else if (rayCamRotZ < -32) {
         rayCamPosX--;
-    } else if ((-48 < rayCamRotZ) && (-16 >= rayCamRotZ)) {
+    } else if (rayCamRotZ < 0) {
         rayCamPosX--; rayCamPosY--;
-    } else if ((-16 < rayCamRotZ) && (16 >= rayCamRotZ)) {
+    } else if (rayCamRotZ < 32) {
         rayCamPosY--;
-    } else if ((16 < rayCamRotZ) && (48 >= rayCamRotZ)) {
+    } else if (rayCamRotZ < 64) {
         rayCamPosX++; rayCamPosY--;
-    } else if ((48 < rayCamRotZ) && (80 >= rayCamRotZ)) {
+    } else if (rayCamRotZ < 96) {
         rayCamPosX++;
-    } else if ((80 < rayCamRotZ) && (112 >= rayCamRotZ)) {
+    } else if (rayCamRotZ < 127) {
         rayCamPosX++; rayCamPosY++;
     } else {
         rayCamPosX++;
-    }
+    }    
+}
+#endif // USE_C_MOVE
+void shiftRight() {
+    savRayCamPosX = rayCamPosX; savRayCamPosY = rayCamPosY;
+    oneStepRight();
 #ifdef USE_GENERIC_COLLISION
     if (isInWall(rayCamPosX, rayCamPosY)){
 #else
     if (!isAllowedPosition(rayCamPosX, rayCamPosY)) {
 #endif
-        rayCamPosX = X; rayCamPosY = Y;
+        rayCamPosX = savRayCamPosX; rayCamPosY = savRayCamPosY;
     }
 }

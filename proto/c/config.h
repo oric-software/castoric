@@ -24,6 +24,7 @@
 #define     USE_C_COLORTEXEL
 #define     USE_C_DICHOBUF
 #define     USE_C_SPRITE
+#define     USE_C_MOVE
 
 #else
 
@@ -44,6 +45,7 @@
 #undef     USE_C_COLORTEXEL
 #undef     USE_C_DICHOBUF
 #undef     USE_C_SPRITE
+#undef     USE_C_MOVE
 #endif
 
 #endif // CONFIG_H

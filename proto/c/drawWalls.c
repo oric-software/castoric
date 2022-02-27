@@ -68,7 +68,7 @@ void OVER_SAMPLE_COLOR_LEFT_TEXEL() {
             ddaNbIter       -= 1;
             idxScreenLine   += 1;
         } 
-        idxVertCol          = idxScreenLine*3;\
+        idxVertCol          = (idxScreenLine-VIEWPORT_START_LINE)*3;\
         do {
             DDA_STEP_2();
             ddaNbIter       -= 1;
@@ -89,7 +89,7 @@ void OVER_SAMPLE_COLOR_RIGHT_TEXEL() {
             ddaNbIter       -= 1;
             idxScreenLine   += 1;
         } 
-        idxVertCol          = idxScreenLine*3;\
+        idxVertCol          = (idxScreenLine-VIEWPORT_START_LINE)*3;\
         do {
             DDA_STEP_2();
             ddaNbIter       -= 1;
@@ -125,7 +125,7 @@ void OVER_SAMPLE_COLOR_RIGHT_TEXEL() {
             ddaNbIter       -= 1;\
             idxScreenLine   += 1;\
         } \
-        idxVertCol          = idxScreenLine*3;\
+        idxVertCol          = (idxScreenLine-VIEWPORT_START_LINE)*3;\
         theAdr              = (unsigned char *)(baseAdr + (int)((multi120_high[idxScreenLine]<<8) | multi120_low[idxScreenLine]));\
         do {\
             DDA_STEP\
@@ -185,11 +185,11 @@ void drawRightColumn(){
 
     }
 }
-#ifdef __GNUC__
-void clearColumn(){
+// #ifdef __GNUC__
+// void clearColumn(){
 
-}
-#endif
+// }
+// #endif
 
 
 #ifdef USE_C_VERTCOLBUF

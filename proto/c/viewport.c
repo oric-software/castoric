@@ -14,23 +14,23 @@ void clearViewport(){
     }
 }
 extern signed char          idxScreenCol; // idxScreenLine,
-void clearColumn(){
-    int ii;
-    ;
-    for (ii=0; ii< (VIEWPORT_HEIGHT * 3)/2; ii+=3){
-#ifndef __GNUC__        
-        *(unsigned char*)(HIRES_SCREEN_ADDRESS + 1 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + ii) + (idxScreenCol / 2)) = 0x40;
-        *(unsigned char*)(HIRES_SCREEN_ADDRESS + 1 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + ii + 1) + (idxScreenCol / 2)) = 0x40;
-        *(unsigned char*)(HIRES_SCREEN_ADDRESS + 1 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + ii + 2) + (idxScreenCol / 2)) = 0x7F;
-#endif
-    }
-    for (ii=(VIEWPORT_HEIGHT * 3)/2; ii< VIEWPORT_HEIGHT * 3; ii+=3){
-#ifndef __GNUC__
-        *(unsigned char*)(HIRES_SCREEN_ADDRESS + 1 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + ii) + (idxScreenCol / 2)) = 0x40;
-        *(unsigned char*)(HIRES_SCREEN_ADDRESS + 1 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + ii + 1) + (idxScreenCol / 2)) = 0x7F;
-        *(unsigned char*)(HIRES_SCREEN_ADDRESS + 1 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + ii + 2) + (idxScreenCol / 2)) = 0x40;
-#endif
-    }
-}
+// void clearColumn(){
+//     int ii;
+//     ;
+//     for (ii=0; ii< (VIEWPORT_HEIGHT * 3)/2; ii+=3){
+// #ifndef __GNUC__        
+//         *(unsigned char*)(HIRES_SCREEN_ADDRESS + 1 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + ii) + (idxScreenCol / 2)) = 0x40;
+//         *(unsigned char*)(HIRES_SCREEN_ADDRESS + 1 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + ii + 1) + (idxScreenCol / 2)) = 0x40;
+//         *(unsigned char*)(HIRES_SCREEN_ADDRESS + 1 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + ii + 2) + (idxScreenCol / 2)) = 0x7F;
+// #endif
+//     }
+//     for (ii=(VIEWPORT_HEIGHT * 3)/2; ii< VIEWPORT_HEIGHT * 3; ii+=3){
+// #ifndef __GNUC__
+//         *(unsigned char*)(HIRES_SCREEN_ADDRESS + 1 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + ii) + (idxScreenCol / 2)) = 0x40;
+//         *(unsigned char*)(HIRES_SCREEN_ADDRESS + 1 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + ii + 1) + (idxScreenCol / 2)) = 0x7F;
+//         *(unsigned char*)(HIRES_SCREEN_ADDRESS + 1 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + ii + 2) + (idxScreenCol / 2)) = 0x40;
+// #endif
+//     }
+// }
 
 #endif // USE_C_VIEWPORT

@@ -223,7 +223,7 @@ loop_000 : lda _idxScreenLine :\
         inc _idxScreenLine:\
         jmp loop_000 :\
 end_loop_000:\
-    lda _idxScreenLine: asl : clc: adc _idxScreenLine: sta _idxVertCol:\
+    lda _idxScreenLine: sec: sbc #VIEWPORT_START_LINE: asl : clc: adc _idxScreenLine: sec: sbc #VIEWPORT_START_LINE: sta _idxVertCol:\
     ldy _idxScreenLine:lda _multi120_low,Y:clc:adc _baseAdr:sta _theAdr:lda _multi120_high,Y:adc _baseAdr+1:sta _theAdr+1 :\
 loop_001 :\
         DDA_STEP_2:\
@@ -249,7 +249,7 @@ loop_000 : lda _idxScreenLine :\
         inc _idxScreenLine:\
         jmp loop_000 :\
 end_loop_000:\
-    lda _idxScreenLine: asl : clc: adc _idxScreenLine: sta _idxVertCol:\
+    lda _idxScreenLine: sec: sbc #VIEWPORT_START_LINE: asl : clc: adc _idxScreenLine: sec: sbc #VIEWPORT_START_LINE: sta _idxVertCol:\
     ldy _idxScreenLine:lda _multi120_low,Y:clc:adc _baseAdr:sta _theAdr:lda _multi120_high,Y:adc _baseAdr+1:sta _theAdr+1 :\
 loop_001 :\
         DDA_STEP:\

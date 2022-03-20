@@ -281,7 +281,7 @@ void drawSpriteCol(){
             spriteTexColumn               = tabPrecalcSpriteOffset [tabSpriteTextureColIdx[engCurrentObjectIdx]];
             spritePtrReadTexture    = spriteTexture + (unsigned int)((multi32_high[spriteTexColumn] << 8) | multi32_low[spriteTexColumn]);
 
-            idxVertCol = tabSpriteViewportLinIdx[engCurrentObjectIdx]*3 ; //(idxScreenLine-VIEWPORT_START_LINE)*3
+            idxVertCol = (tabSpriteViewportLinIdx[engCurrentObjectIdx]-VIEWPORT_START_LINE)*3 ; //(idxScreenLine-VIEWPORT_START_LINE)*3
             if ((idxCurrentSlice&0x01) == 0){
                 // unrollLeftColumn();
 
@@ -290,9 +290,9 @@ void drawSpriteCol(){
                     renCurrentColor     = spritePtrReadTexture[tabPrecalcSpriteOffset [spriteTextureLinIdx]];
                     if (renCurrentColor != EMPTY_ALPHA) {
                         // colorLeftTexel();
-                        bufVertCol[idxVertCol++]=tabLeftRed[renCurrentColor];
-                        bufVertCol[idxVertCol++]=tabLeftGreen[renCurrentColor];
-                        bufVertCol[idxVertCol++]=tabLeftBlue[renCurrentColor];
+                        bufVertCol[idxVertCol]=(bufVertCol[idxVertCol]&0x07)|tabLeftRed[renCurrentColor];idxVertCol++;
+                        bufVertCol[idxVertCol]=(bufVertCol[idxVertCol]&0x07)|tabLeftGreen[renCurrentColor];idxVertCol++;
+                        bufVertCol[idxVertCol]=(bufVertCol[idxVertCol]&0x07)|tabLeftBlue[renCurrentColor];idxVertCol++;
                     }else{
                         idxVertCol += 3; 
                     }
@@ -307,9 +307,9 @@ void drawSpriteCol(){
                     renCurrentColor     = spritePtrReadTexture[tabPrecalcSpriteOffset [spriteTextureLinIdx]];
                     if (renCurrentColor != EMPTY_ALPHA) {
                         // colorRightTexel();
-                        bufVertCol[idxVertCol]|=tabRightRed[renCurrentColor];idxVertCol++;\
-                        bufVertCol[idxVertCol]|=tabRightGreen[renCurrentColor];idxVertCol++;\
-                        bufVertCol[idxVertCol]|=tabRightBlue[renCurrentColor];idxVertCol++;
+                        bufVertCol[idxVertCol]=(bufVertCol[idxVertCol]&0xF8)|tabRightRed[renCurrentColor];idxVertCol++;\
+                        bufVertCol[idxVertCol]=(bufVertCol[idxVertCol]&0xF8)|tabRightGreen[renCurrentColor];idxVertCol++;\
+                        bufVertCol[idxVertCol]=(bufVertCol[idxVertCol]&0xF8)|tabRightBlue[renCurrentColor];idxVertCol++;
 
                     }else{
                         idxVertCol += 3;

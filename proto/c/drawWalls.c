@@ -229,6 +229,9 @@ void drawWalls(){
     idxScreenCol        = VIEWPORT_START_COLUMN;
     baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (idxScreenCol>>1));
 
+#ifdef USE_SPRITE
+    prepareDrawSprites ();
+#endif  
     idxCurrentSlice     = 0;
 
     do {
@@ -241,6 +244,9 @@ void drawWalls(){
         if (wallId !=255) {
             drawLeftColumn ();
         }
+#ifdef USE_SPRITE
+        drawSpriteCol();
+#endif        
 
         idxScreenCol        += 1;
         idxCurrentSlice     += 1;
@@ -250,6 +256,9 @@ void drawWalls(){
         if (wallId !=255) {
             drawRightColumn();
         }
+#ifdef USE_SPRITE
+        drawSpriteCol();
+#endif        
 
         copyVertCol ();
         idxCurrentSlice++;

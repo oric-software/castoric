@@ -52,112 +52,116 @@ extern unsigned char idxCurrentSlice;
 
 unsigned  char *tabPrecalcSpriteOffset;
 
+unsigned char   theVisibility;  
+unsigned char   theObjHeight;
+unsigned char unCompteur;
 
 
 void precalcSpriteTexPixelRunthrough(){
 
-    // if (spriteHeight > 64) {
-    //     idxTexPixel         = 0;
+    if (spriteHeight > 64) {
+        idxTexPixel         = 0;
 
-    //     iea2StartValue      = 0;
-    //     iea2NbVal           = TEXTURE_SIZE-1;
-    //     iea2NbStep          = spriteHeight;
+        iea2StartValue      = 0;
+        iea2NbVal           = TEXTURE_SIZE-1;
+        iea2NbStep          = spriteHeight;
 
 
-    //     // iea2Init();
-    //     iea2CurrentValue         = iea2StartValue;
-    //     iea2EndValue             = iea2StartValue + iea2NbVal;
-    //     iea2CurrentError     = iea2NbStep;
-    //     // iea2StepFunction     = &iea2Step2;
+        // iea2Init();
+        iea2CurrentValue         = iea2StartValue;
+        iea2EndValue             = iea2StartValue + iea2NbVal;
+        iea2CurrentError     = iea2NbStep;
+        // iea2StepFunction     = &iea2Step2;
 
-    //     do {
-    //         precalTexPixelOffset [idxTexPixel++] = iea2CurrentValue;
+        do {
+            precalTexPixelOffset [idxTexPixel++] = iea2CurrentValue;
 
-    //         // (*iea2StepFunction)();
-    //         iea2CurrentError         -= iea2NbVal;
-    //         if ((iea2CurrentError<<1) < iea2NbStep) {
-    //             iea2CurrentError     += iea2NbStep;
-    //             iea2CurrentValue     += 1;
-    //         }
+            // (*iea2StepFunction)();
+            iea2CurrentError         -= iea2NbVal;
+            if ((iea2CurrentError<<1) < iea2NbStep) {
+                iea2CurrentError     += iea2NbStep;
+                iea2CurrentValue     += 1;
+            }
 
-    //     } while (iea2CurrentValue < iea2EndValue);
-    //     precalTexPixelOffset [idxTexPixel++] = iea2CurrentValue;
-    // } else {
-    //     memcpy(precalTexPixelOffset, &(tabIdxRdTexture[((spriteHeight+1)*spriteHeight)/2]), spriteHeight);
-    // }
-    tabPrecalTexPixelOffset[engCurrentObjectIdx] = &(tabIdxRdTexture[((spriteHeight+1)*spriteHeight)/2]);
+        } while (iea2CurrentValue < iea2EndValue);
+        precalTexPixelOffset [idxTexPixel++] = iea2CurrentValue;
+        tabPrecalTexPixelOffset[engCurrentObjectIdx] = precalTexPixelOffset; // &(tabIdxRdTexture[((spriteHeight+1)*spriteHeight)/2]);
+
+    } else {
+        // memcpy(precalTexPixelOffset, &(tabIdxRdTexture[((spriteHeight+1)*spriteHeight)/2]), spriteHeight);
+        tabPrecalTexPixelOffset[engCurrentObjectIdx] = &(tabIdxRdTexture[((spriteHeight+1)*spriteHeight)/2]);
+    }
 }
 
 extern void colorLeftTexel ();
 extern void colorRightTexel ();
 
 // ============================================ //
-#ifdef USE_C_SPRITE 
-void unrollLeftColumn();
-void unrollRightColumn();
+// #ifdef USE_C_SPRITE 
+// void unrollLeftColumn();
+// void unrollRightColumn();
 
-void spriteDrawColumn() {
+// void spriteDrawColumn() {
     
-    if ((objLogDistance[engCurrentObjectIdx] < raylogdist[spriteViewportColIdx-VIEWPORT_START_COLUMN-1])
-     || (raywall[spriteViewportColIdx-VIEWPORT_START_COLUMN-1] == 255)) {
+//     if ((objLogDistance[engCurrentObjectIdx] < raylogdist[spriteViewportColIdx-VIEWPORT_START_COLUMN-1])
+//      || (raywall[spriteViewportColIdx-VIEWPORT_START_COLUMN-1] == 255)) {
 
-        spriteTextureLinIdx     = spriteSavTextureLinIdx;
-        spriteNbLoopLine              = spriteSavNbLoopLine;
+//         spriteTextureLinIdx     = spriteSavTextureLinIdx;
+//         spriteNbLoopLine              = spriteSavNbLoopLine;
 
-        theAdr                  = (unsigned char *)((int)baseAdr + spriteScreenOffset ); // multi120[spriteViewportLinIdx]); // 
+//         theAdr                  = (unsigned char *)((int)baseAdr + spriteScreenOffset ); // multi120[spriteViewportLinIdx]); // 
 
-        // Parcours ligne
-        spriteTexColumn               = precalTexPixelOffset [spriteTextureColIdx];
-        spritePtrReadTexture    = spriteTexture + (unsigned int)((multi32_high[spriteTexColumn] << 8) | multi32_low[spriteTexColumn]);
-
-
-        if ((spriteViewportColIdx&0x01) != 0){
-            unrollLeftColumn();
-        } else {
-            unrollRightColumn();
-        }
-    }
-}
+//         // Parcours ligne
+//         spriteTexColumn               = precalTexPixelOffset [spriteTextureColIdx];
+//         spritePtrReadTexture    = spriteTexture + (unsigned int)((multi32_high[spriteTexColumn] << 8) | multi32_low[spriteTexColumn]);
 
 
-void unrollRightColumn() {
+//         if ((spriteViewportColIdx&0x01) != 0){
+//             unrollLeftColumn();
+//         } else {
+//             unrollRightColumn();
+//         }
+//     }
+// }
 
-    do {
-        renCurrentColor     = spritePtrReadTexture[precalTexPixelOffset [spriteTextureLinIdx]];
-        if (renCurrentColor != EMPTY_ALPHA) {
-            colorRightTexel();
-        }else{
-            theAdr              += 120; 
-        }
-        spriteTextureLinIdx       ++;
-    } while ((--spriteNbLoopLine) != 0);
 
-}
+// void unrollRightColumn() {
 
-void unrollLeftColumn() {
+//     do {
+//         renCurrentColor     = spritePtrReadTexture[precalTexPixelOffset [spriteTextureLinIdx]];
+//         if (renCurrentColor != EMPTY_ALPHA) {
+//             colorRightTexel();
+//         }else{
+//             theAdr              += 120; 
+//         }
+//         spriteTextureLinIdx       ++;
+//     } while ((--spriteNbLoopLine) != 0);
 
-    do {
+// }
 
-        renCurrentColor     = spritePtrReadTexture[precalTexPixelOffset [spriteTextureLinIdx]];
-        if (renCurrentColor != EMPTY_ALPHA) {
-            colorLeftTexel();
-        }else{
-            theAdr              += 120; 
-        }
-        spriteTextureLinIdx       ++;
+// void unrollLeftColumn() {
 
-    } while ((--spriteNbLoopLine) != 0);
+//     do {
 
-}
+//         renCurrentColor     = spritePtrReadTexture[precalTexPixelOffset [spriteTextureLinIdx]];
+//         if (renCurrentColor != EMPTY_ALPHA) {
+//             colorLeftTexel();
+//         }else{
+//             theAdr              += 120; 
+//         }
+//         spriteTextureLinIdx       ++;
 
-void prepareScreenAdr(){
+//     } while ((--spriteNbLoopLine) != 0);
 
-    spriteScreenOffset = ((int)(multi120_high[spriteViewportLinIdx]<<8) | (int)(multi120_low[spriteViewportLinIdx]));
-    baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + 1 + ((spriteViewportColIdx)>>1));
+// }
 
-}
-#endif // USE_C_SPRITE 
+// void prepareScreenAdr(){
 
+//     spriteScreenOffset = ((int)(multi120_high[spriteViewportLinIdx]<<8) | (int)(multi120_low[spriteViewportLinIdx]));
+//     baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + 1 + ((spriteViewportColIdx)>>1));
+
+// }
+// #endif // USE_C_SPRITE 
 
 
 
@@ -165,37 +169,35 @@ void prepareScreenAdr(){
 
 void prepareDrawSprite (){
 
-    unsigned char visibility;  
-    unsigned char   objHeight;
     
     // compute objAngle, objLogDist
     objX = objPosX[engCurrentObjectIdx];
     objY = objPosY[engCurrentObjectIdx];
 
-    visibility = isVisibleSprite();
+    theVisibility = isVisibleSprite();
 
-    // if (visibility == 0) return ;
+    // if (theVisibility == 0) return ;
 
-    if ((objHeight=dist2hh(objLogDistance[engCurrentObjectIdx])) == 0) return;
+    if ((theObjHeight=dist2hh(objLogDistance[engCurrentObjectIdx])) == 0) return;
 
     
 
-    spriteHeight            = objHeight*2;
+    spriteHeight            = theObjHeight*2;
 
     precalcSpriteTexPixelRunthrough();
 
 
-    if (visibility == 1){
+    if (theVisibility == 1){
         spriteRefColumn = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngle[engCurrentObjectIdx]];
         // displaySprite03();
 
         // Rejoindre la bordure gauche
         if (spriteRefColumn <= spriteHeight/2) {
-            tabSpriteViewportColIdx[engCurrentObjectIdx]       = VIEWPORT_START_COLUMN + 1;
+            tabSpriteViewportColIdx[engCurrentObjectIdx]       = 0 ; // VIEWPORT_START_COLUMN + 1;
             tabSpriteTextureColIdx[engCurrentObjectIdx]         = spriteHeight/2 - spriteRefColumn + 2;
             tabSpriteNbLoopColumn[engCurrentObjectIdx] = min(VIEWPORT_WIDTH - 3,spriteHeight/2+spriteRefColumn-2);
         } else {
-            tabSpriteViewportColIdx[engCurrentObjectIdx]       = spriteRefColumn - spriteHeight/2 + VIEWPORT_START_COLUMN;
+            tabSpriteViewportColIdx[engCurrentObjectIdx]       = spriteRefColumn - spriteHeight/2; // + VIEWPORT_START_COLUMN;
             tabSpriteTextureColIdx[engCurrentObjectIdx]        = 0;
             tabSpriteNbLoopColumn[engCurrentObjectIdx] = min(VIEWPORT_WIDTH-2-spriteRefColumn+spriteHeight/2,spriteHeight);
         }
@@ -211,14 +213,14 @@ void prepareDrawSprite (){
         }
 
 
-    } else if (visibility == 2) {
+    } else if (theVisibility == 2) {
         spriteRefColumn = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngleRight];
-        if (spriteRefColumn > VIEWPORT_START_COLUMN) {
+        // if (spriteRefColumn > VIEWPORT_START_COLUMN) {
 
             // displaySpriteRightVisible();
-            tabSpriteViewportColIdx[engCurrentObjectIdx]          = spriteRefColumn;
-            tabSpriteTextureColIdx[engCurrentObjectIdx]           = spriteHeight-1;
-            tabSpriteNbLoopColumn[engCurrentObjectIdx]                = spriteRefColumn-VIEWPORT_START_COLUMN;
+            tabSpriteViewportColIdx[engCurrentObjectIdx]          = 0; 
+            tabSpriteTextureColIdx[engCurrentObjectIdx]           = spriteHeight-spriteRefColumn-1;
+            tabSpriteNbLoopColumn[engCurrentObjectIdx]                = spriteRefColumn; // spriteRefColumn-VIEWPORT_START_COLUMN;
             // if (spriteNbLoopColumn == 0) return ;
 
             if (spriteHeight > VIEWPORT_HEIGHT){
@@ -231,10 +233,13 @@ void prepareDrawSprite (){
                 tabSpriteSavNbLoopLine[engCurrentObjectIdx]               = spriteHeight ;
             }
 
-            tabSpriteViewportColIdx[engCurrentObjectIdx]          -= tabSpriteNbLoopColumn[engCurrentObjectIdx];
-            tabSpriteTextureColIdx[engCurrentObjectIdx]           -= tabSpriteNbLoopColumn[engCurrentObjectIdx];
-        }
-    } else if (visibility == 3) {
+            // tabSpriteViewportColIdx[engCurrentObjectIdx]          -= tabSpriteNbLoopColumn[engCurrentObjectIdx];
+            // tabSpriteTextureColIdx[engCurrentObjectIdx]           -= tabSpriteNbLoopColumn[engCurrentObjectIdx];
+        // } else {
+        //     // FIXME: make sprite not visible
+        //     tabSpriteViewportColIdx[engCurrentObjectIdx] = NUMBER_OF_SLICE;
+        // }
+    } else if (theVisibility == 3) {
         spriteRefColumn = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngleLeft];
 
         // displaySpriteLeftVisible();
@@ -253,17 +258,22 @@ void prepareDrawSprite (){
             tabSpriteSavNbLoopLine[engCurrentObjectIdx]               = spriteHeight ;
         }
 
+    } else {
+        tabSpriteNbLoopColumn[engCurrentObjectIdx]                = 0;
     }
 }
 
+
+
+
 // -VIEWPORT_START_COLUMN-1
+
 void drawSpriteCol(){
 
-    int ii;
-    ii= dichoNbVal;
-    while (ii >0) {
-        ii -= 1;
-        engCurrentObjectIdx = tabDichoIdxs[ii];
+    unCompteur= dichoNbVal;
+    while (unCompteur >0) {
+        unCompteur -= 1;
+        engCurrentObjectIdx = tabDichoIdxs[unCompteur];
         spriteTexture = objTexture[engCurrentObjectIdx];
         
         if (
@@ -334,11 +344,11 @@ void drawSpriteCol(){
 
 
 void prepareDrawSprites (){
-    int ii;
-    ii= dichoNbVal;
-    while (ii >0) {
-        ii -= 1;
-        engCurrentObjectIdx = tabDichoIdxs[ii];
+
+    unCompteur= dichoNbVal;
+    while (unCompteur >0) {
+        unCompteur -= 1;
+        engCurrentObjectIdx = tabDichoIdxs[unCompteur];
         prepareDrawSprite ();
     }
 

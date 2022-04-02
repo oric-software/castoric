@@ -331,6 +331,9 @@ _drawWalls
 
     ; idxScreenCol        = VIEWPORT_START_COLUMN;
     ; baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (idxScreenCol>>1));
+; #ifdef USE_SPRITE
+    ; prepareDrawSprite ();
+; #endif     
     ; idxCurrentSlice     = 0;
 
     lda     #VIEWPORT_START_COLUMN
@@ -343,6 +346,10 @@ _drawWalls
     adc     #0
     sta     _baseAdr+1
 
+#ifdef USE_SPRITE
+    ldy #0 : jsr     _prepareDrawSprites
+#endif 
+
     lda     #0
     sta     _idxCurrentSlice
 
@@ -352,7 +359,7 @@ drawWalls_loop
           
 
 ;;         baseAdr             += 1;
-;;         idxScreenCol        += 1;
+;;         initVertCol ();
 ;;         wallId              = raywall[idxCurrentSlice];
 
             inc _baseAdr: .( : bne skip : inc _baseAdr+1: skip:.)
@@ -372,6 +379,13 @@ drawWalls_loop
 
 ;;         }
 LeftSliceEmpty
+
+;; #ifdef USE_SPRITE
+;;         drawSpriteCol();
+;; #endif    
+#ifdef USE_SPRITE    
+        ldy #0 : jsr _drawSpriteCol
+#endif
 ;; 
 ;;         idxScreenCol        += 1;
 ;;         idxCurrentSlice     += 1;
@@ -386,11 +400,20 @@ LeftSliceEmpty
                 jsr drawRightColumn
 ;;         }
 RightSliceEmpty
+ 
+;; #ifdef USE_SPRITE
+;;         drawSpriteCol();
+;; #endif        
+#ifdef USE_SPRITE
+        ldy #0 : jsr _drawSpriteCol
+#endif        
+
+ 
             jsr         _copyVertCol
             inc         _idxCurrentSlice
             inc         _idxScreenCol
 
-;;     } while (idxCurrentSlice < NUMBER_OF_SLICE-1);
+;;     } while (idxCurrentSlice < NUMBER_OF_SLICE-2);
         lda         _idxCurrentSlice
         cmp         #NUMBER_OF_SLICE-2
         beq         end_drawWalls
@@ -407,4 +430,4 @@ end_drawWalls
     rts
 
 
-#endif // USE_C_DRAWWALLS
+#endif ;; USE_C_DRAWWALLS

@@ -12,8 +12,8 @@ python tools\precalcIdxOfIdxRd.py > proto\c\tabAdrTabIdxRd.h
 
 REM [ref config_viewport]
 REM python tools\clearViewport.py > proto\c\viewport_s.s
-python tools\clearVertColBuf.py > proto\c\vertcolbuf_s.s
-python tools\copyVertColBuf.py >> proto\c\vertcolbuf_s.s
+REM python tools\clearVertColBuf.py > proto\c\vertcolbuf_s.s
+REM python tools\copyVertColBuf.py >> proto\c\vertcolbuf_s.s
 REM python tools\clearColumn.py > proto\c\column_s.s
 
 REM [ref texel_codec]

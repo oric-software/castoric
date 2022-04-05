@@ -15,8 +15,9 @@
 
 #include "game.c"
 #include "collision.c"
+#ifndef PROFILER_ENABLE
 #include "player.c"
-
+#endif // PROFILER_ENABLE
 #include "texel.c"
 #include "keyboard_c.c"
 #include "viewport.c"
@@ -64,9 +65,9 @@ void prepareRGB(){
 
 // [ref camera_situation]
 void initCamera(){
-    rayCamPosX               = -1;
-    rayCamPosY               = -13; 
-    rayCamRotZ               = 0;
+    rayCamPosX               = 0;
+    rayCamPosY               = -8; 
+    rayCamRotZ               = 64;
     RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
 }
 
@@ -76,7 +77,7 @@ void initCamera(){
 #endif
 
 
-
+#ifndef PROFILER_ENABLE
 void keyPressed(unsigned char c){
 	// printf ("kp: %x, ", c);
     if (c == keyForward) {
@@ -123,18 +124,23 @@ void lsys(){
 		}
 	}
 }
+#else
+void lsys(){
+    refreshNeeded           = 1;
+}
+#endif // PROFILER_ENABLE
 
 void gameLoop() {
 
 #ifdef USE_SPRITE
     engInitObjects();
-    engAddObject(OBJ_TREE, 3, -11, 0);
+    engAddObject(OBJ_TREE, 0, 0, 0);
     objTexture[0] = texture_tree;
     // engAddObject(OBJ_TREE, 0, 11, 0);
     // objTexture[1] = texture_tree;
     // engAddObject(OBJ_KEY, 9, -6, 0);
     // objTexture[2] = texture_aKey;
-    engAddObject(OBJ_SOLDIER, -1, 0, 0);
+    engAddObject(OBJ_SOLDIER, 0, -4, 0);
     objTexture[1] = texture_smily_back;
 #endif // USE_SPRITE
 
@@ -164,6 +170,9 @@ void gameLoop() {
         dichoInit();
         engPulse();
 
+#ifdef PROFILER_ENABLE
+        if ((objPosX[1] == 0) && (objPosY[1] == -5)) running = 0;
+#endif // PROFILER_ENABLE
 
         if (refreshNeeded) {
             rayInitCasting();

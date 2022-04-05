@@ -275,66 +275,57 @@ void drawSpriteCol(){
         unCompteur -= 1;
         engCurrentObjectIdx = tabDichoIdxs[unCompteur];
         spriteTexture = objTexture[engCurrentObjectIdx];
-        
-        if (
-            ((objLogDistance[engCurrentObjectIdx] < raylogdist[idxCurrentSlice])
-        || (raywall[idxCurrentSlice] == 255))
-        && (tabSpriteNbLoopColumn[engCurrentObjectIdx] != 0)
-        && (idxCurrentSlice >= tabSpriteViewportColIdx[engCurrentObjectIdx])
-        ) {
-
-            spriteTextureLinIdx     = tabSpriteSavTextureLinIdx[engCurrentObjectIdx];
-            spriteNbLoopLine        = tabSpriteSavNbLoopLine[engCurrentObjectIdx];
-
-            // Parcours ligne
-            tabPrecalcSpriteOffset = tabPrecalTexPixelOffset[engCurrentObjectIdx];
-            spriteTexColumn               = tabPrecalcSpriteOffset [tabSpriteTextureColIdx[engCurrentObjectIdx]];
-            spritePtrReadTexture    = spriteTexture + (unsigned int)((multi32_high[spriteTexColumn] << 8) | multi32_low[spriteTexColumn]);
-
-            idxBufVertCol = tabSpriteViewportLinIdx[engCurrentObjectIdx]-VIEWPORT_START_LINE;
-            if ((idxCurrentSlice&0x01) == 0){
-                // unrollLeftColumn();
-
-                do {
-
-                    renCurrentColor     = spritePtrReadTexture[tabPrecalcSpriteOffset [spriteTextureLinIdx]];
-                    if (renCurrentColor != EMPTY_ALPHA) {
-                        bufVertColLeft[idxBufVertCol++] = renCurrentColor;
-                    }else{
-                        idxBufVertCol += 1;
-                    }
-                    spriteTextureLinIdx       ++;
-
-                } while ((--spriteNbLoopLine) != 0);
 
 
-            } else {
-                // unrollRightColumn();
-                do {
-                    renCurrentColor     = spritePtrReadTexture[tabPrecalcSpriteOffset [spriteTextureLinIdx]];
-                    if (renCurrentColor != EMPTY_ALPHA) {
-                        bufVertColRight[idxBufVertCol++] = renCurrentColor;
-                    }else{
-                        idxBufVertCol += 1;
-                    }
-                    spriteTextureLinIdx       ++;
-                } while ((--spriteNbLoopLine) != 0);
+        if ((tabSpriteNbLoopColumn[engCurrentObjectIdx] != 0)
+            && (idxCurrentSlice >= tabSpriteViewportColIdx[engCurrentObjectIdx]) ) {
 
+            if (
+                (objLogDistance[engCurrentObjectIdx] < raylogdist[idxCurrentSlice])
+            || (raywall[idxCurrentSlice] == 255)) {
+
+                spriteTextureLinIdx     = tabSpriteSavTextureLinIdx[engCurrentObjectIdx];
+                spriteNbLoopLine        = tabSpriteSavNbLoopLine[engCurrentObjectIdx];
+
+                // Parcours ligne
+                tabPrecalcSpriteOffset = tabPrecalTexPixelOffset[engCurrentObjectIdx];
+                spriteTexColumn               = tabPrecalcSpriteOffset [tabSpriteTextureColIdx[engCurrentObjectIdx]];
+                spritePtrReadTexture    = spriteTexture + (unsigned int)((multi32_high[spriteTexColumn] << 8) | multi32_low[spriteTexColumn]);
+
+                idxBufVertCol = tabSpriteViewportLinIdx[engCurrentObjectIdx]-VIEWPORT_START_LINE;
+                if ((idxCurrentSlice&0x01) == 0){
+                    // unrollLeftColumn();
+
+                    do {
+
+                        renCurrentColor     = spritePtrReadTexture[tabPrecalcSpriteOffset [spriteTextureLinIdx]];
+                        if (renCurrentColor != EMPTY_ALPHA) {
+                            bufVertColLeft[idxBufVertCol++] = renCurrentColor;
+                        }else{
+                            idxBufVertCol += 1;
+                        }
+                        spriteTextureLinIdx       ++;
+                    } while ((--spriteNbLoopLine) != 0);
+
+                } else {
+                    // unrollRightColumn();
+                    do {
+                        renCurrentColor     = spritePtrReadTexture[tabPrecalcSpriteOffset [spriteTextureLinIdx]];
+                        if (renCurrentColor != EMPTY_ALPHA) {
+                            bufVertColRight[idxBufVertCol++] = renCurrentColor;
+                        }else{
+                            idxBufVertCol += 1;
+                        }
+                        spriteTextureLinIdx       ++;
+                    } while ((--spriteNbLoopLine) != 0);
+
+                }
             }
-
-            if ((tabSpriteNbLoopColumn[engCurrentObjectIdx] != 0)) {
-                tabSpriteTextureColIdx[engCurrentObjectIdx] += 1;
-                tabSpriteNbLoopColumn[engCurrentObjectIdx]  -= 1;
-            }
-
+            tabSpriteTextureColIdx[engCurrentObjectIdx] += 1;
+            tabSpriteNbLoopColumn[engCurrentObjectIdx]  -= 1;
         }
-
     }
 }
-
-
-
-
 
 void prepareDrawSprites (){
 

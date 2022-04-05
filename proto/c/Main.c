@@ -7,7 +7,7 @@
 #undef DEBUG
 
 #include "lib.h"
-
+#include "profile.h"
 #include "config.h"
 
 #include "raycast.c"
@@ -140,8 +140,13 @@ void gameLoop() {
 	kernelInit();
 	osmeInit();
 
+    ProfilerInitialize();
 
     while (running) {
+
+        ProfilerNextFrame();
+        PROFILE_ENTER(ROUTINE_GLOBAL);
+        
         doke(630,0);
 
         if ((doorState==1) && (scene_00[2+4*2] != 6)) {
@@ -166,6 +171,7 @@ void gameLoop() {
             rayProcessWalls();
 
             // clearViewport();
+            PROFILE_ENTER(ROUTINE_DRAWWALLS);
             drawWalls();
 #ifdef USE_SPRITE
 //             // logdist(signed char posX, signed char posY) 
@@ -178,6 +184,7 @@ void gameLoop() {
 //             if (! hasKey) drawSprite (0, 0, texture_aKey);
             drawSprites ();
 #endif
+            PROFILE_LEAVE(ROUTINE_DRAWWALLS);
             refreshNeeded = 0;
             printf("\n(X=%d Y=%d) [a=%d] [t=%d]\n\n", rayCamPosX, rayCamPosY, rayCamRotZ, 65535-deek(630));
             if (hasKey) printf ("Key");
@@ -192,8 +199,11 @@ void gameLoop() {
         //     drawTexelOnScreen (VIEWPORT_HEIGHT, 40+ii, 63);
         //     drawTexelOnScreen (VIEWPORT_HEIGHT, 40-ii, 63);
         // }
+        PROFILE_LEAVE(ROUTINE_GLOBAL);
         
+        ProfilerDisplay();
     }
+    ProfilerTerminate();    
     kernelEnd();
 }
 

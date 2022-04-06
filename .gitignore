@@ -56,3 +56,4 @@ proto/c/BUILD/*
 study/.ipynb_checkpoints
 img/textures/*
 proto/c/textures/*
+.vscode/settings.json

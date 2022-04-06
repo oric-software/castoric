@@ -28,7 +28,7 @@ unsigned char           *baseAdr;
 
 #include "texel.c"
 
-
+// #include "vertcolbuf.c"
 #include "drawWalls.c"
 
 #ifdef USE_SPRITE
@@ -36,22 +36,22 @@ unsigned char           *baseAdr;
 #include "texture_sback.h"
 #include "texture_sleft.h"
 #include "texture_sright.h"
+#include "texture_key.h"
+#include "texture_tree.h"
 #endif
 #include "dichobuf.c"
 #include "engine.c"
 #ifdef USE_SPRITE
 #include "dist.c"
 #include "sprite.c"
-#include "texture_key.h"
-#include "texture_tree.h"
 #endif
 
 
 
 void initCamera(){
-    rayCamPosX               = -1; // 0; // -62; // 39;  //
-    rayCamPosY               = -13; // 0; //- 62; // -25; //
-    rayCamRotZ               = 0; // 32; // 64; //
+    rayCamPosX               = 1; // 0; // -62; // 39;  //
+    rayCamPosY               = -4; // 0; //- 62; // -25; //
+    rayCamRotZ               = -64; // 32; // 64; //
     RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
 }
 
@@ -105,7 +105,7 @@ void main(){
 //     printf ("result = %d\n", alpha);
 //     alpha           = ATAN2(0, -2);
 //     printf ("result = %d\n", alpha);
-    drawWalls();
+    // drawWalls();
 // #ifdef USE_SPRITE    
 //     drawSprite (0, 0, texture_aKey);
 // #endif // USE_SPRITE
@@ -125,11 +125,11 @@ void main(){
 
     engInitObjects();
 #ifdef USE_SPRITE
-    engAddObject(OBJ_TREE, 3, -11, 0);
+    // engAddObject(OBJ_TREE, 4, -14, 0);
+    // objTexture[0] = texture_tree;
+    engAddObject(OBJ_TREE, 3, -8, 0);
     objTexture[0] = texture_tree;
-    // engAddObject(OBJ_TREE, 0, 11, 0);
-    // objTexture[1] = texture_tree;
-    // engAddObject(OBJ_KEY, 9, -6, 0);
+    // engAddObject(OBJ_KEY, 6, -10, 0);
     // objTexture[2] = texture_aKey;
     // engAddObject(OBJ_SOLDIER, -1, 0, 0);
     // objTexture[3] = texture_smily_back;
@@ -137,15 +137,17 @@ void main(){
     dichoInit();
     engPulse();
 
-    ii= dichoNbVal;
-    while (ii >0) {
-        ii -= 1;
-        // printf("%d\t", tabDichoIdxs[ii]);
-        engCurrentObjectIdx = tabDichoIdxs[ii];
-#ifdef USE_SPRTIE        
-        drawSprite (); //objPosX[engCurrentObjectIdx], objPosY[engCurrentObjectIdx], objTexture[engCurrentObjectIdx]);
-#endif
-    }
+//     ii= dichoNbVal;
+//     while (ii >0) {
+//         ii -= 1;
+//         // printf("%d\t", tabDichoIdxs[ii]);
+//         engCurrentObjectIdx = tabDichoIdxs[ii];
+// #ifdef USE_SPRITE        
+//         drawSprite (); //objPosX[engCurrentObjectIdx], objPosY[engCurrentObjectIdx], objTexture[engCurrentObjectIdx]);
+// #endif
+//     }
+
+    drawWalls();
 
     
     printf ("FIN\n");

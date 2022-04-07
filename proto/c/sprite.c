@@ -26,8 +26,10 @@ unsigned char       spriteWallHeight; // TODO: remove
 
 #ifdef USE_C_SPRITE 
 unsigned char           *spritePtrReadTexture;
+unsigned  char *tabPrecalcSpriteOffset;
 #else
 extern unsigned char    *spritePtrReadTexture;
+extern unsigned  char *tabPrecalcSpriteOffset;
 #endif
 unsigned char           spriteTexColumn;
 
@@ -50,7 +52,7 @@ unsigned char *tabPrecalTexPixelOffset[OBJECTS_MAX];
 
 extern unsigned char idxCurrentSlice;
 
-unsigned  char *tabPrecalcSpriteOffset;
+
 
 unsigned char   theVisibility;  
 unsigned char   theObjHeight;
@@ -296,28 +298,71 @@ void drawSpriteCol(){
                 if ((idxCurrentSlice&0x01) == 0){
                     // unrollLeftColumn();
 
+#ifdef USE_C_SPRITE
                     do {
 
                         renCurrentColor     = spritePtrReadTexture[tabPrecalcSpriteOffset [spriteTextureLinIdx]];
                         if (renCurrentColor != EMPTY_ALPHA) {
-                            bufVertColLeft[idxBufVertCol++] = renCurrentColor;
-                        }else{
-                            idxBufVertCol += 1;
+                            bufVertColLeft[idxBufVertCol] = renCurrentColor;
                         }
+                        idxBufVertCol += 1;
                         spriteTextureLinIdx       ++;
                     } while ((--spriteNbLoopLine) != 0);
-
+#else
+                    {asm (
+                        ":.(:loopbasic:"    
+                            "ldy _spriteTextureLinIdx:"
+                            "lda (_tabPrecalcSpriteOffset), y:"
+                            "tay:"
+                            "lda (_spritePtrReadTexture), y:"
+                            "sta _renCurrentColor:"
+                            "cmp #0:" // FIXME Replace by EMPTY_ALPHA
+                            "beq donotdrawtex:"
+                                "ldy _idxBufVertCol:"
+                                "lda _renCurrentColor:"
+                                "sta _bufVertColLeft, y:"
+                            "donotdrawtex:"
+                            "inc _idxBufVertCol:"
+                            "inc _spriteTextureLinIdx:"
+                            "dec _spriteNbLoopLine:"
+                            "beq end_loop:"
+                            "jmp loopbasic:end_loop:.):"
+                        );}
+#endif
                 } else {
                     // unrollRightColumn();
+#ifdef USE_C_SPRITE
                     do {
                         renCurrentColor     = spritePtrReadTexture[tabPrecalcSpriteOffset [spriteTextureLinIdx]];
                         if (renCurrentColor != EMPTY_ALPHA) {
-                            bufVertColRight[idxBufVertCol++] = renCurrentColor;
-                        }else{
-                            idxBufVertCol += 1;
+                            bufVertColRight[idxBufVertCol] = renCurrentColor;
                         }
+                        idxBufVertCol               += 1;
                         spriteTextureLinIdx       ++;
                     } while ((--spriteNbLoopLine) != 0);
+#else
+                    {asm (
+                        ":.(:loopbasic:"    
+                            "ldy _spriteTextureLinIdx:"
+                            "lda (_tabPrecalcSpriteOffset), y:"
+                            "tay:"
+                            "lda (_spritePtrReadTexture), y:"
+                            "sta _renCurrentColor:"
+                            "cmp #0:" // FIXME Replace by EMPTY_ALPHA
+                            "beq donotdrawtex:"
+                                "ldy _idxBufVertCol:"
+                                "lda _renCurrentColor:"
+                                "sta _bufVertColRight, y:"
+                            "donotdrawtex:"
+                            "inc _idxBufVertCol:"
+                            "inc _spriteTextureLinIdx:"
+                            "dec _spriteNbLoopLine:"
+                            "beq end_loop:"
+                            "jmp loopbasic:end_loop:.):"
+                        );}
+
+#endif
+
 
                 }
             }

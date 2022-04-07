@@ -3,6 +3,7 @@
 .zero
 
 #ifndef USE_C_SPRITE
+_tabPrecalcSpriteOffset .dsb 2
 _spritePtrReadTexture .dsb 2
 #endif
 

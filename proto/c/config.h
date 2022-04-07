@@ -2,7 +2,7 @@
 #define CONFIG_H
 
 #include "constants.h"
-
+#define OBJECTS_MAX 8
 #define USE_SPRITE
 #define USE_GENERIC_COLLISION
 
@@ -26,6 +26,7 @@
 #define     USE_C_SPRITE
 #define     USE_C_MOVE
 #define     USE_C_COMPUTELOGDIST
+#define     USE_C_ENGINEPULSE
 
 #else
 
@@ -48,6 +49,7 @@
 #undef     USE_C_SPRITE
 #undef     USE_C_MOVE
 #undef     USE_C_COMPUTELOGDIST
+#undef     USE_C_ENGINEPULSE
 #endif
 
 #endif // CONFIG_H

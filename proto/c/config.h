@@ -25,6 +25,7 @@
 #define     USE_C_DICHOBUF
 #define     USE_C_SPRITE
 #define     USE_C_MOVE
+#define     USE_C_COMPUTELOGDIST
 
 #else
 
@@ -46,6 +47,7 @@
 #undef     USE_C_DICHOBUF
 #undef     USE_C_SPRITE
 #undef     USE_C_MOVE
+#undef     USE_C_COMPUTELOGDIST
 #endif
 
 #endif // CONFIG_H

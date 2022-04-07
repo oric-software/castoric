@@ -170,3 +170,38 @@ unsigned char isVisibleSprite (){
     }
     return 0;
 }
+
+
+
+#ifdef USE_C_COMPUTELOGDIST
+// Input : objPosX/Y[engCurrentObjectIdx], rayCamPosX/Y
+// Oupt : objAngle, objLogDistance
+void computeLogDistance (){
+
+    signed char     deltaX, deltaY;
+    // signed char     alpha;
+    unsigned char   log2Delta;
+    unsigned int    log2dist;
+
+    deltaX          = objPosX[engCurrentObjectIdx]-rayCamPosX;
+    deltaY          = objPosY[engCurrentObjectIdx]-rayCamPosY;
+
+    if ((deltaX == 0) && (deltaY == 0)){
+        objLogDistance[engCurrentObjectIdx] = 0;
+        objAngle[engCurrentObjectIdx] = 0;
+        return ;
+    }
+    
+    objAlpha[engCurrentObjectIdx]  = ATAN2(deltaY, deltaX);
+    objAngle[engCurrentObjectIdx]           = objAlpha[engCurrentObjectIdx]-rayCamRotZ;
+
+    if (abs(deltaX) > abs(deltaY)) {
+        log2Delta = log2_tab[(unsigned char)(abs(deltaX))];
+        objLogDistance[engCurrentObjectIdx] = log2Delta + (unsigned int)tab_1overcos[(unsigned char)objAlpha[engCurrentObjectIdx]];
+    } else {
+        log2Delta = log2_tab[(unsigned char)(abs(deltaY))];
+        objLogDistance[engCurrentObjectIdx] = log2Delta + (unsigned int)tab_1oversin[(unsigned char)objAlpha[engCurrentObjectIdx]];
+    }
+
+}
+#endif // USE_C_COMPUTELOGDIST

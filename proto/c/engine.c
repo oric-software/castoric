@@ -37,50 +37,6 @@ unsigned char engCurrentObjectIdx;
 // char soldier_data [] = {32};
 void soldierUpdate();
 
-
-
-// Input : objPosX/Y[engCurrentObjectIdx], rayCamPosX/Y
-// Oupt : objAngle, objLogDistance
-void computeLogDistance (){
-
-    signed char     deltaX, deltaY;
-    // signed char     alpha;
-    unsigned char   log2Delta;
-    unsigned int    log2dist;
-
-    deltaX          = objPosX[engCurrentObjectIdx]-rayCamPosX;
-    deltaY          = objPosY[engCurrentObjectIdx]-rayCamPosY;
-
-    if ((deltaX == 0) && (deltaY == 0)){
-        objLogDistance[engCurrentObjectIdx] = 0;
-        objAngle[engCurrentObjectIdx] = 0;
-        return ;
-    }
-    
-    objAlpha[engCurrentObjectIdx]  = ATAN2(deltaY, deltaX);
-    objAngle[engCurrentObjectIdx]           = objAlpha[engCurrentObjectIdx]-rayCamRotZ;
-
-    if (abs(deltaX) > abs(deltaY)) {
-        log2Delta = log2_tab[(unsigned char)(abs(deltaX))];
-        objLogDistance[engCurrentObjectIdx] = log2Delta + (unsigned int)tab_1overcos[(unsigned char)objAlpha[engCurrentObjectIdx]];
-    } else {
-        log2Delta = log2_tab[(unsigned char)(abs(deltaY))];
-        objLogDistance[engCurrentObjectIdx] = log2Delta + (unsigned int)tab_1oversin[(unsigned char)objAlpha[engCurrentObjectIdx]];
-    }
-
-}
-
-// void objComputeData(){
-//     signed char     alpha;
-//     objLogDistance  [engCurrentObjectIdx] = computeLogDist (objPosX[engCurrentObjectIdx], objPosY[engCurrentObjectIdx]);
-//     alpha = ATAN2(objPosY[engCurrentObjectIdx]-rayCamPosY, objPosX[engCurrentObjectIdx]-rayCamPosX);
-//     objAngle [engCurrentObjectIdx]        = alpha-rayCamRotZ;
-//     // objColumn [engCurrentObjectIdx]       = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngle [engCurrentObjectIdx]+rayCamRotZ];
-//     // objHeight [engCurrentObjectIdx]       = dist2hh(objLogDistance  [engCurrentObjectIdx]);
-// }
-
-
-
 void engObjectPulse()
 {
     switch (objType[engCurrentObjectIdx])

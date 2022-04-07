@@ -259,4 +259,200 @@ _spritePtrReadTexture .dsb 2
 ;; 
 ;; .)
 ;;     rts
+
+
+_prepareDrawSprites
+.(
+
+    ;; unCompteur= dichoNbVal;
+    ;; while (unCompteur >0) {
+    ;;     unCompteur -= 1;
+    ;;     engCurrentObjectIdx = tabDichoIdxs[unCompteur];
+    ;;     prepareDrawSprite ();
+    ;;     
+    ;; }
+
+
+
+    lda _dichoNbVal
+    sta _unCompteur
+loop
+    lda _unCompteur
+    bne higherthanzero
+    jmp prepareDrawSpritesDone
+higherthanzero
+        dec _unCompteur
+        ldy _unCompteur
+        lda _tabDichoIdxs, Y
+        sta _engCurrentObjectIdx
+        ldy #0: jsr _prepareDrawSprite
+        jmp loop
+prepareDrawSpritesDone
+.)
+    rts
+
+
+_drawSpriteCol:
+.(
+    ;; unCompteur= dichoNbVal;
+    ;; while (unCompteur >0) {
+
+    lda _dichoNbVal
+    sta _unCompteur
+loop
+    lda _unCompteur
+    bne higherthanzero
+    jmp endloop
+higherthanzero
+        ;; unCompteur -= 1;
+        ;; engCurrentObjectIdx = tabDichoIdxs[unCompteur];
+        ;; spriteTexture = objTexture[engCurrentObjectIdx];
+        dec _unCompteur
+        ldy _unCompteur
+        lda _tabDichoIdxs, y
+        sta _engCurrentObjectIdx
+        asl
+        tay
+        lda _objTexture,y: sta _spriteTexture
+        iny: lda _objTexture,y: sta _spriteTexture+1
+
+    ;;    if ((tabSpriteNbLoopColumn[engCurrentObjectIdx] != 0)
+    ;;        && (idxCurrentSlice >= tabSpriteViewportColIdx[engCurrentObjectIdx]) ) {
+        ldy _engCurrentObjectIdx
+        lda _tabSpriteNbLoopColumn,Y
+        bne somemorecol2draw
+        jmp end_if_01
+somemorecol2draw
+        lda _tabSpriteViewportColIdx, y
+        cmp _idxCurrentSlice
+        bcc then_01
+        beq then_01
+        jmp end_if_01
+then_01
+    ;;        if (
+    ;;            (objLogDistance[engCurrentObjectIdx] < raylogdist[idxCurrentSlice])
+    ;;        || (raywall[idxCurrentSlice] == 255)) {
+            ldy _idxCurrentSlice
+            lda _raywall,Y
+            cmp #255
+            beq then_02
+            ;; FIXME : ugly hack because raylogdist is array of 16 bits
+            tya:asl:tay:
+            lda _raylogdist,y
+            ldy _engCurrentObjectIdx
+            cmp _objLogDistance,y
+            bcs then_02
+            jmp end_if_02
+then_02
+                ;; spriteTextureLinIdx     = tabSpriteSavTextureLinIdx[engCurrentObjectIdx];
+                ;; spriteNbLoopLine        = tabSpriteSavNbLoopLine[engCurrentObjectIdx];
+                ;; idxBufVertCol = tabSpriteViewportLinIdx[engCurrentObjectIdx]-VIEWPORT_START_LINE;
+
+                ldy _engCurrentObjectIdx: lda _tabSpriteSavTextureLinIdx,y: sta _spriteTextureLinIdx
+                lda _tabSpriteSavNbLoopLine,y: sta _spriteNbLoopLine
+                lda _tabSpriteViewportLinIdx,y
+                sec: sbc #VIEWPORT_START_LINE
+                sta _idxBufVertCol
+
+                ;; tabPrecalcSpriteOffset = tabPrecalTexPixelOffset[engCurrentObjectIdx];
+                lda _engCurrentObjectIdx: asl: tay
+                lda _tabPrecalTexPixelOffset, y: sta _tabPrecalcSpriteOffset: iny: lda _tabPrecalTexPixelOffset, y: sta _tabPrecalcSpriteOffset+1
+
+                ;; spriteTexColumn               = tabPrecalcSpriteOffset [tabSpriteTextureColIdx[engCurrentObjectIdx]];
+                ldy _engCurrentObjectIdx: lda _tabSpriteTextureColIdx, y: tay: lda (_tabPrecalcSpriteOffset), y
+                sta _spriteTexColumn
+
+                ;; spritePtrReadTexture    = spriteTexture + (unsigned int)((multi32_high[spriteTexColumn] << 8) | multi32_low[spriteTexColumn]);
+                ldy _spriteTexColumn
+                lda _multi32_low,Y
+                clc
+                adc _spriteTexture
+                sta _spritePtrReadTexture
+                lda _multi32_high,Y
+                adc _spriteTexture+1
+                sta _spritePtrReadTexture+1
+
+    ;;          if ((idxCurrentSlice&0x01) == 0){
+                lda _idxCurrentSlice
+                and #$01
+                beq then_03
+                jmp else_if_03
+then_03
+
+                ;;    do {
+                ;;        renCurrentColor     = spritePtrReadTexture[tabPrecalcSpriteOffset [spriteTextureLinIdx]];
+                ;;        if (renCurrentColor != EMPTY_ALPHA) {
+                ;;            bufVertColLeft[idxBufVertCol] = renCurrentColor;
+                ;;        }
+                ;;        idxBufVertCol += 1;
+                ;;        spriteTextureLinIdx       ++;
+                ;;    } while ((--spriteNbLoopLine) != 0);
+.(
+loopbasic
+                            ldy _spriteTextureLinIdx
+                            lda (_tabPrecalcSpriteOffset), y
+                            tay
+                            lda (_spritePtrReadTexture), y
+                            sta _renCurrentColor
+                            cmp #EMPTY_ALPHA:
+                            beq donotdrawtex
+                                ldy _idxBufVertCol
+                                lda _renCurrentColor
+                                sta _bufVertColLeft, y
+donotdrawtex
+                            inc _idxBufVertCol
+                            inc _spriteTextureLinIdx
+                            dec _spriteNbLoopLine
+                            beq end_loop
+                            jmp loopbasic:
+end_loop:.)
+
+                jmp end_if_03
+else_if_03
+
+                ;;    do {
+                ;;        renCurrentColor     = spritePtrReadTexture[tabPrecalcSpriteOffset [spriteTextureLinIdx]];
+                ;;        if (renCurrentColor != EMPTY_ALPHA) {
+                ;;            bufVertColRight[idxBufVertCol] = renCurrentColor;
+                ;;        }
+                ;;        idxBufVertCol               += 1;
+                ;;        spriteTextureLinIdx       ++;
+                ;;    } while ((--spriteNbLoopLine) != 0);
+
+.(:
+loopbasic
+                            ldy _spriteTextureLinIdx
+                            lda (_tabPrecalcSpriteOffset), y
+                            tay
+                            lda (_spritePtrReadTexture), y
+                            sta _renCurrentColor
+                            cmp #EMPTY_ALPHA
+                            beq donotdrawtex
+                                ldy _idxBufVertCol
+                                lda _renCurrentColor
+                                sta _bufVertColRight, y
+donotdrawtex
+                            inc _idxBufVertCol
+                            inc _spriteTextureLinIdx
+                            dec _spriteNbLoopLine
+                            beq end_loop
+                            jmp loopbasic:
+end_loop:.)
+
+end_if_03
+
+end_if_02
+
+            ;; tabSpriteTextureColIdx[engCurrentObjectIdx] += 1;
+            ;; tabSpriteNbLoopColumn[engCurrentObjectIdx]  -= 1;
+        ldx _engCurrentObjectIdx
+        inc _tabSpriteTextureColIdx, x
+        dec _tabSpriteNbLoopColumn, x
+
+end_if_01
+    jmp loop
+endloop
+drawSpriteColDone
+.)
+    rts
 #endif ;;USE_C_SPRITE

@@ -98,74 +98,6 @@ void precalcSpriteTexPixelRunthrough(){
 extern void colorLeftTexel ();
 extern void colorRightTexel ();
 
-// ============================================ //
-// #ifdef USE_C_SPRITE 
-// void unrollLeftColumn();
-// void unrollRightColumn();
-
-// void spriteDrawColumn() {
-    
-//     if ((objLogDistance[engCurrentObjectIdx] < raylogdist[spriteViewportColIdx-VIEWPORT_START_COLUMN-1])
-//      || (raywall[spriteViewportColIdx-VIEWPORT_START_COLUMN-1] == 255)) {
-
-//         spriteTextureLinIdx     = spriteSavTextureLinIdx;
-//         spriteNbLoopLine              = spriteSavNbLoopLine;
-
-//         theAdr                  = (unsigned char *)((int)baseAdr + spriteScreenOffset ); // multi120[spriteViewportLinIdx]); // 
-
-//         // Parcours ligne
-//         spriteTexColumn               = precalTexPixelOffset [spriteTextureColIdx];
-//         spritePtrReadTexture    = spriteTexture + (unsigned int)((multi32_high[spriteTexColumn] << 8) | multi32_low[spriteTexColumn]);
-
-
-//         if ((spriteViewportColIdx&0x01) != 0){
-//             unrollLeftColumn();
-//         } else {
-//             unrollRightColumn();
-//         }
-//     }
-// }
-
-
-// void unrollRightColumn() {
-
-//     do {
-//         renCurrentColor     = spritePtrReadTexture[precalTexPixelOffset [spriteTextureLinIdx]];
-//         if (renCurrentColor != EMPTY_ALPHA) {
-//             colorRightTexel();
-//         }else{
-//             theAdr              += 120; 
-//         }
-//         spriteTextureLinIdx       ++;
-//     } while ((--spriteNbLoopLine) != 0);
-
-// }
-
-// void unrollLeftColumn() {
-
-//     do {
-
-//         renCurrentColor     = spritePtrReadTexture[precalTexPixelOffset [spriteTextureLinIdx]];
-//         if (renCurrentColor != EMPTY_ALPHA) {
-//             colorLeftTexel();
-//         }else{
-//             theAdr              += 120; 
-//         }
-//         spriteTextureLinIdx       ++;
-
-//     } while ((--spriteNbLoopLine) != 0);
-
-// }
-
-// void prepareScreenAdr(){
-
-//     spriteScreenOffset = ((int)(multi120_high[spriteViewportLinIdx]<<8) | (int)(multi120_low[spriteViewportLinIdx]));
-//     baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + 1 + ((spriteViewportColIdx)>>1));
-
-// }
-// #endif // USE_C_SPRITE 
-
-
 
 #define min(x,y)          (((x)<(y))?(x):(y))
 
@@ -178,11 +110,8 @@ void prepareDrawSprite (){
 
     theVisibility = isVisibleSprite();
 
-    // if (theVisibility == 0) return ;
-
     if ((theObjHeight=dist2hh(objLogDistance[engCurrentObjectIdx])) == 0) return;
-
-    
+   
 
     spriteHeight            = theObjHeight*2;
 
@@ -217,30 +146,24 @@ void prepareDrawSprite (){
 
     } else if (theVisibility == 2) {
         spriteRefColumn = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngleRight];
-        // if (spriteRefColumn > VIEWPORT_START_COLUMN) {
 
-            // displaySpriteRightVisible();
-            tabSpriteViewportColIdx[engCurrentObjectIdx]          = 0; 
-            tabSpriteTextureColIdx[engCurrentObjectIdx]           = spriteHeight-spriteRefColumn-1;
-            tabSpriteNbLoopColumn[engCurrentObjectIdx]                = spriteRefColumn; // spriteRefColumn-VIEWPORT_START_COLUMN;
-            // if (spriteNbLoopColumn == 0) return ;
+        // displaySpriteRightVisible();
+        tabSpriteViewportColIdx[engCurrentObjectIdx]          = 0; 
+        tabSpriteTextureColIdx[engCurrentObjectIdx]           = spriteHeight-spriteRefColumn-1;
+        tabSpriteNbLoopColumn[engCurrentObjectIdx]                = spriteRefColumn; // spriteRefColumn-VIEWPORT_START_COLUMN;
+        // if (spriteNbLoopColumn == 0) return ;
 
-            if (spriteHeight > VIEWPORT_HEIGHT){
-                tabSpriteViewportLinIdx[engCurrentObjectIdx]        = VIEWPORT_START_LINE + 1;
-                tabSpriteSavTextureLinIdx[engCurrentObjectIdx]      = spriteHeight/2 - VIEWPORT_HEIGHT/ 2  + 1;
-                tabSpriteSavNbLoopLine[engCurrentObjectIdx]               = VIEWPORT_HEIGHT  - 1;
-            } else {
-                tabSpriteSavTextureLinIdx[engCurrentObjectIdx]      = 0;
-                tabSpriteViewportLinIdx[engCurrentObjectIdx]        = VIEWPORT_HEIGHT/ 2 - spriteHeight/2 + VIEWPORT_START_LINE;
-                tabSpriteSavNbLoopLine[engCurrentObjectIdx]               = spriteHeight ;
-            }
+        if (spriteHeight > VIEWPORT_HEIGHT){
+            tabSpriteViewportLinIdx[engCurrentObjectIdx]        = VIEWPORT_START_LINE + 1;
+            tabSpriteSavTextureLinIdx[engCurrentObjectIdx]      = spriteHeight/2 - VIEWPORT_HEIGHT/ 2  + 1;
+            tabSpriteSavNbLoopLine[engCurrentObjectIdx]               = VIEWPORT_HEIGHT  - 1;
+        } else {
+            tabSpriteSavTextureLinIdx[engCurrentObjectIdx]      = 0;
+            tabSpriteViewportLinIdx[engCurrentObjectIdx]        = VIEWPORT_HEIGHT/ 2 - spriteHeight/2 + VIEWPORT_START_LINE;
+            tabSpriteSavNbLoopLine[engCurrentObjectIdx]               = spriteHeight ;
+        }
 
-            // tabSpriteViewportColIdx[engCurrentObjectIdx]          -= tabSpriteNbLoopColumn[engCurrentObjectIdx];
-            // tabSpriteTextureColIdx[engCurrentObjectIdx]           -= tabSpriteNbLoopColumn[engCurrentObjectIdx];
-        // } else {
-        //     // FIXME: make sprite not visible
-        //     tabSpriteViewportColIdx[engCurrentObjectIdx] = NUMBER_OF_SLICE;
-        // }
+
     } else if (theVisibility == 3) {
         spriteRefColumn = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngleLeft];
 
@@ -267,8 +190,19 @@ void prepareDrawSprite (){
 
 
 
+#ifdef USE_C_SPRITE
 
-// -VIEWPORT_START_COLUMN-1
+void prepareDrawSprites (){
+
+    unCompteur= dichoNbVal;
+    while (unCompteur >0) {
+        unCompteur -= 1;
+        engCurrentObjectIdx = tabDichoIdxs[unCompteur];
+        prepareDrawSprite ();
+        
+    }
+}
+
 
 void drawSpriteCol(){
 
@@ -277,7 +211,6 @@ void drawSpriteCol(){
         unCompteur -= 1;
         engCurrentObjectIdx = tabDichoIdxs[unCompteur];
         spriteTexture = objTexture[engCurrentObjectIdx];
-
 
         if ((tabSpriteNbLoopColumn[engCurrentObjectIdx] != 0)
             && (idxCurrentSlice >= tabSpriteViewportColIdx[engCurrentObjectIdx]) ) {
@@ -288,17 +221,17 @@ void drawSpriteCol(){
 
                 spriteTextureLinIdx     = tabSpriteSavTextureLinIdx[engCurrentObjectIdx];
                 spriteNbLoopLine        = tabSpriteSavNbLoopLine[engCurrentObjectIdx];
+                idxBufVertCol = tabSpriteViewportLinIdx[engCurrentObjectIdx]-VIEWPORT_START_LINE;
 
                 // Parcours ligne
                 tabPrecalcSpriteOffset = tabPrecalTexPixelOffset[engCurrentObjectIdx];
+
                 spriteTexColumn               = tabPrecalcSpriteOffset [tabSpriteTextureColIdx[engCurrentObjectIdx]];
+
                 spritePtrReadTexture    = spriteTexture + (unsigned int)((multi32_high[spriteTexColumn] << 8) | multi32_low[spriteTexColumn]);
 
-                idxBufVertCol = tabSpriteViewportLinIdx[engCurrentObjectIdx]-VIEWPORT_START_LINE;
                 if ((idxCurrentSlice&0x01) == 0){
                     // unrollLeftColumn();
-
-#ifdef USE_C_SPRITE
                     do {
 
                         renCurrentColor     = spritePtrReadTexture[tabPrecalcSpriteOffset [spriteTextureLinIdx]];
@@ -308,30 +241,8 @@ void drawSpriteCol(){
                         idxBufVertCol += 1;
                         spriteTextureLinIdx       ++;
                     } while ((--spriteNbLoopLine) != 0);
-#else
-                    {asm (
-                        ":.(:loopbasic:"    
-                            "ldy _spriteTextureLinIdx:"
-                            "lda (_tabPrecalcSpriteOffset), y:"
-                            "tay:"
-                            "lda (_spritePtrReadTexture), y:"
-                            "sta _renCurrentColor:"
-                            "cmp #0:" // FIXME Replace by EMPTY_ALPHA
-                            "beq donotdrawtex:"
-                                "ldy _idxBufVertCol:"
-                                "lda _renCurrentColor:"
-                                "sta _bufVertColLeft, y:"
-                            "donotdrawtex:"
-                            "inc _idxBufVertCol:"
-                            "inc _spriteTextureLinIdx:"
-                            "dec _spriteNbLoopLine:"
-                            "beq end_loop:"
-                            "jmp loopbasic:end_loop:.):"
-                        );}
-#endif
                 } else {
                     // unrollRightColumn();
-#ifdef USE_C_SPRITE
                     do {
                         renCurrentColor     = spritePtrReadTexture[tabPrecalcSpriteOffset [spriteTextureLinIdx]];
                         if (renCurrentColor != EMPTY_ALPHA) {
@@ -340,30 +251,6 @@ void drawSpriteCol(){
                         idxBufVertCol               += 1;
                         spriteTextureLinIdx       ++;
                     } while ((--spriteNbLoopLine) != 0);
-#else
-                    {asm (
-                        ":.(:loopbasic:"    
-                            "ldy _spriteTextureLinIdx:"
-                            "lda (_tabPrecalcSpriteOffset), y:"
-                            "tay:"
-                            "lda (_spritePtrReadTexture), y:"
-                            "sta _renCurrentColor:"
-                            "cmp #0:" // FIXME Replace by EMPTY_ALPHA
-                            "beq donotdrawtex:"
-                                "ldy _idxBufVertCol:"
-                                "lda _renCurrentColor:"
-                                "sta _bufVertColRight, y:"
-                            "donotdrawtex:"
-                            "inc _idxBufVertCol:"
-                            "inc _spriteTextureLinIdx:"
-                            "dec _spriteNbLoopLine:"
-                            "beq end_loop:"
-                            "jmp loopbasic:end_loop:.):"
-                        );}
-
-#endif
-
-
                 }
             }
             tabSpriteTextureColIdx[engCurrentObjectIdx] += 1;
@@ -372,15 +259,6 @@ void drawSpriteCol(){
     }
 }
 
-void prepareDrawSprites (){
-
-    unCompteur= dichoNbVal;
-    while (unCompteur >0) {
-        unCompteur -= 1;
-        engCurrentObjectIdx = tabDichoIdxs[unCompteur];
-        prepareDrawSprite ();
-    }
-
-}
+#endif // USE_C_SPRITE
 
 #endif // USE_SPRITE

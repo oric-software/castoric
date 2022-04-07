@@ -1,6 +1,6 @@
 // Inpired by Rax https://github.com/raxrax/oricAsciiTank
 
-#define OBJECTS_MAX 8
+
 
 // objects
 #define OBJ_KEY 1
@@ -52,6 +52,7 @@ void engObjectPulse()
     }
 }
 
+#ifdef USE_C_ENGINEPULSE
 void engPulse() {
     for (engCurrentObjectIdx = 0; engCurrentObjectIdx < OBJECTS_MAX; engCurrentObjectIdx++) {
         if (objActive[engCurrentObjectIdx]) {
@@ -59,20 +60,8 @@ void engPulse() {
         }
     }
 
-    // {
-    //     asm (
-    //         "ldy #17: sty _engCurrentObjectIdx:"
-    //         "engPulseLoop:"
-    //             "lda _objActive, y:"
-    //             "beq EndIfObjectIsActive:"
-    //                 "jsr _engObjectPulse:"
-    //             "EndIfObjectIsActive:"
-    //             "dec _engCurrentObjectIdx: ldy _engCurrentObjectIdx: bpl engPulseLoop:"
-    //         "engPulseEndLoop:"
-    //     );
-    // }
 }
-
+#endif // USE_C_ENGINEPULSE
 
 unsigned char computeRelativeOrientation (signed char direction, signed char rayCamRotZ);
 // void keyUpdate()

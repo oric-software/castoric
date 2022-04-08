@@ -20,7 +20,7 @@ strConstants = f"""// Generated file. Do not modify by hand.
 #define VIEWPORT_START_LINE             {config.VIEWPORT_START_LINE}
 #define TEXTURE_SIZE                    {config.TEXTURE_SIZE}
 #define HALF_FOV_FIX_ANGLE              {config.HALF_FOV_FIX_ANGLE}
-#define EMPTY_ALPHA                     0
+#define EMPTY_ALPHA                     17
 
 // [ref scene_describe]
 #define NB_MAX_WALL                     {config.NB_MAX_WALL}

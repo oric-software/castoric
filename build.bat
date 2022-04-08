@@ -41,4 +41,4 @@ python tools\texture2buf.py img\soldier_left.bmp > proto\c\texture_sleft.h
 python tools\texture2buf.py img\soldier_right.bmp > proto\c\texture_sright.h
 
 
-python tools\texture2buf.py img\tree.png > proto\c\texture_tree.h
+python tools\texture2buf.py img\tree.bmp > proto\c\texture_tree.h

@@ -9,4 +9,4 @@ SET OSDKFILE=texel_s engine_s dist_s vertcolbuf_s tab3trigo player_s game_s kern
 SET OSDKFILE=%OSDKFILE%  profile
 SET OSDKCOMP=-O2
 set OSDKLINK=
-:: display buffer clip line8 profile ay_s viewport_s 
+:: display buffer clip line8 profile ay_s viewport_s column_s 

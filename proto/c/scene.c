@@ -5,6 +5,8 @@
 // #include "texture_redbrick.h"
 // #include "texture_logo.h"
 #include "texture_bluewall.h"
+#include "texture_metalwall.h"
+#include "texture_door.h"
 // #include "textures/texture_bigleaves.h"
 // #include "textures/texture_bigsquares.h"
 // #include "textures/texture_dentwall.h"
@@ -15,7 +17,7 @@ unsigned char wallTexture_low[NB_MAX_WALL] ;
 // [ref scene_describe]
 signed char scene_00[] = {
 
-    /* nbPoints = */ 12, /* nbWall = */ 11
+    /* nbPoints = */ 14, /* nbWall = */ 12
 	, -3, 12	 	// P0
 	, -9, 12		// P1
 	, -9,  0		// P2
@@ -28,6 +30,9 @@ signed char scene_00[] = {
 	,  3,  12		// P9
 	, -3, 18		// P10
 	,  3, 18		// P11
+	// door
+	, -3, 15        // P12
+	, 3 , 15        // P13 
 
 	, 0, 1   // W0
 	, 1, 2   // W1
@@ -40,6 +45,8 @@ signed char scene_00[] = {
 	, 8, 9   // W8
 	, 0, 10  // W9
 	, 9, 11  // W10
+	// door 
+	, 12, 13 // W11
 
 };
 
@@ -54,8 +61,9 @@ unsigned char *texture_00[]= {
 	, texture_texture_bluewall // , texture_dentwall			// W3
 	, texture_texture_bluewall // , texture_dentwall			// W3
 	, texture_texture_bluewall // , texture_dentwall			// W3
-	, texture_texture_bluewall // , texture_dentwall			// W3
-	, texture_texture_bluewall // , texture_dentwall			// W3
+	, texture_texture_metalwall // , texture_dentwall			// W3
+	, texture_texture_metalwall // , texture_dentwall			// W3
+	, texture_texture_door
 };
 
 

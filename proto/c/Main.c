@@ -65,8 +65,8 @@ void prepareRGB(){
 // [ref camera_situation]
 void initCamera(){
     rayCamPosX               = 0;
-    rayCamPosY               = -8; 
-    rayCamRotZ               = 64;
+    rayCamPosY               = 0; 
+    rayCamRotZ               = -64;
     RayLeftAlpha            = rayCamRotZ + HALF_FOV_FIX_ANGLE;
 }
 
@@ -133,14 +133,14 @@ void gameLoop() {
 
 #ifdef USE_SPRITE
     engInitObjects();
-    engAddObject(OBJ_TREE, 0, 0, 0);
-    objTexture[0] = texture_tree;
+    engAddObject(OBJ_TREE, 5, 10, 0);
+    objTexture[engCurrentObjectIdx] = texture_tree;
     // engAddObject(OBJ_TREE, 0, 11, 0);
-    // objTexture[1] = texture_tree;
+    // objTexture[engCurrentObjectIdx] = texture_tree;
     // engAddObject(OBJ_KEY, 9, -6, 0);
-    // objTexture[2] = texture_aKey;
-    engAddObject(OBJ_SOLDIER, 0, -4, 0);
-    objTexture[1] = texture_smily_back;
+    // objTexture[engCurrentObjectIdx] = texture_aKey;
+    engAddObject(OBJ_SOLDIER, 0, 10, 0);
+    objTexture[engCurrentObjectIdx] = texture_smily_back;
 #endif // USE_SPRITE
 
 	kernelInit();
@@ -155,16 +155,16 @@ void gameLoop() {
         
         doke(630,0);
 
-        if ((doorState==1) && (scene_00[2+4*2] != 6)) {
-            scene_00[2+4*2] ++;
-            scene_00[2+5*2] ++;
-            if (scene_00[2+4*2] == 6) doorState = 0;
-            initScene (scene_00, texture_00);
-            refreshNeeded = 1;
-        } else {
+        // if ((doorState==1) && (scene_00[2+4*2] != 6)) {
+        //     scene_00[2+4*2] ++;
+        //     scene_00[2+5*2] ++;
+        //     if (scene_00[2+4*2] == 6) doorState = 0;
+        //     initScene (scene_00, texture_00);
+        //     refreshNeeded = 1;
+        // } else {
             // player ();
             lsys();
-        }
+        // }
 
         dichoInit();
         engPulse();

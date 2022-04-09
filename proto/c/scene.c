@@ -15,26 +15,45 @@ unsigned char wallTexture_low[NB_MAX_WALL] ;
 // [ref scene_describe]
 signed char scene_00[] = {
 
-    /* nbPoints = */ 6, /* nbWall = */ 5
-	, -6, -6	 	// P0
-	, -6,  6		// P1
-	,  6,  6		// P2
-	,  6, -6		// P3
-	, -2, -6	 	// P4
-	,  2, -6		// P5
+    /* nbPoints = */ 12, /* nbWall = */ 11
+	, -3, 12	 	// P0
+	, -9, 12		// P1
+	, -9,  0		// P2
+	, -9, -12		// P3
+	, -3, -12	 	// P4
+	,  3, -12		// P5
+	,  9, -12		// P6
+	,  9,  0		// P7
+	,  9,  12		// P8
+	,  3,  12		// P9
+	, -3, 18		// P10
+	,  3, 18		// P11
 
 	, 0, 1   // W0
 	, 1, 2   // W1
 	, 2, 3   // W2
-	, 0, 4   // W3
-	, 5, 3   // W4
+	, 3, 4   // W3
+	, 4, 5   // W4
+	, 5, 6   // W5
+	, 6, 7   // W6
+	, 7, 8   // W7
+	, 8, 9   // W8
+	, 0, 10  // W9
+	, 9, 11  // W10
+
 };
 
 // [ref texture_file2buffer]
 unsigned char *texture_00[]= {
-	texture_bigbricks // texture_bigbricks		// W0
+	  texture_bigbricks // texture_bigbricks		// W0
 	, texture_bigbricks // , texture_bigleaves		// W1
 	, texture_bigbricks //, texture_bigsquares		// W2
+	, texture_bigbricks // , texture_dentwall			// W3
+	, texture_bigbricks // , texture_dentwall			// W3
+	, texture_bigbricks // , texture_dentwall			// W3
+	, texture_bigbricks // , texture_dentwall			// W3
+	, texture_bigbricks // , texture_dentwall			// W3
+	, texture_bigbricks // , texture_dentwall			// W3
 	, texture_bigbricks // , texture_dentwall			// W3
 	, texture_bigbricks // , texture_dentwall			// W3
 };

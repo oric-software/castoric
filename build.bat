@@ -45,7 +45,7 @@ python tools\texture2buf.py img\sprite_lamp.bmp > proto\c\sprite_lamp.h
 python tools\texture2buf.py img\texture_bluewall.bmp > proto\c\texture_bluewall.h
 python tools\texture2buf.py img\texture_door.bmp > proto\c\texture_door.h
 python tools\texture2buf.py img\texture_gridwall.bmp > proto\c\texture_gridwall.h
-python tools\texture2buf.py img\texture_metalwook.bmp > proto\c\texture_metalwook.h
+python tools\texture2buf.py img\texture_metalwall.bmp > proto\c\texture_metalwall.h
 
 
 python tools\texture2buf.py img\tree.bmp > proto\c\texture_tree.h

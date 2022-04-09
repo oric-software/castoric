@@ -6,7 +6,7 @@
 #ifndef  USE_C_VERTCOLBUF
 _initBufVertCol
 
-patch_sky_color:lda #$03	; Blue Sky
+patch_sky_color:lda #21	; Blue Sky
 sta _bufVertColRight+0
 sta _bufVertColLeft+0
 sta _bufVertColRight+1
@@ -39,6 +39,7 @@ sta _bufVertColRight+14
 sta _bufVertColLeft+14
 sta _bufVertColRight+15
 sta _bufVertColLeft+15
+patch_ground_color:lda #42	; Green Grass Ground
 sta _bufVertColRight+16
 sta _bufVertColLeft+16
 sta _bufVertColRight+17
@@ -67,7 +68,6 @@ sta _bufVertColRight+28
 sta _bufVertColLeft+28
 sta _bufVertColRight+29
 sta _bufVertColLeft+29
-patch_ground_color:lda #$0C	; Green Grass Ground
 sta _bufVertColRight+30
 sta _bufVertColLeft+30
 sta _bufVertColRight+31

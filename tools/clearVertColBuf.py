@@ -26,13 +26,13 @@ def main ():
     
 	content = ficcontent_header
     # Generate Sky part of viewport
-	content += f"patch_sky_color:lda #$03	; Blue Sky\n"
+	content += f"patch_sky_color:lda #21	; Blue Sky\n"
 	for ii in range (0, config.VIEWPORT_HEIGHT//2):
 		content += f"sta _bufVertColRight+{ii}\n"
 		content += f"sta _bufVertColLeft+{ii}\n"
 
 	# Generate Ground part of viewport
-	content += f"patch_ground_color:lda #$0C	; Green Grass Ground\n"
+	content += f"patch_ground_color:lda #42	; Green Grass Ground\n"
 	for ii in range (config.VIEWPORT_HEIGHT//2, config.VIEWPORT_HEIGHT):
 		content += f"sta _bufVertColRight+{ii}\n"
 		content += f"sta _bufVertColLeft+{ii}\n"

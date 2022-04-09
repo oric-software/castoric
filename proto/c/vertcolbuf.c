@@ -4,8 +4,8 @@ unsigned char bufVertColRight[VIEWPORT_HEIGHT+ VIEWPORT_START_LINE];
 unsigned char bufVertColLeft[VIEWPORT_HEIGHT+ VIEWPORT_START_LINE];
 unsigned char idxBufVertCol;
 
-#define BLUE_SKY 3
-#define GREEN_GRASS 12
+#define BLUE_SKY 21
+#define GREEN_GRASS 42
 
 #ifdef USE_C_VERTCOLBUF
 

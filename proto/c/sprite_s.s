@@ -341,7 +341,9 @@ then_01
             lda _raylogdist,y
             ldy _engCurrentObjectIdx
             cmp _objLogDistance,y
+            beq goto_endif
             bcs then_02
+goto_endif            
             jmp end_if_02
 then_02
                 ;; spriteTextureLinIdx     = tabSpriteSavTextureLinIdx[engCurrentObjectIdx];

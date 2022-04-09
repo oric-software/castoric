@@ -103,6 +103,7 @@ void keyPressed(unsigned char c){
     } else if (c == keyQuit) {
             running = 0;
     } else if (c ==  0x20) {
+        doorData[0]=1;
         if ((rayCamPosY <= -4) && (doorState == 2)){
             doorState = 1;
         }
@@ -130,12 +131,15 @@ void lsys(){
 }
 #endif // PROFILER_ENABLE
 
+
 void gameLoop() {
 
 #ifdef USE_SPRITE
     engInitObjects();
-    engAddObject(OBJ_TREE, 5, 10, 0);
-    objTexture[engCurrentObjectIdx] = texture_tree;
+
+    engAddObject(OBJ_DOOR, 5, 10, doorData);
+    idObjDoor = engCurrentObjectIdx;
+
     // engAddObject(OBJ_TREE, 0, 11, 0);
     // objTexture[engCurrentObjectIdx] = texture_tree;
     // engAddObject(OBJ_KEY, 9, -6, 0);

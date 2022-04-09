@@ -3,7 +3,7 @@
 
 
 // objects
-#define OBJ_KEY 1
+#define OBJ_DOOR 1
 #define OBJ_TREE 2
 #define OBJ_SOLDIER 3
 
@@ -11,7 +11,7 @@ unsigned char   objType     [OBJECTS_MAX];
 unsigned char   objActive   [OBJECTS_MAX];
 signed char     objPosX     [OBJECTS_MAX];
 signed char     objPosY     [OBJECTS_MAX];
-char *          objData     [OBJECTS_MAX];
+signed char *   objData     [OBJECTS_MAX];
 unsigned char * objTexture  [OBJECTS_MAX];
 
 
@@ -36,12 +36,19 @@ unsigned char engCurrentObjectIdx;
 // void itemUpdate();
 // char soldier_data [] = {32};
 void soldierUpdate();
+signed char doorData[] = {0}; // state 0 : close,  1..6 : opening, 7: opened , 
+unsigned char idObjDoor;
+
+void doorUpdate();
+
 
 void engObjectPulse()
 {
     switch (objType[engCurrentObjectIdx])
     {
-        case OBJ_KEY:
+        case OBJ_DOOR:
+            doorUpdate();
+            break;
         case OBJ_TREE:
             computeLogDistance();
             dichoInsert (engCurrentObjectIdx, objLogDistance[engCurrentObjectIdx]);
@@ -77,6 +84,20 @@ unsigned char computeRelativeOrientation (signed char direction, signed char ray
 //     // objPosY[engCurrentObjectIdx] = ey;
 // }
 
+
+void doorUpdate()
+{
+	signed char ex = objPosX[engCurrentObjectIdx];
+    signed char ey = objPosY[engCurrentObjectIdx];
+    signed char state = *(objData[engCurrentObjectIdx]);
+    if (state != 0 && state < 7) {
+        state ++;
+        scene_00[26] ++;
+        *(objData[engCurrentObjectIdx])=state;
+        initScene (scene_00, texture_00);
+    }
+    if (state == 7) objActive[engCurrentObjectIdx]=0;
+}
 
 void soldierUpdate()
 {
@@ -148,7 +169,7 @@ void engInitObjects()
 }
 #endif USE_C_ENGINEPULSE
 
-void engAddObject(char type, signed char x, signed char y, char *data)
+void engAddObject(char type, signed char x, signed char y, signed char *data)
 {
     for (engCurrentObjectIdx = 0; engCurrentObjectIdx < OBJECTS_MAX; engCurrentObjectIdx++)
     {

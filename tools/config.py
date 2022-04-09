@@ -3,11 +3,11 @@ import math
 WALL_HEIGHT             = 6
 CAMERA_PLANE_HEIGHT     = 8
 
-HFOV_IN_DEGREES         = 112 # 112
-VIEWPORT_WIDTH          = 74 # 80 # 48 # 48 # 48 # Max : 80
-VIEWPORT_HEIGHT         = 60 # 64 # 32 # 32 # 32 # Max : 64
-VIEWPORT_START_COLUMN   =  2 #  0 # 16 # 32 #  2 # Min : 0
-VIEWPORT_START_LINE     =  2 #  0 # 16 # 32 #  0 # Min : 0
+HFOV_IN_DEGREES         = 92 # 112
+VIEWPORT_WIDTH          = 48 # 74 # 80 # 48 # 48 # Max : 80
+VIEWPORT_HEIGHT         = 32 # 60 # 64 # 32 # 32 # Max : 64
+VIEWPORT_START_COLUMN   = 16 #  2 #  0 # 32 #  2 # Min : 0
+VIEWPORT_START_LINE     = 16 #  2 #  0 # 32 #  0 # Min : 0
 
 NB_MAX_WALL             = 32
 NB_MAX_POINT            = 64

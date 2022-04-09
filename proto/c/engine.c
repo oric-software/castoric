@@ -140,18 +140,13 @@ void soldierUpdate()
 #endif
     refreshNeeded = 1;
 }
-
+#ifdef USE_C_ENGINEPULSE
 void engInitObjects()
 {
     unsigned char i;
     for (i = 0; i < OBJECTS_MAX; i++) objActive[i] = 0;
-    // {asm(
-    //     "ldy #17:"
-    //     "lda #0:"
-    //     "loopEngInitObjects:"
-    //     "sta _objActive, y:dey:bpl loopEngInitObjects:"
-    // );}
 }
+#endif USE_C_ENGINEPULSE
 
 void engAddObject(char type, signed char x, signed char y, char *data)
 {

@@ -150,19 +150,18 @@ void engInitObjects()
 
 void engAddObject(char type, signed char x, signed char y, char *data)
 {
-    unsigned char i;
-    for (i = 0; i < OBJECTS_MAX; i++)
+    for (engCurrentObjectIdx = 0; engCurrentObjectIdx < OBJECTS_MAX; engCurrentObjectIdx++)
     {
-        if (objActive[i] == 0)
-        {
-            objActive[i] = 1;
-            objType[i] = type;
-            objPosX[i] = x;
-            objPosY[i] = y;
-            objData[i] = data;
-            return;
-        }
+        if (objActive[engCurrentObjectIdx] == 0) break;
     }
+    if (engCurrentObjectIdx != OBJECTS_MAX) {
+        objActive[engCurrentObjectIdx] = 1;
+        objType[engCurrentObjectIdx] = type;
+        objPosX[engCurrentObjectIdx] = x;
+        objPosY[engCurrentObjectIdx] = y;
+        objData[engCurrentObjectIdx] = data;
+    };
+
 }
 
 // void engDeleteObject(unsigned char objectNumber) {

@@ -140,10 +140,10 @@ void gameLoop() {
     engAddObject(OBJ_DOOR, 5, 10, doorData);
     idObjDoor = engCurrentObjectIdx;
 
-    engAddObject(OBJ_LAMP, 0, 27, doorData);
+    engAddObject(OBJ_LAMP, 0, 27, 0);
     objTexture[engCurrentObjectIdx] = texture_sprite_lamp;
 
-    engAddObject(OBJ_LAMP, -24, 27, doorData);
+    engAddObject(OBJ_LAMP, -24, 27, 0);
     objTexture[engCurrentObjectIdx] = texture_sprite_lamp;
 
 

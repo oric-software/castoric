@@ -14,7 +14,7 @@
 #define EMPTY_ALPHA                     17
 
 // [ref scene_describe]
-#define NB_MAX_WALL                     32
+#define NB_MAX_WALL                     60
 #define NB_MAX_POINT                    64
 
 //((unsigned int)0xA000)

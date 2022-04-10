@@ -9,7 +9,7 @@ VIEWPORT_HEIGHT         = 32 # 60 # 64 # 32 # 32 # Max : 64
 VIEWPORT_START_COLUMN   = 16 #  2 #  0 # 32 #  2 # Min : 0
 VIEWPORT_START_LINE     = 16 #  2 #  0 # 32 #  0 # Min : 0
 
-NB_MAX_WALL             = 32
+NB_MAX_WALL             = 60
 NB_MAX_POINT            = 64
 
 NUMBER_OF_SLICE         = VIEWPORT_WIDTH

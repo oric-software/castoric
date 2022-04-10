@@ -108,34 +108,55 @@ void soldierUpdate()
     signed char sex, sey;
 	signed char ex = objPosX[engCurrentObjectIdx];
     signed char ey = objPosY[engCurrentObjectIdx];
-    sex = ex;
-    sey = ey;
     direction = *(objData[engCurrentObjectIdx]);
-    if (-112 >= direction) {
-        ex--;
-    } else if ((-112 < direction) && (-80 >= direction)) {
-        ex--; ey--;
-    } else if ((-80 < direction) && (-48 >= direction)) {
-        ey--;
-    } else if ((-48 < direction) && (-16 >= direction)) {
-        ex++; ey--;
-    } else if ((-16 < direction) && (16 >= direction)) {
-        ex++;
-    } else if ((16 < direction) && (48 >= direction)) {
-        ex++; ey++;
-    } else if ((48 < direction) && (80 >= direction)) {
-        ey++;
-    } else if ((80 < direction) && (112 >= direction)) {
-        ex--; ey++;
+    if (ey == 60) { //(ex == 24) 
+        if (direction == -64){
+            ey --;
+        } else {
+            direction += 16;
+        }
+    } else if (ey == -3) {
+        if (direction == 64){
+            ey ++;
+        } else {
+            direction += 16;
+        }
     } else {
-        ex--;
+        if (direction == -64){
+            ey --;
+        } else {
+            ey ++;;
+        }
     }
-    if (isInWall(ex, ey)) {
-         direction += 16;
-         *(objData[engCurrentObjectIdx]) = direction;
-         ex = sex;
-         ey = sey;
-    }
+    *(objData[engCurrentObjectIdx]) = direction;
+    // sex = ex;
+    // sey = ey;
+    // direction = *(objData[engCurrentObjectIdx]);
+    // if (-112 >= direction) {
+    //     ex--;
+    // } else if ((-112 < direction) && (-80 >= direction)) {
+    //     ex--; ey--;
+    // } else if ((-80 < direction) && (-48 >= direction)) {
+    //     ey--;
+    // } else if ((-48 < direction) && (-16 >= direction)) {
+    //     ex++; ey--;
+    // } else if ((-16 < direction) && (16 >= direction)) {
+    //     ex++;
+    // } else if ((16 < direction) && (48 >= direction)) {
+    //     ex++; ey++;
+    // } else if ((48 < direction) && (80 >= direction)) {
+    //     ey++;
+    // } else if ((80 < direction) && (112 >= direction)) {
+    //     ex--; ey++;
+    // } else {
+    //     ex--;
+    // }
+    // if (isInWall(ex, ey)) {
+    //      direction += 16;
+    //      *(objData[engCurrentObjectIdx]) = direction;
+    //      ex = sex;
+    //      ey = sey;
+    // }
     objPosX[engCurrentObjectIdx] = ex;
     objPosY[engCurrentObjectIdx] = ey;
     // ldist = computeLogDist (ex, ey);

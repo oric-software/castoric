@@ -103,12 +103,11 @@ void keyPressed(unsigned char c){
     } else if (c == keyQuit) {
             running = 0;
     } else if (c ==  0x20) {
-        doorData[0]=1;
-        if ((rayCamPosY <= -4) && (doorState == 2)){
-            doorState = 1;
+        // space bar pressed => trigger door opening if player is close to the door and it is closed
+        if ((abs(rayCamPosX) <= 3) && (abs(rayCamPosY-12) <= 3) && (doorData[0] == 0)){
+            doorData[0]=1;
         }
     }
-
 }
 
 void keyReleased(unsigned char c){

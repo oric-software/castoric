@@ -4,7 +4,7 @@
 
 // objects
 #define OBJ_DOOR 1
-#define OBJ_TREE 2
+#define OBJ_LAMP 2
 #define OBJ_SOLDIER 3
 
 unsigned char   objType     [OBJECTS_MAX];
@@ -34,11 +34,12 @@ signed char   objAngle  [OBJECTS_MAX];
 unsigned char engCurrentObjectIdx;
 
 // void itemUpdate();
-// char soldier_data [] = {32};
+signed char soldierData [] = {-64};
 void soldierUpdate();
-signed char doorData[] = {0}; // state 0 : close,  1..6 : opening, 7: opened , 
-unsigned char idObjDoor;
 
+
+signed  char doorData[] = {0}; // state 0 : close,  1..6 : opening, 7: opened , 
+unsigned char idObjDoor;
 void doorUpdate();
 
 
@@ -49,7 +50,7 @@ void engObjectPulse()
         case OBJ_DOOR:
             doorUpdate();
             break;
-        case OBJ_TREE:
+        case OBJ_LAMP:
             computeLogDistance();
             dichoInsert (engCurrentObjectIdx, objLogDistance[engCurrentObjectIdx]);
             break;

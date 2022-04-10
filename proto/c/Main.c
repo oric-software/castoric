@@ -35,7 +35,7 @@
 #ifdef USE_SPRITE
 #include "dist.c"
 #include "sprite.c"
-#include "texture_key.h"
+#include "sprite_lamp.h"
 #include "texture_tree.h"
 #endif // USE_SPRITE
 
@@ -140,11 +140,18 @@ void gameLoop() {
     engAddObject(OBJ_DOOR, 5, 10, doorData);
     idObjDoor = engCurrentObjectIdx;
 
+    engAddObject(OBJ_LAMP, 0, 27, doorData);
+    objTexture[engCurrentObjectIdx] = texture_sprite_lamp;
+
+    engAddObject(OBJ_LAMP, -24, 27, doorData);
+    objTexture[engCurrentObjectIdx] = texture_sprite_lamp;
+
+
     // engAddObject(OBJ_TREE, 0, 11, 0);
     // objTexture[engCurrentObjectIdx] = texture_tree;
     // engAddObject(OBJ_KEY, 9, -6, 0);
     // objTexture[engCurrentObjectIdx] = texture_aKey;
-    engAddObject(OBJ_SOLDIER, 0, 10, 0);
+    engAddObject(OBJ_SOLDIER, 24, 60, soldierData);
     objTexture[engCurrentObjectIdx] = texture_soldier_back;
 #endif // USE_SPRITE
 

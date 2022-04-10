@@ -5,6 +5,7 @@
 #define OBJECTS_MAX 8
 #define USE_SPRITE
 #define USE_GENERIC_COLLISION
+#define USE_SLOW_TEXEL
 
 #ifdef __GNUC__
 

@@ -129,9 +129,24 @@ void lsys(){
     refreshNeeded           = 1;
 }
 #endif // PROFILER_ENABLE
-
+#define BORDER_COLOR 3
+void borderViewport(){
+    int ii;
+        for (ii = -2; ii <= VIEWPORT_HEIGHT; ii++) {
+            drawTexelOnScreen (ii+VIEWPORT_START_LINE, VIEWPORT_START_COLUMN -2, BORDER_COLOR);
+            drawTexelOnScreen (ii+VIEWPORT_START_LINE, VIEWPORT_START_COLUMN+VIEWPORT_WIDTH-2, BORDER_COLOR);
+        }
+        for (ii=0 ; ii < VIEWPORT_WIDTH; ii++){
+            drawTexelOnScreen (VIEWPORT_START_LINE-2, VIEWPORT_START_COLUMN+ii, BORDER_COLOR);
+            drawTexelOnScreen (VIEWPORT_START_LINE + VIEWPORT_HEIGHT+1, VIEWPORT_START_COLUMN+ii, BORDER_COLOR);
+        }
+}
 
 void gameLoop() {
+
+
+borderViewport();
+
 
 #ifdef USE_SPRITE
     engInitObjects();
@@ -213,14 +228,6 @@ void gameLoop() {
         }
 
 
-        // for (ii = 0; ii <= VIEWPORT_HEIGHT; ii++) {
-        //     drawTexelOnScreen (ii, 40-VIEWPORT_WIDTH/2, 63);
-        //     drawTexelOnScreen (ii, 40+VIEWPORT_WIDTH/2, 63);
-        // }
-        // for (ii=0 ; ii < VIEWPORT_WIDTH/2; ii++){
-        //     drawTexelOnScreen (VIEWPORT_HEIGHT, 40+ii, 63);
-        //     drawTexelOnScreen (VIEWPORT_HEIGHT, 40-ii, 63);
-        // }
         PROFILE_LEAVE(ROUTINE_GLOBAL);
         
         ProfilerDisplay();

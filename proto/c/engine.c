@@ -146,16 +146,16 @@ void soldierUpdate()
     displaystate = computeRelativeOrientation (direction, rayCamRotZ);
     switch (displaystate) {
         case 0:
-            objTexture[engCurrentObjectIdx] = texture_smily_back; // ptrTextureSoldierBack;
+            objTexture[engCurrentObjectIdx] = texture_soldier_back; // ptrTextureSoldierBack;
             break;
         case 1:
-            objTexture[engCurrentObjectIdx] = texture_smily_left; // ptrTextureSoldierRight;
+            objTexture[engCurrentObjectIdx] = texture_soldier_left; // ptrTextureSoldierRight;
             break;
         case 2:
-            objTexture[engCurrentObjectIdx] = texture_smily_front; // ptrTextureSoldierFront;
+            objTexture[engCurrentObjectIdx] = texture_soldier_front; // ptrTextureSoldierFront;
             break;
         case 3:
-            objTexture[engCurrentObjectIdx] = texture_smily_right; // ptrTextureSoldierLeft;
+            objTexture[engCurrentObjectIdx] = texture_soldier_right; // ptrTextureSoldierLeft;
             break;
     }
 #endif

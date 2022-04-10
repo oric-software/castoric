@@ -25,10 +25,10 @@
 #include "drawWalls.c"
 
 #ifdef USE_SPRITE
-#include "texture_sfront.h"
-#include "texture_sback.h"
-#include "texture_sleft.h"
-#include "texture_sright.h"
+#include "texture_soldier_front.h"
+#include "texture_soldier_back.h"
+#include "texture_soldier_left.h"
+#include "texture_soldier_right.h"
 #endif // USE_SPRITE
 #include "dichobuf.c"
 #include "engine.c"
@@ -145,7 +145,7 @@ void gameLoop() {
     // engAddObject(OBJ_KEY, 9, -6, 0);
     // objTexture[engCurrentObjectIdx] = texture_aKey;
     engAddObject(OBJ_SOLDIER, 0, 10, 0);
-    objTexture[engCurrentObjectIdx] = texture_smily_back;
+    objTexture[engCurrentObjectIdx] = texture_soldier_back;
 #endif // USE_SPRITE
 
 	kernelInit();

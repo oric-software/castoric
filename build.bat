@@ -35,10 +35,10 @@ python tools\texture2buf.py img\smily_front.bmp > proto\c\texture_sfront.h
 python tools\texture2buf.py img\smily_left.bmp > proto\c\texture_sleft.h
 python tools\texture2buf.py img\smily_right.bmp > proto\c\texture_sright.h
 
-REM python tools\texture2buf.py img\soldier_back.bmp > proto\c\texture_sback.h
-REM python tools\texture2buf.py img\soldier_front.bmp > proto\c\texture_sfront.h
-REM python tools\texture2buf.py img\soldier_left.bmp > proto\c\texture_sleft.h
-REM python tools\texture2buf.py img\soldier_right.bmp > proto\c\texture_sright.h
+python tools\texture2buf.py img\soldier_back.bmp > proto\c\texture_soldier_back.h
+python tools\texture2buf.py img\soldier_front.bmp > proto\c\texture_soldier_front.h
+python tools\texture2buf.py img\soldier_left.bmp > proto\c\texture_soldier_left.h
+python tools\texture2buf.py img\soldier_right.bmp > proto\c\texture_soldier_right.h
 
 
 python tools\texture2buf.py img\sprite_lamp.bmp > proto\c\sprite_lamp.h

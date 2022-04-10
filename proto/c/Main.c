@@ -36,7 +36,7 @@
 #include "dist.c"
 #include "sprite.c"
 #include "sprite_lamp.h"
-#include "texture_tree.h"
+
 #endif // USE_SPRITE
 
 #define CHANGE_INK_TO_RED	            1		

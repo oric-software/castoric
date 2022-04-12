@@ -82,107 +82,22 @@ _ddaNbIter              .dsb 1
         lda #0 : sta _nxtOffsetIndex :\
 .)
 
-; x contains _renCurrentColor
+
 #define COLOR_LEFT_TEXEL :.(:\
-    ldy         _idxVertCol:\
-    lda         _tabLeftRed,x:\
-    sta         _bufVertCol,y:\
-    iny        :\
-    lda         _tabLeftGreen,x:\
-    sta         _bufVertCol,y:\
-    iny        :\
-    lda         _tabLeftBlue,x:\
-    sta         _bufVertCol,y:\
-    iny        :\
-    sty         _idxVertCol:\
-.)
-
-
-; x contains _renCurrentColor
-#define COLOR_LEFT_TEXEL_FIRST :.(:\
-    ldy         _idxVertCol:\
-    lda         _tabLeftRed,x:\
-    sta         _bufVertCol,y:\
-    iny        :\
-    lda         _tabLeftGreen,x:\
-    sta         _bufVertCol,y:\
-    iny        :\
-    lda         _tabLeftBlue,x:\
-    sta         _bufVertCol,y:\
-    iny        :\
-    sty         _idxVertCol:\
-.)
-
-
-; x contains _renCurrentColor
-#define COLOR_LEFT_TEXEL_SECOND :.(:\
-    ldy         _idxVertCol:\
-    lda         _tabLeftRed,x:\
-    sta         _bufVertCol,y:\
-    iny        :\
-    lda         _tabLeftGreen,x:\
-    sta         _bufVertCol,y:\
-    iny        :\
-    lda         _tabLeftBlue,x:\
-    sta         _bufVertCol,y:\
-    iny        :\
-    sty         _idxVertCol:\
+    ldy         _idxBufVertCol:\
+    txa:\
+    sta         _bufVertColLeft,y:\
+    inc         _idxBufVertCol:\
 .)
 
 ; x contains _renCurrentColor
 #define COLOR_RIGHT_TEXEL :.(:\
-    ldy         _idxVertCol:\
-    lda         _tabRightRed,x:\
-    ora         _bufVertCol,y:\
-    sta         _bufVertCol,y:\
-    iny        :\
-    lda         _tabRightGreen,x:\
-    ora         _bufVertCol,y:\
-    sta         _bufVertCol,y:\
-    iny        :\
-    lda         _tabRightBlue,x:\
-    ora         _bufVertCol,y:\
-    sta         _bufVertCol,y:\
-    iny        :\
-    sty         _idxVertCol:\
+    ldy         _idxBufVertCol:\
+    txa:\
+    sta         _bufVertColRight,y:\
+    inc         _idxBufVertCol:\
 .)
 
-
-; x contains _renCurrentColor
-#define COLOR_RIGHT_TEXEL_FIRST :.(:\
-    ldy         _idxVertCol:\
-    lda         _tabRightRed,x:\
-    ora         _bufVertCol,y:\
-    sta         _bufVertCol,y:\
-    iny        :\
-    lda         _tabRightGreen,x:\
-    ora         _bufVertCol,y:\
-    sta         _bufVertCol,y:\
-    iny        :\
-    lda         _tabRightBlue,x:\
-    ora         _bufVertCol,y:\
-    sta         _bufVertCol,y:\
-    iny        :\
-    sty         _idxVertCol:\
-.)
-
-; x contains _renCurrentColor
-#define COLOR_RIGHT_TEXEL_SECOND :.(:\
-    ldy         _idxVertCol:\
-    lda         _tabRightRed,x:\
-    ora         _bufVertCol,y:\
-    sta         _bufVertCol,y:\
-    iny        :\
-    lda         _tabRightGreen,x:\
-    ora         _bufVertCol,y:\
-    sta         _bufVertCol,y:\
-    iny        :\
-    lda         _tabRightBlue,x:\
-    ora         _bufVertCol,y:\
-    sta         _bufVertCol,y:\
-    iny        :\
-    sty         _idxVertCol:\
-.)
 
 ;; ddaCurrentValue = ptrOffsetIndex[nxtOffsetIndex++];
 #define DDA_STEP :.( :\
@@ -223,8 +138,7 @@ loop_000 : lda _idxScreenLine :\
         inc _idxScreenLine:\
         jmp loop_000 :\
 end_loop_000:\
-    lda _idxScreenLine: sec: sbc #VIEWPORT_START_LINE: asl : clc: adc _idxScreenLine: sec: sbc #VIEWPORT_START_LINE: sta _idxVertCol:\
-    ldy _idxScreenLine:lda _multi120_low,Y:clc:adc _baseAdr:sta _theAdr:lda _multi120_high,Y:adc _baseAdr+1:sta _theAdr+1 :\
+    lda _idxScreenLine: sec: sbc #VIEWPORT_START_LINE: sta _idxBufVertCol:\
 loop_001 :\
         DDA_STEP_2:\
         ldy _ddaCurrentValue : lda (_ptrReadTexture),Y :\
@@ -238,7 +152,7 @@ loop_001 :\
 endloop_001 :\
 .)
 
-
+;; TODO: To be Simplified because prim_first and prim_scnd are the same
 #define UNROLL_SAMPLE(prim_frst,prim_scnd) :.(:\
     lda     #TEXTURE_SIZE: sta _ddaCurrentError:\
 loop_000 : lda _idxScreenLine :\
@@ -249,8 +163,7 @@ loop_000 : lda _idxScreenLine :\
         inc _idxScreenLine:\
         jmp loop_000 :\
 end_loop_000:\
-    lda _idxScreenLine: sec: sbc #VIEWPORT_START_LINE: asl : clc: adc _idxScreenLine: sec: sbc #VIEWPORT_START_LINE: sta _idxVertCol:\
-    ldy _idxScreenLine:lda _multi120_low,Y:clc:adc _baseAdr:sta _theAdr:lda _multi120_high,Y:adc _baseAdr+1:sta _theAdr+1 :\
+    lda _idxScreenLine: sec: sbc #VIEWPORT_START_LINE: sta _idxBufVertCol:\
 loop_001 :\
         DDA_STEP:\
         ldy _ddaCurrentValue : lda (_ptrReadTexture),Y :\
@@ -289,7 +202,7 @@ goUnroll
         PREPARE_UNROLL_SAMPLE
         DDA_STEP
 
-        UNROLL_SAMPLE(COLOR_LEFT_TEXEL_FIRST,COLOR_LEFT_TEXEL_SECOND)
+        UNROLL_SAMPLE(COLOR_LEFT_TEXEL,COLOR_LEFT_TEXEL)
 
 drawLeftColumnDone
 .)
@@ -314,7 +227,7 @@ goUnroll
 
         DDA_STEP
 
-        UNROLL_SAMPLE(COLOR_RIGHT_TEXEL_FIRST,COLOR_RIGHT_TEXEL_SECOND)
+        UNROLL_SAMPLE(COLOR_RIGHT_TEXEL,COLOR_RIGHT_TEXEL)
 
 drawRightColumnDone
 .)
@@ -331,6 +244,9 @@ _drawWalls
 
     ; idxScreenCol        = VIEWPORT_START_COLUMN;
     ; baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (idxScreenCol>>1));
+; #ifdef USE_SPRITE
+    ; prepareDrawSprite ();
+; #endif     
     ; idxCurrentSlice     = 0;
 
     lda     #VIEWPORT_START_COLUMN
@@ -343,6 +259,10 @@ _drawWalls
     adc     #0
     sta     _baseAdr+1
 
+#ifdef USE_SPRITE
+    ldy #0 : jsr     _prepareDrawSprites
+#endif 
+
     lda     #0
     sta     _idxCurrentSlice
 
@@ -352,12 +272,12 @@ drawWalls_loop
           
 
 ;;         baseAdr             += 1;
-;;         idxScreenCol        += 1;
+;;         initBufVertCol ();
 ;;         wallId              = raywall[idxCurrentSlice];
 
             inc _baseAdr: .( : bne skip : inc _baseAdr+1: skip:.)
 
-            jsr _initVertCol
+            ldy #0 : jsr _initBufVertCol
             
             ldy _idxCurrentSlice
             lda _raywall,Y
@@ -372,6 +292,13 @@ drawWalls_loop
 
 ;;         }
 LeftSliceEmpty
+
+;; #ifdef USE_SPRITE
+;;         drawSpriteCol();
+;; #endif    
+#ifdef USE_SPRITE    
+        ldy #0 : jsr _drawSpriteCol
+#endif
 ;; 
 ;;         idxScreenCol        += 1;
 ;;         idxCurrentSlice     += 1;
@@ -386,11 +313,20 @@ LeftSliceEmpty
                 jsr drawRightColumn
 ;;         }
 RightSliceEmpty
-            jsr         _copyVertCol
+ 
+;; #ifdef USE_SPRITE
+;;         drawSpriteCol();
+;; #endif        
+#ifdef USE_SPRITE
+        ldy #0 : jsr _drawSpriteCol
+#endif        
+
+ 
+            jsr         _drawBufVertCol
             inc         _idxCurrentSlice
             inc         _idxScreenCol
 
-;;     } while (idxCurrentSlice < NUMBER_OF_SLICE-1);
+;;     } while (idxCurrentSlice < NUMBER_OF_SLICE-2);
         lda         _idxCurrentSlice
         cmp         #NUMBER_OF_SLICE-2
         beq         end_drawWalls
@@ -407,4 +343,4 @@ end_drawWalls
     rts
 
 
-#endif // USE_C_DRAWWALLS
+#endif ;; USE_C_DRAWWALLS

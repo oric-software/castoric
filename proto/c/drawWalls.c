@@ -13,8 +13,6 @@ extern unsigned char *      ptrOffsetIndex;
 #endif
 unsigned char               nxtOffsetIndex;
 
-unsigned char bufVertCol [(VIEWPORT_HEIGHT + VIEWPORT_START_LINE)*3];
-unsigned char idxVertCol ;
 
 #ifdef USE_C_DRAWWALLS
 
@@ -43,13 +41,9 @@ void PREPARE(){
     ddaCurrentValue     = 0;
 }
 
-#define COLOR_LEFT_TEXEL  bufVertCol[idxVertCol++]=tabLeftRed[renCurrentColor];\
-    bufVertCol[idxVertCol++]=tabLeftGreen[renCurrentColor];\
-    bufVertCol[idxVertCol++]=tabLeftBlue[renCurrentColor];
+#define COLOR_LEFT_TEXEL  bufVertColLeft[idxBufVertCol++]=renCurrentColor; 
 
-#define COLOR_RIGHT_TEXEL bufVertCol[idxVertCol]|=tabRightRed[renCurrentColor];idxVertCol++;\
-    bufVertCol[idxVertCol]|=tabRightGreen[renCurrentColor];idxVertCol++;\
-    bufVertCol[idxVertCol]|=tabRightBlue[renCurrentColor];idxVertCol++;
+#define COLOR_RIGHT_TEXEL bufVertColRight[idxBufVertCol++]=renCurrentColor;
 
 #define DDA_STEP ddaCurrentValue = ptrOffsetIndex[nxtOffsetIndex++];\
 
@@ -68,7 +62,7 @@ void OVER_SAMPLE_COLOR_LEFT_TEXEL() {
             ddaNbIter       -= 1;
             idxScreenLine   += 1;
         } 
-        idxVertCol          = (idxScreenLine-VIEWPORT_START_LINE)*3;\
+        idxBufVertCol       = idxScreenLine-VIEWPORT_START_LINE;
         do {
             DDA_STEP_2();
             ddaNbIter       -= 1;
@@ -89,7 +83,7 @@ void OVER_SAMPLE_COLOR_RIGHT_TEXEL() {
             ddaNbIter       -= 1;
             idxScreenLine   += 1;
         } 
-        idxVertCol          = (idxScreenLine-VIEWPORT_START_LINE)*3;\
+        idxBufVertCol       = idxScreenLine-VIEWPORT_START_LINE;
         do {
             DDA_STEP_2();
             ddaNbIter       -= 1;
@@ -118,6 +112,7 @@ void OVER_SAMPLE_COLOR_RIGHT_TEXEL() {
 //             idxScreenLine   += 1;\
 //         } while ((ddaNbIter > 0) && (idxScreenLine < VIEWPORT_HEIGHT + VIEWPORT_START_LINE));
 
+//         theAdr              = (unsigned char *)(baseAdr + (int)((multi120_high[idxScreenLine]<<8) | multi120_low[idxScreenLine]));\
 
 #define UNROLL_SAMPLE(prim)         ddaCurrentError     = TEXTURE_SIZE;\
         while (idxScreenLine < VIEWPORT_START_LINE){\
@@ -125,8 +120,7 @@ void OVER_SAMPLE_COLOR_RIGHT_TEXEL() {
             ddaNbIter       -= 1;\
             idxScreenLine   += 1;\
         } \
-        idxVertCol          = (idxScreenLine-VIEWPORT_START_LINE)*3;\
-        theAdr              = (unsigned char *)(baseAdr + (int)((multi120_high[idxScreenLine]<<8) | multi120_low[idxScreenLine]));\
+        idxBufVertCol       = idxScreenLine-VIEWPORT_START_LINE;\
         do {\
             DDA_STEP\
             ddaNbIter       -= 1;\
@@ -192,55 +186,30 @@ void drawRightColumn(){
 // #endif
 
 
-#ifdef USE_C_VERTCOLBUF
-void initVertCol () {
-    for (idxVertCol=0; idxVertCol<(VIEWPORT_HEIGHT * 3)/2; ){
-        bufVertCol[idxVertCol]  = 0x40; 
-        idxVertCol  +=1;
-        bufVertCol[idxVertCol]  = 0x40; 
-        idxVertCol  +=1;
-        bufVertCol[idxVertCol]  = 0x7F; 
-        idxVertCol  +=1;
-    }
-    for (idxVertCol=(VIEWPORT_HEIGHT * 3)/2; idxVertCol<VIEWPORT_HEIGHT * 3; ){
-        bufVertCol[idxVertCol]  = 0x40; 
-        idxVertCol  +=1;
-        bufVertCol[idxVertCol]  = 0x7F; 
-        idxVertCol  +=1;
-        bufVertCol[idxVertCol]  = 0x40; 
-        idxVertCol  +=1;
-    }
-}
 
-
-void copyVertCol (){
-    baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (idxScreenCol>>1));
-    theAdr  = (unsigned char *)(baseAdr + (int)((multi120_high[VIEWPORT_START_LINE]<<8) | multi120_low[VIEWPORT_START_LINE])); 
-    for (idxVertCol=0; idxVertCol<VIEWPORT_HEIGHT * 3; idxVertCol++){
-#ifndef __GNUC__
-        *theAdr  = bufVertCol[idxVertCol]; 
-#endif
-        theAdr += NEXT_SCANLINE_INCREMENT;
-    }
-}
-#endif
 void drawWalls(){
 
     idxScreenCol        = VIEWPORT_START_COLUMN;
     baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + (idxScreenCol>>1));
 
+#ifdef USE_SPRITE
+    prepareDrawSprites ();
+#endif  
     idxCurrentSlice     = 0;
 
     do {
         baseAdr             += 1;
 
-        initVertCol ();
+        initBufVertCol ();
 
         wallId              = raywall[idxCurrentSlice];
 
         if (wallId !=255) {
             drawLeftColumn ();
         }
+#ifdef USE_SPRITE
+        drawSpriteCol();
+#endif        
 
         idxScreenCol        += 1;
         idxCurrentSlice     += 1;
@@ -250,8 +219,11 @@ void drawWalls(){
         if (wallId !=255) {
             drawRightColumn();
         }
+#ifdef USE_SPRITE
+        drawSpriteCol();
+#endif        
 
-        copyVertCol ();
+        drawBufVertCol ();
         idxCurrentSlice++;
         idxScreenCol        += 1;
 

@@ -21,6 +21,7 @@
 #include "texel.c"
 #include "keyboard_c.c"
 #include "viewport.c"
+#include "vertcolbuf.c"
 #include "drawWalls.c"
 
 #ifdef USE_SPRITE
@@ -191,7 +192,7 @@ void gameLoop() {
 //                 // hasKey = 1;
 //             }
 //             if (! hasKey) drawSprite (0, 0, texture_aKey);
-            drawSprites ();
+            // drawSprites ();
 #endif
             PROFILE_LEAVE(ROUTINE_DRAWWALLS);
             refreshNeeded = 0;

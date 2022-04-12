@@ -9,14 +9,14 @@ ficcontent_header = f"""
 ;; [ref config_viewport] 
 #include "config.h"
 #ifndef  USE_C_VERTCOLBUF
-_initVertCol
+_initBufVertCol
 
 """	
 
 
 ficcontent_trailer = f"""
 
-initVertColDone    
+initBufVertColDone    
 	rts
 
 #endif // USE_C_VERTCOLBUF
@@ -26,26 +26,17 @@ def main ():
     
 	content = ficcontent_header
     # Generate Sky part of viewport
-	content += f"patch_red_in_sky_part:lda #$40	; pixel eteint\n"
-	for ii in range (0, (config.VIEWPORT_HEIGHT * 3)//2, 3):
-		content += f"sta _bufVertCol+{ii}\n"
-	content += f"patch_green_in_sky_part:lda #$40	; pixel eteint\n"
-	for ii in range (0, (config.VIEWPORT_HEIGHT * 3)//2, 3):
-		content += f"sta _bufVertCol+{ii+1}\n"
-	content += f"patch_blue_in_sky_part:lda #$7F	; pixel allume\n"
-	for ii in range (0, (config.VIEWPORT_HEIGHT * 3)//2, 3):
-		content += f"sta _bufVertCol+{ii+2}\n"
+	content += f"patch_sky_color:lda #$03	; Blue Sky\n"
+	for ii in range (0, config.VIEWPORT_HEIGHT//2):
+		content += f"sta _bufVertColRight+{ii}\n"
+		content += f"sta _bufVertColLeft+{ii}\n"
 
 	# Generate Ground part of viewport
-	content += f"patch_red_on_ground_part:lda #$40	; pixel eteint\n"
-	for ii in range ((config.VIEWPORT_HEIGHT * 3)//2, (config.VIEWPORT_HEIGHT * 3), 3):
-		content += f"sta _bufVertCol+{ii}\n"
-	content += f"patch_green_on_ground_part:lda #$7F	; pixel allume\n"
-	for ii in range ((config.VIEWPORT_HEIGHT * 3)//2, (config.VIEWPORT_HEIGHT * 3), 3):
-		content += f"sta _bufVertCol+{ii+1}\n"
-	content += f"patch_blue_on_ground_part:lda #$40	; pixel eteint\n"
-	for ii in range ((config.VIEWPORT_HEIGHT * 3)//2, (config.VIEWPORT_HEIGHT * 3), 3):
-		content += f"sta _bufVertCol+{ii+2}\n"
+	content += f"patch_ground_color:lda #$0C	; Green Grass Ground\n"
+	for ii in range (config.VIEWPORT_HEIGHT//2, config.VIEWPORT_HEIGHT):
+		content += f"sta _bufVertColRight+{ii}\n"
+		content += f"sta _bufVertColLeft+{ii}\n"
+
 	content += ficcontent_trailer
 	print (content)
 

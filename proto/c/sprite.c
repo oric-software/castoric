@@ -26,8 +26,10 @@ unsigned char       spriteWallHeight; // TODO: remove
 
 #ifdef USE_C_SPRITE 
 unsigned char           *spritePtrReadTexture;
+unsigned  char *tabPrecalcSpriteOffset;
 #else
 extern unsigned char    *spritePtrReadTexture;
+extern unsigned  char *tabPrecalcSpriteOffset;
 #endif
 unsigned char           spriteTexColumn;
 
@@ -38,7 +40,26 @@ unsigned char           spriteTexColumn;
 unsigned char           precalTexPixelOffset[100];
 unsigned char           idxTexPixel;    // run through precalTexPixelOffset
 
-void precalcTexPixelRunthrough(){
+
+
+unsigned char tabSpriteViewportColIdx[OBJECTS_MAX];
+unsigned char tabSpriteTextureColIdx[OBJECTS_MAX];
+unsigned char tabSpriteNbLoopColumn[OBJECTS_MAX];
+unsigned char tabSpriteViewportLinIdx[OBJECTS_MAX];
+unsigned char tabSpriteSavTextureLinIdx[OBJECTS_MAX];
+unsigned char tabSpriteSavNbLoopLine[OBJECTS_MAX];
+unsigned char *tabPrecalTexPixelOffset[OBJECTS_MAX];
+
+extern unsigned char idxCurrentSlice;
+
+
+
+unsigned char   theVisibility;  
+unsigned char   theObjHeight;
+unsigned char unCompteur;
+
+
+void precalcSpriteTexPixelRunthrough(){
 
     if (spriteHeight > 64) {
         idxTexPixel         = 0;
@@ -66,305 +87,178 @@ void precalcTexPixelRunthrough(){
 
         } while (iea2CurrentValue < iea2EndValue);
         precalTexPixelOffset [idxTexPixel++] = iea2CurrentValue;
-    } else {
-        memcpy(precalTexPixelOffset, &(tabIdxRdTexture[((spriteHeight+1)*spriteHeight)/2]), spriteHeight);
-    }
+        tabPrecalTexPixelOffset[engCurrentObjectIdx] = precalTexPixelOffset; // &(tabIdxRdTexture[((spriteHeight+1)*spriteHeight)/2]);
 
+    } else {
+        // memcpy(precalTexPixelOffset, &(tabIdxRdTexture[((spriteHeight+1)*spriteHeight)/2]), spriteHeight);
+        tabPrecalTexPixelOffset[engCurrentObjectIdx] = &(tabIdxRdTexture[((spriteHeight+1)*spriteHeight)/2]);
+    }
 }
 
 extern void colorLeftTexel ();
 extern void colorRightTexel ();
 
-// ============================================ //
-#ifdef USE_C_SPRITE 
-void unrollLeftColumn();
-void unrollRightColumn();
-
-void spriteDrawColumn() {
-    
-    if ((objLogDistance[engCurrentObjectIdx] < raylogdist[spriteViewportColIdx-VIEWPORT_START_COLUMN-1])
-     || (raywall[spriteViewportColIdx-VIEWPORT_START_COLUMN-1] == 255)) {
-
-        spriteTextureLinIdx     = spriteSavTextureLinIdx;
-        spriteNbLoopLine              = spriteSavNbLoopLine;
-
-        theAdr                  = (unsigned char *)((int)baseAdr + spriteScreenOffset ); // multi120[spriteViewportLinIdx]); // 
-
-        // Parcours ligne
-        spriteTexColumn               = precalTexPixelOffset [spriteTextureColIdx];
-        spritePtrReadTexture    = spriteTexture + (unsigned int)((multi32_high[spriteTexColumn] << 8) | multi32_low[spriteTexColumn]);
-
-
-        if ((spriteViewportColIdx&0x01) != 0){
-            unrollLeftColumn();
-        } else {
-            unrollRightColumn();
-        }
-    }
-}
-
-
-void unrollRightColumn() {
-
-    do {
-        renCurrentColor     = spritePtrReadTexture[precalTexPixelOffset [spriteTextureLinIdx]];
-        if (renCurrentColor != EMPTY_ALPHA) {
-            colorRightTexel();
-        }else{
-            theAdr              += 120; 
-        }
-        spriteTextureLinIdx       ++;
-    } while ((--spriteNbLoopLine) != 0);
-
-}
-
-void unrollLeftColumn() {
-
-    do {
-
-        renCurrentColor     = spritePtrReadTexture[precalTexPixelOffset [spriteTextureLinIdx]];
-        if (renCurrentColor != EMPTY_ALPHA) {
-            colorLeftTexel();
-        }else{
-            theAdr              += 120; 
-        }
-        spriteTextureLinIdx       ++;
-
-    } while ((--spriteNbLoopLine) != 0);
-
-}
-
-void prepareScreenAdr(){
-
-    spriteScreenOffset = ((int)(multi120_high[spriteViewportLinIdx]<<8) | (int)(multi120_low[spriteViewportLinIdx]));
-    baseAdr             = (unsigned char *)(HIRES_SCREEN_ADDRESS + 1 + ((spriteViewportColIdx)>>1));
-
-}
-#endif // USE_C_SPRITE 
-
-
-
 
 #define min(x,y)          (((x)<(y))?(x):(y))
-void displaySprite03(){
 
-    // Rejoindre la bordure gauche
-    if (spriteRefColumn <= spriteHeight/2) {
-        spriteViewportColIdx       = VIEWPORT_START_COLUMN + 1;
-        spriteTextureColIdx         = spriteHeight/2 - spriteRefColumn + 2;
-        spriteNbLoopColumn = min(VIEWPORT_WIDTH - 3,spriteHeight/2+spriteRefColumn-2);
-    } else {
-        spriteViewportColIdx       = spriteRefColumn - spriteHeight/2 + VIEWPORT_START_COLUMN;
-        spriteTextureColIdx        = 0;
-        spriteNbLoopColumn = min(VIEWPORT_WIDTH-2-spriteRefColumn+spriteHeight/2,spriteHeight);
-    }
-    
+void prepareDrawSprite (){
 
-
-    if (spriteHeight > VIEWPORT_HEIGHT){
-        spriteViewportLinIdx    = VIEWPORT_START_LINE + 1;
-        spriteSavTextureLinIdx  = spriteHeight/2 - VIEWPORT_HEIGHT/ 2 + 1;
-        spriteSavNbLoopLine           = VIEWPORT_HEIGHT  - 1;
-    } else {
-        spriteViewportLinIdx    = VIEWPORT_HEIGHT/ 2 - spriteHeight/2 + VIEWPORT_START_LINE;
-        spriteSavTextureLinIdx  = 0;
-        spriteSavNbLoopLine           = spriteHeight ;
-    }
-
-    prepareScreenAdr();
-
-    // Parcours colonne
-#ifdef __GNUC__    
-    do {
-
-        spriteDrawColumn();
-
-        spriteTextureColIdx         += 1;
-        spriteViewportColIdx        += 1;
-
-        if ((spriteViewportColIdx&0x01) != 0){
-            baseAdr             += 1;
-        }
-    } while ((--spriteNbLoopColumn) != 0);
-#else
-    {asm(
-        ".(:loopColumn:"
-        "jsr _spriteDrawColumn:"
-        "inc _spriteTextureColIdx:"
-        "inc _spriteViewportColIdx:"
-        "lda _spriteViewportColIdx:"
-        "and #$01:"
-        "clc:"
-        "adc         _baseAdr:"
-        "sta         _baseAdr:"
-        ".(:bcc skip:    inc _baseAdr+1: skip:.):"
-        "skipIncAdr:"
-        "dec _spriteNbLoopColumn:bne loopColumn:"
-        ":.):"
-    );}
-#endif
-}
-
-void displaySpriteRightVisible(){
-
-    spriteViewportColIdx          = spriteRefColumn;
-    spriteTextureColIdx           = spriteHeight-1;
-    spriteNbLoopColumn                = spriteRefColumn-VIEWPORT_START_COLUMN;
-    // if (spriteNbLoopColumn == 0) return ;
-
-    if (spriteHeight > VIEWPORT_HEIGHT){
-        spriteViewportLinIdx        = VIEWPORT_START_LINE + 1;
-        spriteSavTextureLinIdx      = spriteHeight/2 - VIEWPORT_HEIGHT/ 2  + 1;
-        spriteSavNbLoopLine               = VIEWPORT_HEIGHT  - 1;
-    } else {
-        spriteSavTextureLinIdx      = 0;
-        spriteViewportLinIdx        = VIEWPORT_HEIGHT/ 2 - spriteHeight/2 + VIEWPORT_START_LINE;
-        spriteSavNbLoopLine               = spriteHeight ;
-    }
-    
-    prepareScreenAdr();
-
-    // Parcours colonne
-#ifdef __GNUC__    
-    do {
-        spriteDrawColumn();
-
-        spriteTextureColIdx         -= 1;
-        spriteViewportColIdx        -= 1;
-
-        if ((spriteViewportColIdx&0x01) == 0){
-            baseAdr                 -= 1;
-        }
-
-    } while ((--spriteNbLoopColumn) != 0);    
-#else
-
-    {asm(
-        ".(:loopColumn:"
-        "jsr _spriteDrawColumn:"
-        "dec _spriteTextureColIdx:"
-        "dec _spriteViewportColIdx:"
-        "lda _spriteViewportColIdx:"
-        "and #$01:"
-        "bne skipIncAdr:"
-        "lda         _baseAdr:"
-        "sec:"
-        "sbc #$01:"
-        "sta         _baseAdr:"
-        "lda         _baseAdr+1:"
-        "sbc #$00:"
-        "sta         _baseAdr+1:"
-        "skipIncAdr:"
-        "dec _spriteNbLoopColumn:bne loopColumn:"
-        ":.):"
-    );}
-#endif
-}
-
-
-void displaySpriteLeftVisible(){
-
-    spriteViewportColIdx        = spriteRefColumn;
-    spriteTextureColIdx         = 0;
-
-    spriteNbLoopColumn                = VIEWPORT_WIDTH-spriteRefColumn;
-
-    if (spriteHeight > VIEWPORT_HEIGHT){
-        spriteViewportLinIdx        = VIEWPORT_START_LINE + 1;
-        spriteSavTextureLinIdx      = spriteHeight/2 - VIEWPORT_HEIGHT/ 2  + 1;
-        spriteSavNbLoopLine               = VIEWPORT_HEIGHT  - 1;
-    } else {
-        spriteViewportLinIdx        = VIEWPORT_HEIGHT/ 2 - spriteHeight/2 + VIEWPORT_START_LINE;
-        spriteSavTextureLinIdx      = 0;
-        spriteSavNbLoopLine               = spriteHeight ;
-    }
-
-    prepareScreenAdr();
-
-
-    // Parcours colonne
-
-#ifdef __GNUC__    
-    do {
-        spriteDrawColumn();
-
-        spriteTextureColIdx       ++;
-        spriteViewportColIdx++;
-
-        if ((spriteViewportColIdx&0x01) != 0){
-            baseAdr             += 1;
-        }
-
-    } while ((--spriteNbLoopColumn) != 0);
-
-#else
-    {asm(
-        ".(:loopColumn:"
-        "jsr _spriteDrawColumn:"
-        "inc _spriteTextureColIdx:"
-        "inc _spriteViewportColIdx:"
-        "lda _spriteViewportColIdx:"
-        "and #$01:"
-        "clc:"
-        "adc         _baseAdr:"
-        "sta         _baseAdr:"
-        ".(:bcc skip:    inc _baseAdr+1: skip:.):"
-        "skipIncAdr:"
-        "dec _spriteNbLoopColumn:bne loopColumn:"
-        ":.):"
-    );}
-
-#endif
-
-}
-
-void drawSprite (){
-
-    unsigned char visibility;  
-    unsigned char   objHeight;
     
     // compute objAngle, objLogDist
     objX = objPosX[engCurrentObjectIdx];
     objY = objPosY[engCurrentObjectIdx];
 
-    visibility = isVisibleSprite();
+    theVisibility = isVisibleSprite();
 
-    if (visibility == 0) return ;
+    if ((theObjHeight=dist2hh(objLogDistance[engCurrentObjectIdx])) == 0) return;
+   
 
-    if ((objHeight=dist2hh(objLogDistance[engCurrentObjectIdx])) == 0) return;
+    spriteHeight            = theObjHeight*2;
 
-    spriteTexture = objTexture[engCurrentObjectIdx];
-
-    spriteHeight            = objHeight*2;
-
-    precalcTexPixelRunthrough();
+    precalcSpriteTexPixelRunthrough();
 
 
-
-    if (visibility == 1){
+    if (theVisibility == 1){
         spriteRefColumn = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngle[engCurrentObjectIdx]];
-        displaySprite03();
-    } else if (visibility == 2) {
-        spriteRefColumn = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngleRight];
-        if (spriteRefColumn > VIEWPORT_START_COLUMN) {
-            displaySpriteRightVisible();
+        // displaySprite03();
+
+        // Rejoindre la bordure gauche
+        if (spriteRefColumn <= spriteHeight/2) {
+            tabSpriteViewportColIdx[engCurrentObjectIdx]       = 0 ; // VIEWPORT_START_COLUMN + 1;
+            tabSpriteTextureColIdx[engCurrentObjectIdx]         = spriteHeight/2 - spriteRefColumn + 2;
+            tabSpriteNbLoopColumn[engCurrentObjectIdx] = min(VIEWPORT_WIDTH - 3,spriteHeight/2+spriteRefColumn-2);
+        } else {
+            tabSpriteViewportColIdx[engCurrentObjectIdx]       = spriteRefColumn - spriteHeight/2; // + VIEWPORT_START_COLUMN;
+            tabSpriteTextureColIdx[engCurrentObjectIdx]        = 0;
+            tabSpriteNbLoopColumn[engCurrentObjectIdx] = min(VIEWPORT_WIDTH-2-spriteRefColumn+spriteHeight/2,spriteHeight);
         }
-    } else if (visibility == 3) {
+
+        if (spriteHeight > VIEWPORT_HEIGHT){
+            tabSpriteViewportLinIdx[engCurrentObjectIdx]    = VIEWPORT_START_LINE + 1;
+            tabSpriteSavTextureLinIdx[engCurrentObjectIdx]  = spriteHeight/2 - VIEWPORT_HEIGHT/ 2 + 1;
+            tabSpriteSavNbLoopLine[engCurrentObjectIdx]           = VIEWPORT_HEIGHT  - 1;
+        } else {
+            tabSpriteViewportLinIdx[engCurrentObjectIdx]    = VIEWPORT_HEIGHT/ 2 - spriteHeight/2 + VIEWPORT_START_LINE;
+            tabSpriteSavTextureLinIdx[engCurrentObjectIdx]  = 0;
+            tabSpriteSavNbLoopLine[engCurrentObjectIdx]           = spriteHeight ;
+        }
+
+
+    } else if (theVisibility == 2) {
+        spriteRefColumn = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngleRight];
+
+        // displaySpriteRightVisible();
+        tabSpriteViewportColIdx[engCurrentObjectIdx]          = 0; 
+        tabSpriteTextureColIdx[engCurrentObjectIdx]           = spriteHeight-spriteRefColumn-1;
+        tabSpriteNbLoopColumn[engCurrentObjectIdx]                = spriteRefColumn; // spriteRefColumn-VIEWPORT_START_COLUMN;
+        // if (spriteNbLoopColumn == 0) return ;
+
+        if (spriteHeight > VIEWPORT_HEIGHT){
+            tabSpriteViewportLinIdx[engCurrentObjectIdx]        = VIEWPORT_START_LINE + 1;
+            tabSpriteSavTextureLinIdx[engCurrentObjectIdx]      = spriteHeight/2 - VIEWPORT_HEIGHT/ 2  + 1;
+            tabSpriteSavNbLoopLine[engCurrentObjectIdx]               = VIEWPORT_HEIGHT  - 1;
+        } else {
+            tabSpriteSavTextureLinIdx[engCurrentObjectIdx]      = 0;
+            tabSpriteViewportLinIdx[engCurrentObjectIdx]        = VIEWPORT_HEIGHT/ 2 - spriteHeight/2 + VIEWPORT_START_LINE;
+            tabSpriteSavNbLoopLine[engCurrentObjectIdx]               = spriteHeight ;
+        }
+
+
+    } else if (theVisibility == 3) {
         spriteRefColumn = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngleLeft];
-        displaySpriteLeftVisible();
+
+        // displaySpriteLeftVisible();
+        tabSpriteViewportColIdx[engCurrentObjectIdx]        = spriteRefColumn;
+        tabSpriteTextureColIdx[engCurrentObjectIdx]         = 0;
+
+        tabSpriteNbLoopColumn[engCurrentObjectIdx]                = VIEWPORT_WIDTH-spriteRefColumn;
+
+        if (spriteHeight > VIEWPORT_HEIGHT){
+            tabSpriteViewportLinIdx[engCurrentObjectIdx]        = VIEWPORT_START_LINE + 1;
+            tabSpriteSavTextureLinIdx[engCurrentObjectIdx]      = spriteHeight/2 - VIEWPORT_HEIGHT/ 2  + 1;
+            tabSpriteSavNbLoopLine[engCurrentObjectIdx]               = VIEWPORT_HEIGHT  - 1;
+        } else {
+            tabSpriteViewportLinIdx[engCurrentObjectIdx]        = VIEWPORT_HEIGHT/ 2 - spriteHeight/2 + VIEWPORT_START_LINE;
+            tabSpriteSavTextureLinIdx[engCurrentObjectIdx]      = 0;
+            tabSpriteSavNbLoopLine[engCurrentObjectIdx]               = spriteHeight ;
+        }
+
+    } else {
+        tabSpriteNbLoopColumn[engCurrentObjectIdx]                = 0;
     }
 }
 
 
-void drawSprites (){
-    int ii;
-    ii= dichoNbVal;
-    while (ii >0) {
-        ii -= 1;
-        engCurrentObjectIdx = tabDichoIdxs[ii];
-        drawSprite ();
-    }
 
+#ifdef USE_C_SPRITE
+
+void prepareDrawSprites (){
+
+    unCompteur= dichoNbVal;
+    while (unCompteur >0) {
+        unCompteur -= 1;
+        engCurrentObjectIdx = tabDichoIdxs[unCompteur];
+        prepareDrawSprite ();
+        
+    }
 }
+
+
+void drawSpriteCol(){
+
+    unCompteur= dichoNbVal;
+    while (unCompteur >0) {
+        unCompteur -= 1;
+        engCurrentObjectIdx = tabDichoIdxs[unCompteur];
+        spriteTexture = objTexture[engCurrentObjectIdx];
+
+        if ((tabSpriteNbLoopColumn[engCurrentObjectIdx] != 0)
+            && (idxCurrentSlice >= tabSpriteViewportColIdx[engCurrentObjectIdx]) ) {
+
+            if (
+                (objLogDistance[engCurrentObjectIdx] < raylogdist[idxCurrentSlice])
+            || (raywall[idxCurrentSlice] == 255)) {
+
+                spriteTextureLinIdx     = tabSpriteSavTextureLinIdx[engCurrentObjectIdx];
+                spriteNbLoopLine        = tabSpriteSavNbLoopLine[engCurrentObjectIdx];
+                idxBufVertCol = tabSpriteViewportLinIdx[engCurrentObjectIdx]-VIEWPORT_START_LINE;
+
+                // Parcours ligne
+                tabPrecalcSpriteOffset = tabPrecalTexPixelOffset[engCurrentObjectIdx];
+
+                spriteTexColumn               = tabPrecalcSpriteOffset [tabSpriteTextureColIdx[engCurrentObjectIdx]];
+
+                spritePtrReadTexture    = spriteTexture + (unsigned int)((multi32_high[spriteTexColumn] << 8) | multi32_low[spriteTexColumn]);
+
+                if ((idxCurrentSlice&0x01) == 0){
+                    // unrollLeftColumn();
+                    do {
+
+                        renCurrentColor     = spritePtrReadTexture[tabPrecalcSpriteOffset [spriteTextureLinIdx]];
+                        if (renCurrentColor != EMPTY_ALPHA) {
+                            bufVertColLeft[idxBufVertCol] = renCurrentColor;
+                        }
+                        idxBufVertCol += 1;
+                        spriteTextureLinIdx       ++;
+                    } while ((--spriteNbLoopLine) != 0);
+                } else {
+                    // unrollRightColumn();
+                    do {
+                        renCurrentColor     = spritePtrReadTexture[tabPrecalcSpriteOffset [spriteTextureLinIdx]];
+                        if (renCurrentColor != EMPTY_ALPHA) {
+                            bufVertColRight[idxBufVertCol] = renCurrentColor;
+                        }
+                        idxBufVertCol               += 1;
+                        spriteTextureLinIdx       ++;
+                    } while ((--spriteNbLoopLine) != 0);
+                }
+            }
+            tabSpriteTextureColIdx[engCurrentObjectIdx] += 1;
+            tabSpriteNbLoopColumn[engCurrentObjectIdx]  -= 1;
+        }
+    }
+}
+
+#endif // USE_C_SPRITE
 
 #endif // USE_SPRITE

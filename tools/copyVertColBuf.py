@@ -9,31 +9,110 @@ ficcontent_header = f"""
 ;; [ref config_viewport] 
 #include "config.h"
 #ifndef  USE_C_VERTCOLBUF
-_copyVertCol
-    lda _idxScreenCol
-    lsr
-    tax 
+.zero
+colorRight .dsb 1
+colorLeft .dsb 1
+
+.text
+_drawBufVertCol
+	lda _idxScreenCol: lsr: tax 
 """	
 
 
 ficcontent_trailer = f"""
 
-copyVertColDone    
+drawBufVertColDone    
 
 	rts
 #endif // USE_C_VERTCOLBUF
+
+
+;; _drawBufVertCol_slow
+;; 
+;; ;; theAdr  = (unsigned char *)(baseAdr + (int)((multi120_high[VIEWPORT_START_LINE]<<8) | multi120_low[VIEWPORT_START_LINE])); 
+;; ldy #VIEWPORT_START_LINE
+;; lda _multi120_low,Y
+;; clc
+;; adc _baseAdr
+;; sta _theAdr
+;; lda _multi120_high,Y
+;; adc _baseAdr+1
+;; sta _theAdr+1
+;; 
+;; 
+;; ;; for (idxBufVertCol = 0; idxBufVertCol < VIEWPORT_HEIGHT; ) 
+;; lda #0
+;; sta _idxBufVertCol
+;; loop_over_line:
+;; 
+;;     ldy _idxBufVertCol
+;;     lda _bufVertColLeft,y
+;;     sta colorLeft
+;;     lda _bufVertColRight,y
+;;     sta colorRight
+;;     
+;;     ldy colorLeft 
+;;     lda _tabLeftRed, y
+;;     ldy colorRight
+;;     ora _tabRightRed, y
+;;     
+;;     ldy #0
+;;     sta (_theAdr),y 
+;; 
+;;     ldy colorLeft 
+;;     lda _tabLeftGreen, y
+;;     ldy colorRight
+;;     ora _tabRightGreen, y
+;; 
+;;     ldy #40
+;;     sta (_theAdr),y 
+;; 
+;;     ldy colorLeft 
+;;     lda _tabLeftBlue, y
+;;     ldy colorRight
+;;     ora _tabRightBlue, y
+;; 
+;;     ldy #80
+;;     sta (_theAdr),y 
+;;     
+;;     clc 
+;;     lda _theAdr
+;;     adc #120
+;;     sta _theAdr
+;;     .( : bcc skip: inc _theAdr+1: skip .)
+;; 
+;; 
+;; ;;     idxBufVertCol++;
+;; inc _idxBufVertCol
+;; 
+;; lda _idxBufVertCol
+;; cmp #VIEWPORT_HEIGHT
+;; beq end_loop_over_line
+;; jmp loop_over_line
+;; end_loop_over_line:
+;; ;; 
+;; 
+;; drawBufVertColDone    
+;; 
+;; 	rts
+
+
 """
 
 def main ():
     
 	content = ficcontent_header
 
-
-# lda _bufVertCol+0
-# sta HIRES_SCREEN_ADDRESS + 1 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + 0),x     
-	for ii in range (0, config.VIEWPORT_HEIGHT * 3, 1):
-		content += f"lda _bufVertCol+{ii}\n"
-		content += f"sta HIRES_SCREEN_ADDRESS + 1 + NEXT_SCANLINE_INCREMENT * ( VIEWPORT_START_LINE*3 + {ii}),x\n"
+	for ii in range (config.VIEWPORT_HEIGHT):
+		content += f"""ldy #{ii} ;; idxBufVertCol
+lda _bufVertColLeft,y: sta colorLeft: lda _bufVertColRight,y: sta colorRight:
+ldy colorLeft: lda _tabLeftRed, y: ldy colorRight: ora _tabRightRed, y:
+sta HIRES_SCREEN_ADDRESS+NEXT_SCANLINE_INCREMENT*((VIEWPORT_START_LINE+{ii})*3+0),x
+ldy colorLeft: lda _tabLeftGreen, y: ldy colorRight: ora _tabRightGreen, y:
+sta HIRES_SCREEN_ADDRESS+NEXT_SCANLINE_INCREMENT*((VIEWPORT_START_LINE+{ii})*3+1),x
+ldy colorLeft: lda _tabLeftBlue, y: ldy colorRight: ora _tabRightBlue, y:
+sta HIRES_SCREEN_ADDRESS+NEXT_SCANLINE_INCREMENT*((VIEWPORT_START_LINE+{ii})*3+2),x
+"""
 
 	content += ficcontent_trailer
 	print (content)

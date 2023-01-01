@@ -8,8 +8,6 @@ from PIL import Image
 import codegen
 import argparse
 
-def toSimpleRgb(val):
-    return val//85
 
 ## [ref texture_file2buffer]
 def image2TextureBuf (filepathname):
@@ -30,7 +28,7 @@ def image2TextureBuf (filepathname):
         for jj in range (imh):    
             ## [ref texel_codec]
             r, g, b = rgb_im.getpixel((ii, jj))
-            texel_value = (r//85)*16 + (g//85)*4 + (b//85)
+            texel_value = (r//64)*16 + (g//64)*4 + (b//64)
             bufimgtranslat.append(texel_value)
 
     cCode = codegen.buffer2cCode("texture_"+namerad, "unsigned char", bufimgtranslat)

@@ -261,6 +261,93 @@ _spritePtrReadTexture .dsb 2
 ;;     rts
 
 
+
+_precalcSpriteTexPixelRunthrough:
+.(
+
+;     if (spriteHeight >= 64) {
+    lda _spriteHeight
+    cmp #64
+    bcc spriteSmallerThan64
+
+;         // idxTexPixel         = 0;
+
+;         // iea2StartValue      = 0;
+;         // iea2NbVal           = TEXTURE_SIZE-1;
+;         // iea2NbStep          = spriteHeight;
+
+;         // iea2CurrentValue         = iea2StartValue;
+;         // iea2EndValue             = iea2StartValue + iea2NbVal;
+;         // iea2CurrentError     = iea2NbStep;
+
+
+        lda #0
+        sta _idxTexPixel: sta _iea2StartValue:
+        lda #TEXTURE_SIZE-1: sta _iea2NbVal
+        lda _spriteHeight: sta _iea2NbStep
+        lda _iea2StartValue: sta _iea2CurrentValue
+        clc: adc _iea2NbVal: sta _iea2EndValue
+        lda _iea2NbStep: sta _iea2CurrentError
+
+iea2_loop:
+;         do {
+;             // precalTexPixelOffset [idxTexPixel++] = iea2CurrentValue;
+;             // iea2CurrentError         -= iea2NbVal;
+;             // if ((iea2CurrentError<<1) < iea2NbStep) {
+;             //     iea2CurrentError     += iea2NbStep;
+;             //     iea2CurrentValue     += 1;
+;             // }
+            ldy _idxTexPixel: lda _iea2CurrentValue: sta _precalTexPixelOffset,y :iny: sty _idxTexPixel
+            lda _iea2CurrentError: sec: sbc _iea2NbVal: sta _iea2CurrentError
+            :.(:bmi updateError
+            asl
+            cmp _iea2NbStep
+            bcc updateError: jmp endUpdateError
+            updateError
+            lda _iea2CurrentError: clc: adc _iea2NbStep: sta _iea2CurrentError
+            inc _iea2CurrentValue
+            :endUpdateError:.)
+
+
+        lda _iea2CurrentValue
+        cmp _iea2EndValue
+        bcc iea2_loop
+;         } while (iea2CurrentValue < iea2EndValue);
+
+;         // precalTexPixelOffset [idxTexPixel++] = iea2CurrentValue;
+        ldy _idxTexPixel: lda _iea2CurrentValue: sta _precalTexPixelOffset,y: iny: sty _idxTexPixel
+;         // tabPrecalTexPixelOffset[engCurrentObjectIdx] = precalTexPixelOffset; // &(tabIdxRdTexture[((spriteHeight+1)*spriteHeight)/2]);
+        lda _engCurrentObjectIdx: asl: tay
+        lda #<(_precalTexPixelOffset): sta _tabPrecalTexPixelOffset,y
+        iny
+        lda #>(_precalTexPixelOffset)
+        sta _tabPrecalTexPixelOffset,y
+    jmp EndIfSpriteSmallerThan64
+;     } else {
+spriteSmallerThan64:
+;         tabPrecalTexPixelOffset[engCurrentObjectIdx] = &(tabIdxRdTexture[((spriteHeight+1)*spriteHeight)>>1]);
+
+        lda _engCurrentObjectIdx : sta tmp0 :
+        lda tmp0 : sta tmp0 : lda #0 : sta tmp0+1 :
+        lda tmp0 : asl : sta tmp0 : lda tmp0+1 : rol : sta tmp0+1 :
+        clc : lda #<(_tabPrecalTexPixelOffset) : adc tmp0 : sta tmp0 : lda #>(_tabPrecalTexPixelOffset) : adc tmp0+1 : sta tmp0+1 :
+        lda _spriteHeight : sta tmp1 :
+        lda tmp1 : sta tmp1 : lda #0 : sta tmp1+1 :
+        clc : lda #<(1) : adc tmp1 : sta tmp2 : lda #>(1) : adc tmp1+1 : sta tmp2+1 :
+        lda tmp2 : sta op1 : lda tmp2+1 : sta op1+1 : lda tmp1 : sta op2 : lda tmp1+1 : sta op2+1 : jsr mul16i : stx tmp1 : sta tmp1+1 :
+        lda tmp1 : sta tmp : lda tmp1+1 : ldx #1 : beq *+8 : lsr : ror tmp : dex : bne *-4 : ldx tmp : : stx tmp1 : sta tmp1+1 :
+        clc : lda #<(_tabIdxRdTexture) : adc tmp1 : sta tmp1 : lda #>(_tabIdxRdTexture) : adc tmp1+1 : sta tmp1+1 :
+        ldy #0 : lda tmp1 : sta (tmp0),y : iny : lda tmp1+1 : sta (tmp0),y :
+
+
+
+;     }
+EndIfSpriteSmallerThan64:
+
+precalcSpriteTexPixelRunthroughDone
+.)
+    rts
+
 _prepareDrawSprites
 .(
 
@@ -457,4 +544,229 @@ endloop
 drawSpriteColDone
 .)
     rts
+
+
+_prepareDrawSprite:
+.(
+    // compute objAngle, objLogDist
+    // objX = objPosX[engCurrentObjectIdx];
+    // objY = objPosY[engCurrentObjectIdx];
+    ldy _engCurrentObjectIdx
+    lda _objPosX,y
+    sta _objX
+    lda _objPosY,y
+    sta _objY
+
+    // theVisibility = isVisibleSprite();
+    jsr _elaborateSpriteVisibility
+    lda _visi_SpriteVisibility
+    sta _theVisibility
+
+    ; if ((theObjHeight=dist2hh(objLogDistance[engCurrentObjectIdx])) == 0) return;
+    ldy _engCurrentObjectIdx
+    lda _objLogDistance,y
+    tay
+    lda         _unlogd2hh, Y
+    sta _theObjHeight
+    bne heightNotNull
+    rts
+
+heightNotNull
+
+    // spriteHeight            = theObjHeight*2;
+    lda _theObjHeight
+    asl
+    sta _spriteHeight
+
+
+    ; precalcSpriteTexPixelRunthrough();
+    ldy #0: jsr _precalcSpriteTexPixelRunthrough
+
+
+    ; if (theVisibility == 1){
+    lda _theVisibility
+    cmp #1
+    beq visibilityEquals1
+    jmp visibilityNot1
+visibilityEquals1:
+    ;     // spriteRefColumn = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngle[engCurrentObjectIdx]];
+        ldy _engCurrentObjectIdx: lda #HALF_FOV_FIX_ANGLE: sec: sbc _objAngle,y: tay: lda _tabAngle2Col,y
+        sta _spriteRefColumn
+
+
+    ;     // Rejoindre la bordure gauche
+    ;     if (spriteRefColumn <= spriteHeight/2) {
+        lda _spriteHeight    
+        lsr
+        cmp _spriteRefColumn
+        bcc refColumnHigherThanHeight_00
+    ;         // tabSpriteViewportColIdx[engCurrentObjectIdx]       = 0 ; // VIEWPORT_START_COLUMN + 1;
+            lda #0: ldy _engCurrentObjectIdx: sta _tabSpriteViewportColIdx,y
+    ;         // tabSpriteTextureColIdx[engCurrentObjectIdx]         = spriteHeight/2 - spriteRefColumn + 2;
+            lda _spriteHeight: lsr: clc: adc #2: sec: sbc _spriteRefColumn
+            ldy _engCurrentObjectIdx: sta _tabSpriteTextureColIdx,y // TODO: Remove loading of engCurrentObjectIdx cause it is already loaded
+
+    ;         // tabSpriteNbLoopColumn[engCurrentObjectIdx] = min(VIEWPORT_WIDTH - 3,spriteHeight/2+spriteRefColumn-2);
+            lda _spriteHeight: lsr: clc: adc _spriteRefColumn : sec: sbc #2
+            .(:cmp #VIEWPORT_WIDTH - 3:bcc skip:lda #VIEWPORT_WIDTH - 3:skip:.)
+            ldy _engCurrentObjectIdx: sta _tabSpriteNbLoopColumn,y
+        jmp enfIfrefColumnHigherThanHeight_00
+refColumnHigherThanHeight_00:
+    ;     } else {
+    ;         // tabSpriteViewportColIdx[engCurrentObjectIdx]       = spriteRefColumn - spriteHeight/2; // + VIEWPORT_START_COLUMN;
+            lda _spriteHeight: lsr: eor #$FF: sec: adc #1: clc: adc _spriteRefColumn
+            ldy _engCurrentObjectIdx: sta _tabSpriteViewportColIdx,y
+    ;         // tabSpriteTextureColIdx[engCurrentObjectIdx]        = 0;
+            lda #0: ldy _engCurrentObjectIdx: sta _tabSpriteTextureColIdx,y
+    ;         // tabSpriteNbLoopColumn[engCurrentObjectIdx] = min(VIEWPORT_WIDTH-2-spriteRefColumn+spriteHeight/2,spriteHeight);
+            lda _spriteHeight: lsr: clc: adc #VIEWPORT_WIDTH-2: sec: sbc _spriteRefColumn
+            .(:cmp _spriteHeight: bcc skip: lda _spriteHeight :skip:.)
+            ldy _engCurrentObjectIdx: sta _tabSpriteNbLoopColumn,y
+enfIfrefColumnHigherThanHeight_00
+    ;     }
+
+    ;     if (spriteHeight > VIEWPORT_HEIGHT){
+        lda #VIEWPORT_HEIGHT
+        cmp _spriteHeight
+        bcs spriteHeightNotHigherThanViewportHeight_00
+    ;         // tabSpriteViewportLinIdx[engCurrentObjectIdx]    = VIEWPORT_START_LINE + 1;
+            lda #VIEWPORT_START_LINE+1
+            ldy _engCurrentObjectIdx: sta _tabSpriteViewportLinIdx,y
+    ;         // tabSpriteSavTextureLinIdx[engCurrentObjectIdx]  = spriteHeight/2 - VIEWPORT_HEIGHT/ 2 + 1;
+            lda _spriteHeight:lsr: sec
+            sbc #VIEWPORT_HEIGHT/2
+            clc: adc #1
+            ldy _engCurrentObjectIdx: sta _tabSpriteSavTextureLinIdx,y
+    ;         // tabSpriteSavNbLoopLine[engCurrentObjectIdx]           = VIEWPORT_HEIGHT  - 1;
+            lda #VIEWPORT_HEIGHT-1
+            ldy _engCurrentObjectIdx: sta _tabSpriteSavNbLoopLine,y
+        jmp endIfSpriteHeightHigherThanViewportHeight_00
+spriteHeightNotHigherThanViewportHeight_00
+    ;     } else {
+    ;         // tabSpriteViewportLinIdx[engCurrentObjectIdx]    = VIEWPORT_HEIGHT/ 2 - spriteHeight/2 + VIEWPORT_START_LINE;
+            lda _spriteHeight: lsr: eor #$FF: clc: adc #1: clc: adc #VIEWPORT_HEIGHT/2+VIEWPORT_START_LINE
+            ldy _engCurrentObjectIdx: sta _tabSpriteViewportLinIdx,y
+    ;         // tabSpriteSavTextureLinIdx[engCurrentObjectIdx]  = 0;
+            lda #0
+            ldy _engCurrentObjectIdx: sta _tabSpriteSavTextureLinIdx,y
+    ;         // tabSpriteSavNbLoopLine[engCurrentObjectIdx]           = spriteHeight ;
+            lda _spriteHeight
+            ldy _engCurrentObjectIdx: sta _tabSpriteSavNbLoopLine,y
+endIfSpriteHeightHigherThanViewportHeight_00
+    ;     }
+    jmp endSwitchVisibility
+visibilityNot1:
+    ; } else if (theVisibility == 2) {
+    lda _theVisibility
+    cmp #2
+    bne visibilityNot2
+    ;     // spriteRefColumn = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngleRight];
+        lda #HALF_FOV_FIX_ANGLE: sec: sbc _objAngleRight:tay:lda _tabAngle2Col,y
+        sta _spriteRefColumn
+       
+
+    ;     // displaySpriteRightVisible();
+    ;     // tabSpriteViewportColIdx[engCurrentObjectIdx]          = 0; 
+    ;     // tabSpriteTextureColIdx[engCurrentObjectIdx]           = spriteHeight-spriteRefColumn-1;
+    ;     // tabSpriteNbLoopColumn[engCurrentObjectIdx]                = spriteRefColumn; // spriteRefColumn-VIEWPORT_START_COLUMN;
+        ldy _engCurrentObjectIdx
+        lda #0
+        sta _tabSpriteViewportColIdx,y
+        lda _spriteHeight: sec: sbc _spriteRefColumn: sec : sbc #1 
+        sta _tabSpriteTextureColIdx,y
+        lda _spriteRefColumn
+        sta _tabSpriteNbLoopColumn,y
+
+
+    ;     if (spriteHeight > VIEWPORT_HEIGHT){
+        lda #VIEWPORT_HEIGHT
+        cmp _spriteHeight
+        bcs spriteHeightNotHigherThanViewportHeight_01
+    ;         // tabSpriteViewportLinIdx[engCurrentObjectIdx]        = VIEWPORT_START_LINE + 1;
+            lda #VIEWPORT_START_LINE + 1
+            ldy _engCurrentObjectIdx: sta _tabSpriteViewportLinIdx,y
+    ;         // tabSpriteSavTextureLinIdx[engCurrentObjectIdx]      = spriteHeight/2 - VIEWPORT_HEIGHT/ 2  + 1;
+            lda _spriteHeight: lsr: sec: sbc #VIEWPORT_HEIGHT/2:clc: adc #1
+            ldy _engCurrentObjectIdx: sta _tabSpriteSavTextureLinIdx,y
+    ;         // tabSpriteSavNbLoopLine[engCurrentObjectIdx]               = VIEWPORT_HEIGHT  - 1;
+            lda #VIEWPORT_HEIGHT-1
+            ldy _engCurrentObjectIdx: sta _tabSpriteSavNbLoopLine,y
+        jmp endIfSpriteHeightHigherThanViewportHeight_01
+    ;     } else {
+spriteHeightNotHigherThanViewportHeight_01
+    ;         // tabSpriteSavTextureLinIdx[engCurrentObjectIdx]      = 0;
+            lda #0
+            ldy _engCurrentObjectIdx: sta _tabSpriteSavTextureLinIdx,y
+    ;         // tabSpriteViewportLinIdx[engCurrentObjectIdx]        = VIEWPORT_HEIGHT/ 2 - spriteHeight/2 + VIEWPORT_START_LINE;
+            lda _spriteHeight: lsr: eor #$FF: clc: adc #1: adc #VIEWPORT_HEIGHT/2+VIEWPORT_START_LINE
+            ldy _engCurrentObjectIdx: sta _tabSpriteViewportLinIdx,y
+    ;         // tabSpriteSavNbLoopLine[engCurrentObjectIdx]               = spriteHeight ;
+            lda _spriteHeight
+            ldy _engCurrentObjectIdx: sta _tabSpriteSavNbLoopLine,y
+endIfSpriteHeightHigherThanViewportHeight_01
+    ;     }
+
+    jmp endSwitchVisibility
+visibilityNot2:
+    cmp #2
+    bne visibilityNot3
+    ; } else if (theVisibility == 3) {
+    ;     // spriteRefColumn = tabAngle2Col[HALF_FOV_FIX_ANGLE-objAngleLeft];
+        lda #HALF_FOV_FIX_ANGLE: sec: sbc _objAngleLeft: tay: lda _tabAngle2Col,y
+        sta _spriteRefColumn
+
+    ;     // tabSpriteViewportColIdx[engCurrentObjectIdx]        = spriteRefColumn;
+    ;     // tabSpriteTextureColIdx[engCurrentObjectIdx]         = 0;
+    ;     // tabSpriteNbLoopColumn[engCurrentObjectIdx]                = VIEWPORT_WIDTH-spriteRefColumn;
+        ldy _engCurrentObjectIdx
+        lda _spriteRefColumn
+        sta _tabSpriteViewportColIdx,y
+        lda #0
+        sta _tabSpriteTextureColIdx,y
+        lda #VIEWPORT_WIDTH: sec: sbc _spriteRefColumn
+        sta _tabSpriteNbLoopColumn,y
+
+
+
+    ;     if (spriteHeight > VIEWPORT_HEIGHT){
+        lda #VIEWPORT_HEIGHT
+        cmp _spriteHeight
+        bcs spriteHeightNotHigherThanViewportHeight_02
+    ;         // tabSpriteViewportLinIdx[engCurrentObjectIdx]        = VIEWPORT_START_LINE + 1;
+            lda #VIEWPORT_START_LINE+1
+            ldy _engCurrentObjectIdx: sta _tabSpriteViewportLinIdx,y
+    ;         // tabSpriteSavTextureLinIdx[engCurrentObjectIdx]      = spriteHeight/2 - VIEWPORT_HEIGHT/ 2  + 1;
+            lda _spriteHeight: lsr: sec: sbc #VIEWPORT_HEIGHT/2+1
+            ldy _engCurrentObjectIdx: sta _tabSpriteSavTextureLinIdx,y
+    ;         // tabSpriteSavNbLoopLine[engCurrentObjectIdx]               = VIEWPORT_HEIGHT  - 1;
+            lda #VIEWPORT_HEIGHT-1
+            ldy _engCurrentObjectIdx: sta _tabSpriteSavNbLoopLine,y
+        jmp endIfSpriteHeightHigherThanViewportHeight_02
+    ;     } else {
+spriteHeightNotHigherThanViewportHeight_02
+    ;         // tabSpriteViewportLinIdx[engCurrentObjectIdx]        = VIEWPORT_HEIGHT/ 2 - spriteHeight/2 + VIEWPORT_START_LINE;
+            lda _spriteHeight: lsr: eor #$FF: clc: adc #1: clc: adc #VIEWPORT_HEIGHT/2+VIEWPORT_START_LINE
+            ldy _engCurrentObjectIdx: sta _tabSpriteViewportLinIdx,y
+    ;         // tabSpriteSavTextureLinIdx[engCurrentObjectIdx]      = 0;
+            lda #0
+            ldy _engCurrentObjectIdx: sta _tabSpriteSavTextureLinIdx,y
+    ;         // tabSpriteSavNbLoopLine[engCurrentObjectIdx]               = spriteHeight ;
+            lda _spriteHeight
+            ldy _engCurrentObjectIdx: sta _tabSpriteSavNbLoopLine,y
+endIfSpriteHeightHigherThanViewportHeight_02
+    ;     }
+
+    jmp endSwitchVisibility
+visibilityNot3:
+    ; } else {
+    ;     // tabSpriteNbLoopColumn[engCurrentObjectIdx]                = 0;
+        lda #0
+        ldy _engCurrentObjectIdx: sta _tabSpriteNbLoopColumn,y
+        
+    ; }
+endSwitchVisibility
+prepareDrawSpriteDone
+.)
+    rts
+
 #endif ;;USE_C_SPRITE

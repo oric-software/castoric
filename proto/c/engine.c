@@ -43,6 +43,11 @@ unsigned char idObjDoor;
 void doorUpdate();
 
 
+#ifdef USE_C_COMPUTELOGDIST
+// Input : objPosX/Y[engCurrentObjectIdx], rayCamPosX/Y
+// Oupt : objAngle, objLogDistance
+extern void computeLogDistance ();
+#endif
 void engObjectPulse()
 {
     switch (objType[engCurrentObjectIdx])

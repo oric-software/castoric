@@ -11,7 +11,7 @@
 #define VIEWPORT_START_LINE             12
 #define TEXTURE_SIZE                    32
 #define HALF_FOV_FIX_ANGLE              33
-#define EMPTY_ALPHA                     17
+#define EMPTY_ALPHA                     34
 
 // [ref scene_describe]
 #define NB_MAX_WALL                     60
